@@ -114,7 +114,8 @@ public class MainActivity extends BaseActivity {
         Utils.makeFolder();
 
         DataSynchronizer dataSynchronizer = new DataSynchronizer(this);
-        dataSynchronizer.sync();
+        dataSynchronizer.syncIngredients();
+        dataSynchronizer.syncRecipes();
         setContentView(R.layout.activity_root);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
