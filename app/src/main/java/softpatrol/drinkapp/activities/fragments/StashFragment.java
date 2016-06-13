@@ -9,8 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +20,7 @@ import softpatrol.drinkapp.activities.BaseActivity;
 import softpatrol.drinkapp.activities.RootActivity;
 import softpatrol.drinkapp.api.Analyzer;
 import softpatrol.drinkapp.api.Definitions;
+import softpatrol.drinkapp.api.Getter;
 import softpatrol.drinkapp.api.Poster;
 import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.database.models.stash.Stash;
@@ -35,6 +34,7 @@ import softpatrol.drinkapp.util.Debug;
 public class StashFragment extends Fragment {
     private int selectedStash;
     private ArrayList<Stash> stashes;
+    private View rootView;
 
     /**
      * The fragment argument representing the section number for this
@@ -60,17 +60,23 @@ public class StashFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_stash, container, false);
+        ArrayList<Pair<String, String>> headers = new ArrayList<>();
+        headers.add(new Pair<>("Content-Type", "application/json"));
+        DatabaseHandler db = DatabaseHandler.getInstance(getContext());
+        headers.add(new Pair<>("Authorization", db.getAccount(DatabaseHandler.getCurrentAccount(getContext())).getToken()));
+        new Getter(new SynchronizeStash(getActivity()), null, headers).execute(Definitions.GET_STASH);
         selectedStash = -1;
-        updateView(rootView);
+        this.rootView = rootView;
+        updateView();
         return rootView;
     }
 
-    private void updateView(final View rootView) {
+    private void updateView() {
         DatabaseHandler db = new DatabaseHandler(getContext());
         stashes = ((ArrayList<Stash>)db.getAllStashes());
-        ((LinearLayout)rootView.findViewById(R.id.stash_item_container)).removeAllViews();
+        ((LinearLayout) this.rootView.findViewById(R.id.stash_item_container)).removeAllViews();
         LinearLayout row = new LinearLayout(getContext());
-        ((LinearLayout) rootView.findViewById(R.id.stash_item_container)).addView(row);
+        ((LinearLayout) this.rootView.findViewById(R.id.stash_item_container)).addView(row);
         //row.setPadding(10,10,10,10);
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, RootActivity.displayHeight / 5));
@@ -96,13 +102,13 @@ public class StashFragment extends Fragment {
                     public void onClick(View v) {
                         System.out.println(stash.toString());
                         selectedStash = (int) stash.getId();
-                        updateView(rootView);
+                        updateView();
                         //TODO: Edit Stash
                     }
                 });
                 if (i % 2 == 1) {
                     row = new LinearLayout(getContext());
-                    ((LinearLayout) rootView.findViewById(R.id.stash_item_container)).addView(row);
+                    ((LinearLayout) this.rootView.findViewById(R.id.stash_item_container)).addView(row);
                     //row.setPadding(10,10,10,10);
                     row.setOrientation(LinearLayout.HORIZONTAL);
                     row.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, RootActivity.displayHeight / 5));
@@ -125,7 +131,7 @@ public class StashFragment extends Fragment {
             public void onClick(View v) {
                 System.out.println("CREATE NEW STASH!");
                 addStash();
-                updateView(rootView);
+                updateView();
             }
         });
         if(stashes == null || stashes.size() % 2 == 0) {
@@ -201,6 +207,35 @@ public class StashFragment extends Fragment {
 
             ArrayList<Stash> stashes1 = new ArrayList<>(db.getAllStashes());
             for(Stash i : stashes1) Debug.debugMessage((BaseActivity) caller, i.toString());
+        }
+    }
+
+    private class SynchronizeStash extends Analyzer {
+        public SynchronizeStash(Activity activity) { super(activity); }
+        @Override
+        public void analyzeData(JSONObject result) throws JSONException {
+            Debug.debugMessage((BaseActivity) caller, "attempting to sync stashes");
+            JSONArray stashes = result.getJSONArray("data");
+
+            DatabaseHandler db = DatabaseHandler.getInstance(caller);
+            ArrayList<Stash> serverStashes = new ArrayList<>();
+            //Parse stashes
+            for(int i = 0;i<stashes.length();i++)
+                serverStashes.add(new Stash(stashes.getJSONObject(i)));
+
+            for(Stash s : serverStashes) {
+                Stash s2 = db.getServerStash(s.getServerId());
+                if(s2!= null) {
+                    s.setId(s2.getId());
+                    db.updateStash(s);
+                }
+                else db.addStash(s);
+            }
+
+            ArrayList<Stash> stashes1 = new ArrayList<>(db.getAllStashes());
+            for(Stash i : stashes1) Debug.debugMessage((BaseActivity) caller, i.toString());
+
+            updateView();
         }
     }
 }

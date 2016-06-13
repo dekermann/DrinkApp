@@ -28,12 +28,12 @@ public class DataSynchronizer {
     }
 
     public void sync() {
-        if(parent == null) throw new NullPointerException("Set parent activity before using sync");
+        /*if(parent == null) throw new NullPointerException("Set parent activity before using sync");
         ArrayList<Pair<String, String>> headers = new ArrayList<>();
         headers.add(new Pair<>("Content-Type", "application/json"));
         DatabaseHandler db = DatabaseHandler.getInstance(parent);
         headers.add(new Pair<>("Authorization", db.getAccount(DatabaseHandler.getCurrentAccount(parent)).getToken()));
-        new Getter(new SynchronizeStash(parent), null, headers).execute(Definitions.GET_STASH);
+        new Getter(new SynchronizeStash(parent), null, headers).execute(Definitions.GET_STASH);*/
         new Getter(new SynchronizeIngredients(parent)).execute(Definitions.GET_INGREDIENTS);
         new Getter(new SynchronizeRecipes(parent)).execute(Definitions.GET_RECIPES);
     }
