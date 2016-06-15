@@ -90,7 +90,7 @@ public class RootActivity extends BaseActivity {
 
         //TODO: When commenting out the reset look below for next TODO!!!!
         DatabaseHandler db = DatabaseHandler.getInstance(this);
-        //db.onUpgrade(db.getWritableDatabase(), 1, 2);
+        db.onUpgrade(db.getWritableDatabase(), 1, 2);
 
         String[] paths = new String[] { DATA_PATH, DATA_PATH + "tessdata/" };
 
@@ -136,8 +136,6 @@ public class RootActivity extends BaseActivity {
             }
         }
 
-
-
         ArrayList<String> permissionRequests = new ArrayList<>();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             permissionRequests.add(Manifest.permission.CAMERA);
@@ -151,6 +149,9 @@ public class RootActivity extends BaseActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
             permissionRequests.add(Manifest.permission.INTERNET);
         }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
+            permissionRequests.add(Manifest.permission.ACCESS_NETWORK_STATE);
+        }
         if(permissionRequests.size() != 0) {
             String[] permissionRequestArray = new String[permissionRequests.size()];
             for(int i = 0;i<permissionRequests.size();i++) permissionRequestArray[i] = permissionRequests.get(i);
@@ -159,10 +160,9 @@ public class RootActivity extends BaseActivity {
         else {
             Long currentAccountId = DatabaseHandler.getCurrentAccount(this);
             //First time user
-            if(currentAccountId == -1) { //TODO: Remove true when database stops resetting
+            if(currentAccountId == -1 || true) { //TODO: Remove true when database stops resetting
 //                MultipartEntityBuilder multiPartEntityBuilder = MultipartEntityBuilder.create();
 //                multiPartEntityBuilder.setCharset(Charset.forName("UTF-8"));
-                Debug.debugMessage(parent, "attempting to get account");
                 new Poster(new AccountCreation(this)).execute(Definitions.CREATE_MOBILE);
             }
             else {
@@ -178,7 +178,7 @@ public class RootActivity extends BaseActivity {
             case 1:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if(this != null) {
-                        changeToMainActivity(true);
+                        new Poster(new AccountCreation(this)).execute(Definitions.CREATE_MOBILE);
                     }
                 } else {
                     Toast.makeText(this, "PRESS OK YOU RETARD", Toast.LENGTH_SHORT).show();

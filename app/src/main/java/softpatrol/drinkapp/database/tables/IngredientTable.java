@@ -76,6 +76,19 @@ public class IngredientTable {
         return ingredient;
     }
 
+    public static Ingredient getServerIngredient(SQLiteDatabase db, long id) {
+        if (id == -1) return null;
+        Cursor cursor = db.query(TABLE_INGREDIENTS, allColumns, INGREDIENT_SERVER_ID + " = '" + id + "'", null, null, null, null);
+        if (cursor.getCount() == 0) return null;
+
+        cursor.moveToFirst();
+
+        Ingredient ingredient = cursorToIngredient(cursor);
+
+        cursor.close();
+        return ingredient;
+    }
+
     public static Ingredient getIngredient(SQLiteDatabase db, String name) {
         Cursor cursor = db.query(TABLE_INGREDIENTS, allColumns, INGREDIENT_NAME + " = '" + name + "'", null, null, null, null);
         if (cursor.getCount() == 0) return null;

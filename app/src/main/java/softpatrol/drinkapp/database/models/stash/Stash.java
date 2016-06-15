@@ -113,12 +113,22 @@ public class Stash {
         this.ingredientIds = ingredientIds;
     }
 
+    public void addIngredientId(Long ingredient) {
+        for(Long l : this.ingredientIds) if(l.equals(ingredient)) return;
+        this.ingredientIds.add(ingredient);
+    }
+
     public ArrayList<Long> getResultingDrinks() {
         return recipeIds;
     }
 
     public void setResultingDrinks(ArrayList<Long> recipeIds) {
         this.recipeIds = recipeIds;
+    }
+
+    public void addRecipeId(Long recipeId) {
+        for(Long l : this.recipeIds) if(l.equals(recipeId)) return;
+        this.recipeIds.add(recipeId);
     }
 
     public long getServerId() {

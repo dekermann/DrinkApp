@@ -1,7 +1,7 @@
 package softpatrol.drinkapp.activities.fragments;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +20,7 @@ public class ResultFragment extends Fragment {
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    public ResultFragment() {
-    }
+    public ResultFragment() {}
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -40,5 +39,10 @@ public class ResultFragment extends Fragment {
         int fragmentId = getArguments().getInt(ARG_SECTION_NUMBER);
         View rootView = inflater.inflate(R.layout.fragment_result, container, false);
         return rootView;
+    }
+
+    @Override
+    public void onFocused() {
+        Log.d("Swapped to fragment","got stash: " + StashFragment.CURRENT_STASH.toString());
     }
 }

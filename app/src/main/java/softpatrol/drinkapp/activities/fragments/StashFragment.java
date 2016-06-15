@@ -2,7 +2,6 @@ package softpatrol.drinkapp.activities.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +31,8 @@ import softpatrol.drinkapp.util.Debug;
  * Copy this code for instant regret...
  */
 public class StashFragment extends Fragment {
-    private int selectedStash;
+    public static long CURRENT_STASH_ID = -1;
+    public static Stash CURRENT_STASH = new Stash();
     private ArrayList<Stash> stashes;
     private View rootView;
 
@@ -42,8 +42,7 @@ public class StashFragment extends Fragment {
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    public StashFragment() {
-    }
+    public StashFragment() {}
 
     /**
      * Returns a new instance of this fragment for the given section
@@ -65,7 +64,6 @@ public class StashFragment extends Fragment {
         DatabaseHandler db = DatabaseHandler.getInstance(getContext());
         headers.add(new Pair<>("Authorization", db.getAccount(DatabaseHandler.getCurrentAccount(getContext())).getToken()));
         new Getter(new SynchronizeStash(getActivity()), null, headers).execute(Definitions.GET_STASH);
-        selectedStash = -1;
         this.rootView = rootView;
         updateView();
         return rootView;
@@ -89,7 +87,7 @@ public class StashFragment extends Fragment {
         row.addView(nextBox);
         if(stashes != null) {
             for (int i = 0; i < stashes.size(); i++) {
-                if(selectedStash == stashes.get(i).getId())nextBox.setBackground(getActivity().getDrawable(R.drawable.button_border_selected));
+                if(CURRENT_STASH_ID == stashes.get(i).getId())nextBox.setBackground(getActivity().getDrawable(R.drawable.button_border_selected));
                 else nextBox.setBackground(getActivity().getDrawable(R.drawable.button_border));
                 StashView stashView = new StashView(getContext());
                 stashView.setName(stashes.get(i).getName());
@@ -100,10 +98,9 @@ public class StashFragment extends Fragment {
                     private Stash stash = stashes.get(finalI);
                     @Override
                     public void onClick(View v) {
-                        System.out.println(stash.toString());
-                        selectedStash = (int) stash.getId();
+                        CURRENT_STASH = stash;
+                        CURRENT_STASH_ID = stash.getId();
                         updateView();
-                        //TODO: Edit Stash
                     }
                 });
                 if (i % 2 == 1) {
@@ -123,13 +120,13 @@ public class StashFragment extends Fragment {
         }
         nextBox.setBackground(getActivity().getDrawable(R.drawable.button_border));
         StashView stashView = new StashView(getContext());
-        stashView.setName("Create New Stash");
+        stashView.setName("SAVE STASH!");
         stashView.setIcon(getActivity().getDrawable(R.drawable.settings));
         nextBox.addView(stashView);
         nextBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("CREATE NEW STASH!");
+                System.out.println("SAVE STASH!");
                 addStash();
                 updateView();
             }
@@ -146,39 +143,32 @@ public class StashFragment extends Fragment {
 
     private void addStash() {
         DatabaseHandler db = DatabaseHandler.getInstance(getContext());
-        Stash stash = new Stash();
         //Fake load
         long serverId = 0;
         String pictureId = "picture0";
         String name = "Home" + stashes.size();
         String ownerId = "Account1";
-        ArrayList<Long> ingredientsIds = new ArrayList<>();
-        ingredientsIds.add(1L);
-        ingredientsIds.add(2L);
-        ingredientsIds.add(3L);
-        ArrayList<Long> resultingDrinks = new ArrayList<>();
-        resultingDrinks.add(1L);
         String accessState = "private";
         long createdAt = System.currentTimeMillis();
         long latestModification = System.currentTimeMillis();
         //Fake load
-        stash.setServerId(serverId);
-        stash.setPictureId(pictureId);
-        stash.setName(name);
-        stash.setOwnerId(ownerId);
-        stash.setIngredientsIds(ingredientsIds);
-        stash.setResultingDrinks(resultingDrinks);
-        stash.setAccessState(accessState);
-        stash.setCreatedAt(createdAt);
-        stash.setLatestModification(latestModification);
+        CURRENT_STASH.setServerId(serverId);
+        CURRENT_STASH.setPictureId(pictureId);
+        CURRENT_STASH.setName(name);
+        CURRENT_STASH.setOwnerId(ownerId);
+        CURRENT_STASH.setAccessState(accessState);
+        CURRENT_STASH.setCreatedAt(createdAt);
+        CURRENT_STASH.setLatestModification(latestModification);
 
-        db.addStash(stash);
+        db.addStash(CURRENT_STASH);
+
+        CURRENT_STASH_ID = db.getStash(name).getId();
 
         JSONObject postParameters = new JSONObject();
         try {
-            postParameters.put("stashName", stash.getName());
+            postParameters.put("stashName", CURRENT_STASH.getName());
             JSONArray jsonArray = new JSONArray();
-            for(Long l : stash.getIngredientsIds()) jsonArray.put(l);
+            for(Long l : CURRENT_STASH.getIngredientsIds()) jsonArray.put(l);
             postParameters.put("ingredientIds", jsonArray);
         } catch (JSONException e) {
             e.printStackTrace();

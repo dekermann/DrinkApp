@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -35,6 +34,7 @@ import java.util.List;
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.activities.BaseActivity;
 import softpatrol.drinkapp.activities.RootActivity;
+import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.util.Debug;
 
 /**
@@ -106,6 +106,11 @@ public class ScanFragment extends Fragment {
                                 Debug.debugMessage((BaseActivity) getActivity(), "FINAL TEXT: " + recognizedText);
                             }
                             AnalyzeInProgress = false;
+                            //Fake Found
+                            long fakeId = (long) (Math.random()*10) + 1;
+                            Debug.debugMessage((BaseActivity) getActivity(), "FOUND INGREDIENT " + fakeId + ": " + DatabaseHandler.getInstance(getContext()).getServerIngredient(fakeId).getName());
+                            StashFragment.CURRENT_STASH.addIngredientId(fakeId);
+
                         }
                     });
                     thread.start();

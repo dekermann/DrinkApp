@@ -173,8 +173,9 @@ public class MainActivity extends BaseActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
         int currentPage = 2;
+        int lastPage = 2;
         public SectionsPagerAdapter(FragmentManager fm) { super(fm); }
-        public void setCurrentPage(int page) { currentPage = page; }
+        public void setCurrentPage(int page) { lastPage = currentPage; currentPage = page; }
 
         @Override
         public Fragment getItem(int position) {
@@ -201,6 +202,7 @@ public class MainActivity extends BaseActivity {
                     if(currentPage == position) {
                         image = ContextCompat.getDrawable(getBaseContext(), R.drawable.stakk_delete);
                         image.setBounds(0, 0, 140, 140);
+                        ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
                     }
                     else {
                         image = ContextCompat.getDrawable(getBaseContext(), R.drawable.stakk_delete);
@@ -214,6 +216,7 @@ public class MainActivity extends BaseActivity {
                     if(currentPage == position) {
                         image = ContextCompat.getDrawable(getBaseContext(), R.drawable.stakk_delete);
                         image.setBounds(0, 0, 140, 140);
+                        ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
                     }
                     else {
                         image = ContextCompat.getDrawable(getBaseContext(), R.drawable.stakk_delete);
@@ -227,6 +230,7 @@ public class MainActivity extends BaseActivity {
                     if(currentPage == position) {
                         image = ContextCompat.getDrawable(getBaseContext(), R.drawable.people_filled);
                         image.setBounds(0, 0, 140, 140);
+                        ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
                     }
                     else {
                         image = ContextCompat.getDrawable(getBaseContext(), R.drawable.people_unfilled);
@@ -240,6 +244,7 @@ public class MainActivity extends BaseActivity {
                     if(currentPage == position) {
                         image = ContextCompat.getDrawable(getBaseContext(), R.drawable.people_filled);
                         image.setBounds(0, 0, 140, 140);
+                        ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
                     }
                     else {
                         image = ContextCompat.getDrawable(getBaseContext(), R.drawable.people_unfilled);
@@ -253,6 +258,7 @@ public class MainActivity extends BaseActivity {
                     if(currentPage == position) {
                         image = ContextCompat.getDrawable(getBaseContext(), R.drawable.people_filled);
                         image.setBounds(0, 0, 140, 140);
+                        ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
                     }
                     else {
                         image = ContextCompat.getDrawable(getBaseContext(), R.drawable.people_unfilled);
@@ -266,6 +272,7 @@ public class MainActivity extends BaseActivity {
                     if(currentPage == position) {
                         image = ContextCompat.getDrawable(getBaseContext(), R.drawable.people_filled);
                         image.setBounds(0, 0, 140, 140);
+                        ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
                     }
                     else {
                         image = ContextCompat.getDrawable(getBaseContext(), R.drawable.people_unfilled);

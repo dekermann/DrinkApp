@@ -120,6 +120,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public Ingredient getIngredient(long id) {
         return IngredientTable.getIngredient(this.getReadableDatabase(), id);
     }
+
+    public Ingredient getServerIngredient(long id) {
+        return IngredientTable.getServerIngredient(this.getReadableDatabase(), id);
+    }
     public Ingredient getIngredient(String name) {
         return IngredientTable.getIngredient(this.getReadableDatabase(), name);
     }
