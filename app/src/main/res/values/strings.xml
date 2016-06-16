@@ -11,4 +11,5 @@
             camera buffers and save them as DNG files.
     </string>
     <string name="camera_error">This device doesn\\\'t support Camera2 API.</string>
+    <string name="button_undo">undo</string>
 </resources>

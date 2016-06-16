@@ -200,12 +200,12 @@ public class MainActivity extends BaseActivity {
             switch (position) {
                 case 0:
                     if(currentPage == position) {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.stakk_delete);
+                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
                         image.setBounds(0, 0, 140, 140);
                         ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
                     }
                     else {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.stakk_delete);
+                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
                         image.setBounds(0, 0, 100, 100);
                     }
                     sb = new SpannableString(" ");
@@ -214,12 +214,12 @@ public class MainActivity extends BaseActivity {
                     break;
                 case 1:
                     if(currentPage == position) {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.stakk_delete);
+                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
                         image.setBounds(0, 0, 140, 140);
                         ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
                     }
                     else {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.stakk_delete);
+                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
                         image.setBounds(0, 0, 100, 100);
                     }
                     sb = new SpannableString(" ");
@@ -228,12 +228,12 @@ public class MainActivity extends BaseActivity {
                     break;
                 case 2:
                     if(currentPage == position) {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.people_filled);
+                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
                         image.setBounds(0, 0, 140, 140);
                         ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
                     }
                     else {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.people_unfilled);
+                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
                         image.setBounds(0, 0, 100, 100);
                     }
                     sb = new SpannableString(" ");
@@ -242,12 +242,12 @@ public class MainActivity extends BaseActivity {
                     break;
                 case 3:
                     if(currentPage == position) {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.people_filled);
+                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
                         image.setBounds(0, 0, 140, 140);
                         ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
                     }
                     else {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.people_unfilled);
+                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
                         image.setBounds(0, 0, 100, 100);
                     }
                     sb = new SpannableString(" ");
@@ -256,12 +256,12 @@ public class MainActivity extends BaseActivity {
                     break;
                 case 4:
                     if(currentPage == position) {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.people_filled);
+                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
                         image.setBounds(0, 0, 140, 140);
                         ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
                     }
                     else {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.people_unfilled);
+                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
                         image.setBounds(0, 0, 100, 100);
                     }
                     sb = new SpannableString(" ");
@@ -270,12 +270,12 @@ public class MainActivity extends BaseActivity {
                     break;
                 default:
                     if(currentPage == position) {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.people_filled);
+                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
                         image.setBounds(0, 0, 140, 140);
                         ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
                     }
                     else {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.people_unfilled);
+                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
                         image.setBounds(0, 0, 100, 100);
                     }
                     sb = new SpannableString(" ");

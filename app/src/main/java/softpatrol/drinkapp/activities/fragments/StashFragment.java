@@ -91,7 +91,7 @@ public class StashFragment extends Fragment {
                 else nextBox.setBackground(getActivity().getDrawable(R.drawable.button_border));
                 StashView stashView = new StashView(getContext());
                 stashView.setName(stashes.get(i).getName());
-                stashView.setIcon(getActivity().getDrawable(R.drawable.phonebook_filled));
+                stashView.setIcon(getActivity().getDrawable(R.drawable.settings));
                 nextBox.addView(stashView);
                 final int finalI = i;
                 nextBox.setOnClickListener(new View.OnClickListener() {
