@@ -789,8 +789,8 @@ public class ScanFragment extends Fragment {
         public TestViewHolder(ViewGroup parent) {
             super(LayoutInflater.from(parent.getContext()).inflate(R.layout.scanned_item, parent, false));
             titleTextView = (TextView) itemView.findViewById(R.id.title_text_view);
-            Typeface type = Typeface.createFromAsset(parent.getContext().getAssets(),"fonts/font.ttf");
-            titleTextView.setTypeface(type);
+//            Typeface type = Typeface.createFromAsset(parent.getContext().getAssets(),"fonts/font.ttf");
+//            titleTextView.setTypeface(type);
         }
 
     }
