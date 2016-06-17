@@ -1,5 +1,6 @@
 package softpatrol.drinkapp.activities.fragments;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -19,6 +20,7 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -375,8 +377,14 @@ public class ScanFragment extends Fragment {
         torch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!mTorch) torch.setImageDrawable(getContext().getDrawable(R.drawable.flashlight_on));
-                else torch.setImageDrawable(getContext().getDrawable(R.drawable.flashlight_off));
+                if(!mTorch) {
+                    torch.setImageDrawable(getContext().getDrawable(R.drawable.flashlight_on_white));
+                    torch.setBackground(getContext().getDrawable(R.drawable.torch_button_on));
+                }
+                else {
+                    torch.setImageDrawable(getContext().getDrawable(R.drawable.flashlight_off_white));
+                    torch.setBackground(getContext().getDrawable(R.drawable.torch_button_off));
+                }
                 torch();
             }
         });
@@ -431,13 +439,20 @@ public class ScanFragment extends Fragment {
 
     //----- SCANNED LIST -----
     public static RecyclerView mScannedItems;
+    private LinearLayoutManager mLinearLayourManager;
     private void setUpRecyclerView() {
-        mScannedItems.setLayoutManager(new LinearLayoutManager(getContext()));
+        mLinearLayourManager = new LinearLayoutManager(getContext());
+        mScannedItems.setLayoutManager(mLinearLayourManager);
         mScannedItems.setAdapter(new TestAdapter());
         mScannedItems.setHasFixedSize(true);
         setUpItemTouchHelper();
         setUpAnimationDecoratorHelper();
     }
+
+    private boolean listIsAtTop()   {
+        return (mLinearLayourManager.findFirstVisibleItemPosition() == 0);
+    }
+
 
     /**
      * This is the standard support library way of implementing "swipe to delete" feature. You can do custom drawing in onChildDraw method
@@ -455,7 +470,7 @@ public class ScanFragment extends Fragment {
             boolean initiated;
 
             private void init() {
-                background = new ColorDrawable(Color.WHITE);
+                background = new ColorDrawable(Color.TRANSPARENT);
                 xMark = ContextCompat.getDrawable(getContext(), R.drawable.ic_clear_24dp);
                 xMark.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
                 xMarkMargin = (int) getContext().getResources().getDimension(R.dimen.ic_clear_margin);
@@ -541,7 +556,7 @@ public class ScanFragment extends Fragment {
             boolean initiated;
 
             private void init() {
-                background = new ColorDrawable(Color.WHITE);
+                background = new ColorDrawable(Color.TRANSPARENT);
                 initiated = true;
             }
 
@@ -644,11 +659,11 @@ public class ScanFragment extends Fragment {
 
             if (itemsPendingRemoval.contains(item)) {
                 // we need to show the "undo" state of the row
-                viewHolder.itemView.setBackgroundColor(Color.WHITE);
+                viewHolder.itemView.setBackgroundColor(Color.TRANSPARENT);
                 viewHolder.titleTextView.setVisibility(View.GONE);
             } else {
                 // we need to show the "normal" state
-                viewHolder.itemView.setBackgroundColor(Color.WHITE);
+                viewHolder.itemView.setBackgroundColor(Color.TRANSPARENT);
                 viewHolder.titleTextView.setVisibility(View.VISIBLE);
                 viewHolder.titleTextView.setText(item);
             }
@@ -665,8 +680,17 @@ public class ScanFragment extends Fragment {
         public void addItems(String name) {
             Log.d("ADAPTED", "Adding item: " + name);
             for(String scannedItem : items) if(scannedItem.equals(name)) return; //Can only scan same type once
-            items.add(name);
-            notifyItemInserted(items.size() - 1);
+            items.add(0, name);
+            if(listIsAtTop()) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mScannedItems.scrollToPosition(0);
+                        notifyItemInserted(0);
+                    }
+                });
+            }
+            else notifyItemInserted(0);
         }
 
         public void clearItems() {

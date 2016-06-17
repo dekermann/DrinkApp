@@ -1,47 +1,73 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.fragments.ScanFragment"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="0.4">
-        <TextureView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/camera_texture"/>
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/scanner"
-            android:padding="40dp"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/flashlight_off"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:padding="10dp"
-            android:layout_marginBottom="20dp"
-            android:layout_marginEnd="40dp"
-            android:background="@drawable/torch_button"
-            android:id="@+id/torch"/>
-    </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="0.6">
-
-        <android.support.v7.widget.RecyclerView
+        android:orientation="vertical">
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/scanned_item_list">
-
-        </android.support.v7.widget.RecyclerView>
+            android:layout_weight="0.3">
+            <TextureView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/camera_texture"/>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/scanner"
+                android:layout_marginBottom="20dp"
+                android:padding="40dp"/>
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="35dp"
+                android:src="@drawable/flashlight_off_white"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:padding="4dp"
+                android:layout_marginBottom="27dp"
+                android:layout_marginEnd="60dp"
+                android:background="@drawable/torch_button_off"
+                android:id="@+id/torch"/>
+        </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.7"
+            android:background="@color/Beige" />
 
     </LinearLayout>
 
-</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/scanner_list">
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="1dp"
+                android:id="@+id/scanned_item_list">
+            </android.support.v7.widget.RecyclerView>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+
+</RelativeLayout>
