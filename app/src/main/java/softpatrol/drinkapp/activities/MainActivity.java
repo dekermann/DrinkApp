@@ -40,6 +40,7 @@ import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.layout.components.BottomBarItem;
 import softpatrol.drinkapp.model.event.BadgeEvent;
+import softpatrol.drinkapp.layout.components.CustomViewPager;
 import softpatrol.drinkapp.util.Utils;
 
 /**
@@ -62,7 +63,8 @@ public class MainActivity extends BaseActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    private ViewPager mViewPager;
+    private CustomViewPager mViewPager;
+
     //Singleton
     private static MainActivity mainActivity;
     public static MainActivity getMain(){
@@ -74,9 +76,6 @@ public class MainActivity extends BaseActivity {
 
 
     private BottomBarItem resultBottomBarItem;
-
-
-
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -163,7 +162,8 @@ public class MainActivity extends BaseActivity {
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = (CustomViewPager) findViewById(R.id.container);
+        mViewPager.setPagingEnabled(false);
         assert mViewPager != null;
         mViewPager.setOffscreenPageLimit(5);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -253,15 +253,6 @@ public class MainActivity extends BaseActivity {
         public int getCount() { return 5; }
 
     }
-
-    public void refreshStash() {
-        ((softpatrol.drinkapp.activities.fragments.Fragment) ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(0)).refreshStash();
-        ((softpatrol.drinkapp.activities.fragments.Fragment) ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(1)).refreshStash();
-        ((softpatrol.drinkapp.activities.fragments.Fragment) ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(2)).refreshStash();
-        ((softpatrol.drinkapp.activities.fragments.Fragment) ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(3)).refreshStash();
-        ((softpatrol.drinkapp.activities.fragments.Fragment) ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(4)).refreshStash();
-    }
-
     /*
     * Messaging service between stuff
      */

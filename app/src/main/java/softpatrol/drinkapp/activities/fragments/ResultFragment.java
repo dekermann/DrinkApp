@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -23,9 +25,13 @@ import java.util.List;
 
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.api.Analyzer;
+import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.database.models.recipe.Recipe;
+import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.layout.components.BottomBarItem;
 import softpatrol.drinkapp.model.event.BadgeEvent;
+import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
+import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
 
 /**
  * David was here on 2016-06-08!
@@ -140,11 +146,6 @@ public class ResultFragment extends Fragment {
     }
 
     @Override
-    public void onFocused() {
-        Log.d("Swapped to fragment","got stash: " + StashFragment.CURRENT_STASH.toString());
-    }
-
-    @Override
     public void setMenuVisibility(final boolean visible) {
         super.setMenuVisibility(visible);
 
@@ -193,5 +194,29 @@ public class ResultFragment extends Fragment {
         }
     }
 
+    /*
+    * Messaging service between stuff
+     */
 
+    @Subscribe
+    public void onCurrentStashEvent(ChangeCurrentStashEvent stashEvent) {
+
+    }
+
+    @Subscribe
+    public void onEditStashEvent(EditCurrentStashEvent stashEvent) {
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
 }
