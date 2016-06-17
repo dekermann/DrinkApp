@@ -5,17 +5,27 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.support.annotation.IdRes;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 
@@ -28,6 +38,8 @@ import softpatrol.drinkapp.activities.fragments.StashFragment;
 import softpatrol.drinkapp.api.DataSynchronizer;
 import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.database.models.stash.Stash;
+import softpatrol.drinkapp.layout.components.BottomBarItem;
+import softpatrol.drinkapp.model.event.BadgeEvent;
 import softpatrol.drinkapp.util.Utils;
 
 /**
@@ -51,7 +63,6 @@ public class MainActivity extends BaseActivity {
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
-
     //Singleton
     private static MainActivity mainActivity;
     public static MainActivity getMain(){
@@ -60,6 +71,11 @@ public class MainActivity extends BaseActivity {
         }
         return mainActivity;
     }
+
+
+    private BottomBarItem resultBottomBarItem;
+
+
 
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -118,6 +134,8 @@ public class MainActivity extends BaseActivity {
         dataSynchronizer.syncIngredients();
         dataSynchronizer.syncRecipes();
         setContentView(R.layout.activity_root);
+
+        /*
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         mViewPager = (ViewPager) findViewById(R.id.container);
@@ -141,7 +159,52 @@ public class MainActivity extends BaseActivity {
         tabLayout.setupWithViewPager(mViewPager);
 
         mViewPager.setCurrentItem(2);
+        */
+
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        assert mViewPager != null;
+        mViewPager.setOffscreenPageLimit(5);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOnTouchListener(new View.OnTouchListener() {
+
+            public boolean onTouch(View arg0, MotionEvent arg1) {
+                return true;
+            }
+        });
+
+        mViewPager.setCurrentItem(2);
+
+
+        BottomBarItem bbTab1 = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_1);
+        bbTab1.setCustomClickListener(mViewPager,0);
+        bbTab1.setIconImageView(getResources().getDrawable(R.drawable.fragment_home,null));
+
+        BottomBarItem bbTab2 = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_2);
+        bbTab2.setCustomClickListener(mViewPager,1);
+        bbTab2.setIconImageView(getResources().getDrawable(R.drawable.search,null));
+
+        BottomBarItem bbTab3 = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_3);
+        bbTab3.setCustomClickListener(mViewPager,2);
+        bbTab3.setIconImageView(getResources().getDrawable(R.drawable.fragment_scan,null));
+
+        resultBottomBarItem = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_4);
+        resultBottomBarItem.setCustomClickListener(mViewPager,3);
+        resultBottomBarItem.setIconImageView(getResources().getDrawable(R.drawable.fragment_home,null));
+
+        BottomBarItem bbTab5 = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_5);
+        bbTab5.setCustomClickListener(mViewPager,4);
+        bbTab5.setIconImageView(getResources().getDrawable(R.drawable.fragment_home,null));
+
+
+        bbTab1.addOutsideTabListeners(bbTab2,bbTab3,resultBottomBarItem,bbTab5);
+        bbTab2.addOutsideTabListeners(bbTab1,bbTab3,resultBottomBarItem,bbTab5);
+        bbTab3.addOutsideTabListeners(bbTab1,bbTab2,resultBottomBarItem,bbTab5);
+        resultBottomBarItem.addOutsideTabListeners(bbTab1,bbTab2,bbTab3,bbTab5);
+        bbTab5.addOutsideTabListeners(bbTab1,bbTab2,bbTab3,resultBottomBarItem);
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -197,5 +260,26 @@ public class MainActivity extends BaseActivity {
         ((softpatrol.drinkapp.activities.fragments.Fragment) ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(2)).refreshStash();
         ((softpatrol.drinkapp.activities.fragments.Fragment) ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(3)).refreshStash();
         ((softpatrol.drinkapp.activities.fragments.Fragment) ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(4)).refreshStash();
+    }
+
+    /*
+    * Messaging service between stuff
+     */
+
+    @Subscribe
+    public void onBadgeEvent(BadgeEvent event) {
+        resultBottomBarItem.setBadges(event.numberOfBadges);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 }

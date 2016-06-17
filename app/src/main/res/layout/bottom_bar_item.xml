@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/bottom_bar_menu_item_img"
+        android:src="@drawable/fragment_home"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bottom_bar_menu_item_img"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_centerHorizontal="true"
+        android:text="My"
+        android:id="@+id/bottom_bar_menu_item_text" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="0"
+        android:id="@+id/bottom_bar_menu_item_badge_text"
+        android:layout_marginLeft="35dp"
+        android:background="@color/Aquamarine"
+        android:textSize="20dp" />
+
+    <!--
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bottom_bar_menu_item_img_badge"
+        android:layout_alignTop="@id/bottom_bar_menu_item_img"
+        android:layout_marginLeft="25dp"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/abc_btn_radio_to_on_mtrl_015" />
+        -->
+</RelativeLayout>

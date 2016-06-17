@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -23,6 +24,8 @@ import java.util.List;
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.api.Analyzer;
 import softpatrol.drinkapp.database.models.recipe.Recipe;
+import softpatrol.drinkapp.layout.components.BottomBarItem;
+import softpatrol.drinkapp.model.event.BadgeEvent;
 
 /**
  * David was here on 2016-06-08!
@@ -37,6 +40,8 @@ public class ResultFragment extends Fragment {
 
     private RecyclerView mRecycleView;
     private ResultRecipeAdapter resultListAdapter;
+
+    private boolean hasTestResults = false;
 
     public ResultFragment() {}
 
@@ -150,36 +155,41 @@ public class ResultFragment extends Fragment {
             NameValuePair searchIds = new BasicNameValuePair("ingredientIds","1,2,3");
             nvps.add(searchIds);
 
-            final ProgressDialog dialog = ProgressDialog.show(this.getContext(), "Loading", "Searching for some recipes...");
-            //new Getter(new ResultParser(this.getContext()),nvps).execute(Definitions.GET_SEARCH);
 
-            // mimic getter time
-            new CountDownTimer(1500, 1000) {
+            if (!hasTestResults) {
 
-                public void onTick(long millisUntilFinished) {
-                }
+                hasTestResults = true;
+                //new Getter(new ResultParser(this.getContext()),nvps).execute(Definitions.GET_SEARCH);
 
-                public void onFinish() {
-                    dialog.cancel();
-                    new CountDownTimer(1500, 250) {
+                // mimic getter time
+                new CountDownTimer(1, 1) {
 
-                        private String testNames[] = {"Gin och Tonic","Bombay Sapphire","Random shit","Something gut"};
-                        private int index = 0;
 
-                        public void onTick(long millisUntilFinished) {
-                            if (index < testNames.length) {
-                                Recipe testRecipe = new Recipe();
-                                testRecipe.setName(testNames[index++]);
-                                resultListAdapter.addRecipe(testRecipe);
+                    public void onTick(long millisUntilFinished) {
+                    }
+
+                    public void onFinish() {
+                        new CountDownTimer(1500, 250) {
+
+                            private String testNames[] = {"Gin och Tonic", "Bombay Sapphire", "Random shit", "Something gut"};
+                            private int index = 0;
+
+                            public void onTick(long millisUntilFinished) {
+                                if (index < testNames.length) {
+                                    Recipe testRecipe = new Recipe();
+                                    testRecipe.setName(testNames[index++]);
+                                    resultListAdapter.addRecipe(testRecipe);
+                                }
                             }
-                        }
 
-                        public void onFinish() {
-                            dialog.cancel();
-                        }
-                    }.start();
-                }
-            }.start();
+                            public void onFinish() {
+                                // TODO: change
+                                EventBus.getDefault().post(new BadgeEvent(10));
+                            }
+                        }.start();
+                    }
+                }.start();
+            }
         }
     }
 
