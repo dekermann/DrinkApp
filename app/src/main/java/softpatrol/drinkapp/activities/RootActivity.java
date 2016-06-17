@@ -41,6 +41,7 @@ public class RootActivity extends BaseActivity {
     BaseActivity parent;
     public final static int MAIN_ACTIVITY = 1;
 
+    public static boolean firstTimeUser = false;
     public static int displayWidth = 0;
     public static int displayHeight = 0;
     public static final String ACCOUNT_DIR="acc";
@@ -103,7 +104,6 @@ public class RootActivity extends BaseActivity {
                     Debug.debugMessage(this, "Created directory " + path + " on sdcard");
                 }
             }
-
         }
 
         // lang.traineddata file with the app (in assets folder)
@@ -112,7 +112,6 @@ public class RootActivity extends BaseActivity {
         // This area needs work and optimization
         if (!(new File(DATA_PATH + "tessdata/" + LANGUAGE + ".traineddata")).exists()) {
             try {
-
                 AssetManager assetManager = getAssets();
                 InputStream in = assetManager.open("tessdata/" + LANGUAGE + ".traineddata");
                 //GZIPInputStream gin = new GZIPInputStream(in);
@@ -163,6 +162,7 @@ public class RootActivity extends BaseActivity {
             if(currentAccountId == -1) { //TODO: Remove true when database stops resetting
 //                MultipartEntityBuilder multiPartEntityBuilder = MultipartEntityBuilder.create();
 //                multiPartEntityBuilder.setCharset(Charset.forName("UTF-8"));
+                firstTimeUser = true;
                 new Poster(new AccountCreation(this)).execute(Definitions.CREATE_MOBILE);
             }
             else {

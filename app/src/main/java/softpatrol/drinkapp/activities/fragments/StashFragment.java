@@ -60,11 +60,13 @@ public class StashFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_stash, container, false);
-        ArrayList<Pair<String, String>> headers = new ArrayList<>();
-        headers.add(new Pair<>("Content-Type", "application/json"));
-        DatabaseHandler db = DatabaseHandler.getInstance(getContext());
-        headers.add(new Pair<>("Authorization", db.getAccount(DatabaseHandler.getCurrentAccount(getContext())).getToken()));
-        new Getter(new SynchronizeStash(getActivity()), null, headers).execute(Definitions.GET_STASH);
+        if(!RootActivity.firstTimeUser) {
+            ArrayList<Pair<String, String>> headers = new ArrayList<>();
+            headers.add(new Pair<>("Content-Type", "application/json"));
+            DatabaseHandler db = DatabaseHandler.getInstance(getContext());
+            headers.add(new Pair<>("Authorization", db.getAccount(DatabaseHandler.getCurrentAccount(getContext())).getToken()));
+            new Getter(new SynchronizeStash(getActivity()), null, headers).execute(Definitions.GET_STASH);
+        }
         this.rootView = rootView;
         updateView();
         return rootView;
@@ -221,9 +223,6 @@ public class StashFragment extends Fragment {
                 }
                 else db.addStash(s);
             }
-
-            ArrayList<Stash> stashes1 = new ArrayList<>(db.getAllStashes());
-            for(Stash i : stashes1) Debug.debugMessage((BaseActivity) caller, i.toString());
 
             updateView();
         }

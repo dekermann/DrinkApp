@@ -60,7 +60,6 @@ public class Getter extends AsyncTask<String, Void, ResponsePair> {
             if(postParameters != null) Log.d("NEXTWORK: ", postParameters.toString());
             //if(postParameters != null) httpPostRequest.setEntity(new UrlEncodedFormEntity(postParameters));
 
-
             // Execute POST request to the given URL
             HttpResponse httpResponse = httpClient.execute(httpGetRequest);
 

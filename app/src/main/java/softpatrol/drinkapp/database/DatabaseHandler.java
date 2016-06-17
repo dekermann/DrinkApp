@@ -14,6 +14,7 @@ import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.database.tables.*;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -107,7 +108,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public Stash getServerStash(long serverId) {
         return StashTable.getServerStash(this.getReadableDatabase(), serverId);
     }
-    public List<Stash> getAllStashes() {
+    public ArrayList<Stash> getAllStashes() {
         return StashTable.getAllStashes(this.getWritableDatabase());
     }
     public int updateStash(Stash stash) {
@@ -145,6 +146,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     public Recipe getRecipe(long id) {
         return RecipeTable.getRecipe(this.getReadableDatabase(), id);
+    }
+    public Recipe getServerRecipe(long id) {
+        return RecipeTable.getServerRecipe(this.getReadableDatabase(), id);
     }
     public Recipe getRecipe(String name) {
         return RecipeTable.getRecipe(this.getReadableDatabase(), name);

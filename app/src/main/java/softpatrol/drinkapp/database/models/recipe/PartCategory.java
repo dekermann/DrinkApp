@@ -1,5 +1,7 @@
 package softpatrol.drinkapp.database.models.recipe;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 

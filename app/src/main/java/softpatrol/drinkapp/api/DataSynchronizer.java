@@ -1,6 +1,7 @@
 package softpatrol.drinkapp.api;
 
 import android.app.Activity;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,8 +60,17 @@ public class DataSynchronizer {
 
             DatabaseHandler db = DatabaseHandler.getInstance(caller);
             //Parse recipes
-            for(int i = 0;i<recipes.length();i++)
-                db.addRecipe(new Recipe(recipes.getJSONObject(i)));
+            ArrayList<Recipe> serverStashes = new ArrayList<>();
+            //Parse stashes
+            for(int i = 0;i<recipes.length();i++) serverStashes.add(new Recipe(recipes.getJSONObject(i)));
+            for(Recipe r : serverStashes) {
+                Recipe r2 = db.getServerRecipe(r.getServerId());
+                if(r2!= null) {
+                    r.setId(r2.getId());
+                    db.updateRecipe(r);
+                }
+                else db.addRecipe(r);
+            }
 
             ArrayList<Recipe> recipes1 = new ArrayList<>(db.getAllRecipes());
             for(Recipe r : recipes1) Debug.debugMessage((BaseActivity) caller, r.toString());

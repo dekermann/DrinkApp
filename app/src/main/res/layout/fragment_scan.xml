@@ -12,7 +12,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.3">
+            android:layout_weight="0.25">
             <TextureView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -21,8 +21,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:src="@drawable/scanner"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="53dp"
                 android:padding="40dp"/>
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="35dp"
+                android:src="@drawable/manual_add"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:padding="4dp"
+                android:layout_marginBottom="60dp"
+                android:layout_marginStart="60dp"
+                android:background="@drawable/manual_add_button"
+                android:id="@+id/manual_add"/>
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="35dp"
+                android:src="@drawable/new_scan_button"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:padding="4dp"
+                android:layout_marginBottom="60dp"
+                android:background="@drawable/clear_button"
+                android:id="@+id/clear"/>
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="35dp"
@@ -30,7 +51,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
                 android:padding="4dp"
-                android:layout_marginBottom="27dp"
+                android:layout_marginBottom="60dp"
                 android:layout_marginEnd="60dp"
                 android:background="@drawable/torch_button_off"
                 android:id="@+id/torch"/>
@@ -38,7 +59,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.7"
+            android:layout_weight="0.75"
             android:background="@color/Beige" />
 
     </LinearLayout>

@@ -110,8 +110,8 @@ public class StashTable {
         return stash;
     }
 
-    public static List<Stash> getAllStashes(SQLiteDatabase db) {
-        List<Stash> stashes = new ArrayList<>();
+    public static ArrayList<Stash> getAllStashes(SQLiteDatabase db) {
+        ArrayList<Stash> stashes = new ArrayList<>();
 
         Cursor cursor = db.query(TABLE_STASHES, allColumns, null, null, null, null, null);
         if (cursor.getCount() == 0) return null;

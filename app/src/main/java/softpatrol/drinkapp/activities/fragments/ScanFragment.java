@@ -2,6 +2,7 @@ package softpatrol.drinkapp.activities.fragments;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -26,6 +27,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -54,6 +56,8 @@ import softpatrol.drinkapp.activities.BaseActivity;
 import softpatrol.drinkapp.activities.RootActivity;
 import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.util.Debug;
+
+import static android.content.DialogInterface.*;
 
 /**
  * David was here on 2016-06-08!
@@ -349,6 +353,17 @@ public class ScanFragment extends Fragment {
             e.printStackTrace();
         }
     }
+    boolean mManual = false;
+    private void manualAdd() {
+        mManual = !mManual;
+
+    }
+
+    private void clearList() {
+        StashFragment.CURRENT_STASH.setIngredientsIds(new ArrayList<Long>());
+        StashFragment.CURRENT_STASH_ID = -1;
+        refreshStash();
+    }
 
     public ScanFragment() {}
     public static ScanFragment newInstance(int sectionNumber) {
@@ -386,6 +401,27 @@ public class ScanFragment extends Fragment {
                     torch.setBackground(getContext().getDrawable(R.drawable.torch_button_off));
                 }
                 torch();
+            }
+        });
+        final ImageView manual_add = (ImageView) rootView.findViewById(R.id.manual_add);
+        manual_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!mManual) {
+                    manual_add.setImageDrawable(getContext().getDrawable(R.drawable.automatic_add_button));
+                }
+                else {
+                    manual_add.setImageDrawable(getContext().getDrawable(R.drawable.manual_add));
+                }
+                manualAdd();
+            }
+        });
+
+        final ImageView clear = (ImageView) rootView.findViewById(R.id.clear);
+        clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearList();
             }
         });
         return rootView;
@@ -694,7 +730,7 @@ public class ScanFragment extends Fragment {
         }
 
         public void clearItems() {
-            for(int i = 0;i<items.size();i++) {
+            for(int i = 0;i<items.size();) {
                 items.remove(i);
                 notifyItemRemoved(i);
             }

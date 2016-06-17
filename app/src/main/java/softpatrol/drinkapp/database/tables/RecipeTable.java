@@ -3,6 +3,7 @@ package softpatrol.drinkapp.database.tables;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +84,19 @@ public class RecipeTable {
         return recipe;
     }
 
+    public static Recipe getServerRecipe(SQLiteDatabase db, long id) {
+        if (id == -1) return null;
+        Cursor cursor = db.query(TABLE_RECIPES, allColumns, RECIPE_SERVER_ID + " = '" + id + "'", null, null, null, null);
+        if (cursor.getCount() == 0) return null;
+
+        cursor.moveToFirst();
+
+        Recipe recipe = cursorToRecipe(cursor);
+
+        cursor.close();
+        return recipe;
+    }
+
     public static Recipe getRecipe(SQLiteDatabase db, String name) {
         Cursor cursor = db.query(TABLE_RECIPES, allColumns, RECIPE_NAME + " = '" + name + "'", null, null, null, null);
         if (cursor.getCount() == 0) return null;
@@ -145,7 +159,10 @@ public class RecipeTable {
 
     private static String encodePartIngredients(ArrayList<PartIngredient> partIngredients) {
         String ret = "";
-        for(PartIngredient p : partIngredients) ret += p.toString() + ",";
+        for(int i = 0;i<partIngredients.size();i++) {
+            ret += partIngredients.get(i).toString();
+            if(i+1 < partIngredients.size()) ret += ",";
+        }
         return ret;
     }
     private static ArrayList<PartIngredient> decodePartIngredients(String string) {
@@ -158,13 +175,17 @@ public class RecipeTable {
     }
     private static String encodePartCategories(ArrayList<PartCategory> partCategories) {
         String ret = "";
-        for(PartCategory p : partCategories) ret += p.toString() + ",";
+        for(int i = 0;i<partCategories.size();i++) {
+            ret += partCategories.get(i).toString();
+            if(i+1 < partCategories.size()) ret += ",";
+        }
         return ret;
     }
     private static ArrayList<PartCategory> decodePartCategories(String string) {
         ArrayList<PartCategory> partCategories = new ArrayList<>();
         String[] data = string.split(",");
         for (String aData : data) {
+            if(aData.isEmpty()) continue;
             partCategories.add(new PartCategory(aData));
         }
         return partCategories;
