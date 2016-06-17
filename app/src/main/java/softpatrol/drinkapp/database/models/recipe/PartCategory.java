@@ -30,6 +30,7 @@ public class PartCategory {
     }
     public PartCategory(String dataString) {
         String[] data = dataString.split("&&");
+
         categoryName = data[0];
         quantity = Integer.parseInt(data[1]);
         unitName = data[2];

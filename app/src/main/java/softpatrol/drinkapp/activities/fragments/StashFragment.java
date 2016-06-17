@@ -223,8 +223,7 @@ public class StashFragment extends Fragment {
             }
 
             ArrayList<Stash> stashes1 = new ArrayList<>(db.getAllStashes());
-            for(Stash i : stashes1) Debug.debugMessage((BaseActivity) caller, i.toString());
-
+            for (Stash i : stashes1) Debug.debugMessage((BaseActivity) caller, i.toString());
             updateView();
         }
     }

@@ -5,9 +5,11 @@ import android.util.Log;
 import android.util.Pair;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
@@ -18,12 +20,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Getter extends AsyncTask<String, Void, ResponsePair> {
 
     private Analyzer analyzer;
     private ArrayList<Pair<String, String>> headers;
     private JSONObject postParameters;
+
+    private List<NameValuePair> nvps;
 
     public Getter(Analyzer analyzer, JSONObject postParameters, ArrayList<Pair<String, String>> headers) {
         this.analyzer = analyzer;
@@ -38,6 +43,11 @@ public class Getter extends AsyncTask<String, Void, ResponsePair> {
 
     public Getter(Analyzer analyzer) {
         this.analyzer = analyzer;
+    }
+
+    public Getter(Analyzer analyzer, List<NameValuePair> nvps) {
+        this.analyzer = analyzer;
+        this.nvps = nvps;
     }
 
     @Override
@@ -57,7 +67,14 @@ public class Getter extends AsyncTask<String, Void, ResponsePair> {
             //TODO: WTF happened to multipartEntityBuilder?
 
             //if(postParameters != null) httpPostRequest.setEntity(new StringEntity(postParameters.toString(), "UTF8"));
-            if(postParameters != null) Log.d("NEXTWORK: ", postParameters.toString());
+            if(postParameters != null) {
+                Log.d("NEXTWORK: ", postParameters.toString());
+            }
+
+            if (nvps != null) {
+                URI uri = new URIBuilder(httpGetRequest.getURI()).addParameters(nvps).build();
+                httpGetRequest.setURI(uri);
+            }
             //if(postParameters != null) httpPostRequest.setEntity(new UrlEncodedFormEntity(postParameters));
 
 
