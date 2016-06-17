@@ -5,19 +5,35 @@
     tools:context=".activities.fragments.ScanFragment"
     android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="0.4">
         <TextureView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/camera_texture"/>
-    </LinearLayout>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/scanner"
+            android:padding="40dp"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/flashlight_off"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:padding="10dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginEnd="40dp"
+            android:background="@drawable/torch_button"
+            android:id="@+id/torch"/>
+    </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="0.6">
 
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"

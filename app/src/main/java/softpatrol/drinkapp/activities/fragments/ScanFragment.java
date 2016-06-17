@@ -13,6 +13,7 @@ import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
@@ -26,6 +27,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -33,6 +35,7 @@ import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -107,7 +110,7 @@ public class ScanFragment extends Fragment {
                             // We will display a stripped out trimmed alpha-numeric version of it (if lang is eng)
                             // so that garbage doesn't make it to the display.
 
-                            Debug.debugMessage((BaseActivity) getActivity(), "OCRED TEXT: " + recognizedText);
+                            //Debug.debugMessage((BaseActivity) getActivity(), "OCRED TEXT: " + recognizedText);
 
                             if (RootActivity.LANGUAGE.equalsIgnoreCase("eng")) {
                                 recognizedText = recognizedText.replaceAll("[^a-zA-Z0-9]+", " ");
@@ -116,7 +119,7 @@ public class ScanFragment extends Fragment {
                             recognizedText = recognizedText.trim();
 
                             if (recognizedText.length() != 0) {
-                                Debug.debugMessage((BaseActivity) getActivity(), "FINAL TEXT: " + recognizedText);
+                                //Debug.debugMessage((BaseActivity) getActivity(), "FINAL TEXT: " + recognizedText);
                             }
                             AnalyzeInProgress = false;
                             //Fake Found
@@ -263,6 +266,8 @@ public class ScanFragment extends Fragment {
             surfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
             Surface previewSurface = new Surface(surfaceTexture);
             mPreviewCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            if(mTorch) mPreviewCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_TORCH);
+            else mPreviewCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF);
             mPreviewCaptureRequestBuilder.addTarget(previewSurface);
             displaySurfaces.add(previewSurface);
             exportCaptureRequest();
@@ -325,6 +330,23 @@ public class ScanFragment extends Fragment {
             e.printStackTrace();
         }
     }
+    boolean mTorch = false;
+    private void torch() {
+        mTorch = !mTorch;
+        mPreviewCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
+        if(mTorch) mPreviewCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_TORCH);
+        else mPreviewCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF);
+
+        mPreviewCaptureRequest = mPreviewCaptureRequestBuilder.build();
+        try {
+            mCameraCaptureSession.setRepeatingRequest(
+                    mPreviewCaptureRequest,
+                    mCameraSessionCaptureCallback,
+                    mBackgroundHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
 
     public ScanFragment() {}
     public static ScanFragment newInstance(int sectionNumber) {
@@ -344,10 +366,20 @@ public class ScanFragment extends Fragment {
 
         mScannedItems = (RecyclerView) rootView.findViewById(R.id.scanned_item_list);
         setUpRecyclerView();
-        ((TestAdapter)mScannedItems.getAdapter()).addItems("ITEM A");
-        ((TestAdapter)mScannedItems.getAdapter()).addItems("ITEM B");
-        ((TestAdapter)mScannedItems.getAdapter()).addItems("ITEM C");
+        DatabaseHandler db = DatabaseHandler.getInstance(getContext());
+        for(long l : StashFragment.CURRENT_STASH.getIngredientsIds()) {
+            ((TestAdapter)mScannedItems.getAdapter()).addItems(db.getIngredient(l).getName());
+        }
 
+        final ImageView torch = (ImageView) rootView.findViewById(R.id.torch);
+        torch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!mTorch) torch.setImageDrawable(getContext().getDrawable(R.drawable.flashlight_on));
+                else torch.setImageDrawable(getContext().getDrawable(R.drawable.flashlight_off));
+                torch();
+            }
+        });
         return rootView;
     }
 
@@ -367,6 +399,15 @@ public class ScanFragment extends Fragment {
         closeCamera();
         closeBackgroundThread();
         super.onPause();
+    }
+
+    @Override
+    public void refreshStash() {
+        ((TestAdapter)mScannedItems.getAdapter()).clearItems();
+        DatabaseHandler db = DatabaseHandler.getInstance(getContext());
+        for(long l : StashFragment.CURRENT_STASH.getIngredientsIds()) {
+            ((TestAdapter)mScannedItems.getAdapter()).addItems(db.getIngredient(l).getName());
+        }
     }
 
     private HandlerThread mBackgroundThread;
@@ -389,7 +430,7 @@ public class ScanFragment extends Fragment {
     }
 
     //----- SCANNED LIST -----
-    RecyclerView mScannedItems;
+    public static RecyclerView mScannedItems;
     private void setUpRecyclerView() {
         mScannedItems.setLayoutManager(new LinearLayoutManager(getContext()));
         mScannedItems.setAdapter(new TestAdapter());
@@ -414,7 +455,7 @@ public class ScanFragment extends Fragment {
             boolean initiated;
 
             private void init() {
-                background = new ColorDrawable(Color.RED);
+                background = new ColorDrawable(Color.WHITE);
                 xMark = ContextCompat.getDrawable(getContext(), R.drawable.ic_clear_24dp);
                 xMark.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
                 xMarkMargin = (int) getContext().getResources().getDimension(R.dimen.ic_clear_margin);
@@ -478,7 +519,7 @@ public class ScanFragment extends Fragment {
                 int xMarkBottom = xMarkTop + intrinsicHeight;
                 xMark.setBounds(xMarkLeft, xMarkTop, xMarkRight, xMarkBottom);
 
-                xMark.draw(c);
+                //xMark.draw(c);
 
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }
@@ -489,7 +530,7 @@ public class ScanFragment extends Fragment {
     }
 
     /**
-     * We're gonna setup another ItemDecorator that will draw the red background in the empty space while the items are animating to thier new positions
+     * We're gonna setup another ItemDecorator that will draw the red background in the empty space while the items are animating to their new positions
      * after an item is removed.
      */
     private void setUpAnimationDecoratorHelper() {
@@ -500,7 +541,7 @@ public class ScanFragment extends Fragment {
             boolean initiated;
 
             private void init() {
-                background = new ColorDrawable(Color.RED);
+                background = new ColorDrawable(Color.WHITE);
                 initiated = true;
             }
 
@@ -603,7 +644,7 @@ public class ScanFragment extends Fragment {
 
             if (itemsPendingRemoval.contains(item)) {
                 // we need to show the "undo" state of the row
-                viewHolder.itemView.setBackgroundColor(Color.RED);
+                viewHolder.itemView.setBackgroundColor(Color.WHITE);
                 viewHolder.titleTextView.setVisibility(View.GONE);
             } else {
                 // we need to show the "normal" state
@@ -621,10 +662,18 @@ public class ScanFragment extends Fragment {
         /**
          *  Utility method to add some rows for testing purposes. You can add rows from the toolbar menu.
          */
-        public void addItems(String name){
+        public void addItems(String name) {
+            Log.d("ADAPTED", "Adding item: " + name);
             for(String scannedItem : items) if(scannedItem.equals(name)) return; //Can only scan same type once
             items.add(name);
             notifyItemInserted(items.size() - 1);
+        }
+
+        public void clearItems() {
+            for(int i = 0;i<items.size();i++) {
+                items.remove(i);
+                notifyItemRemoved(i);
+            }
         }
 
         public void setUndoOn(boolean undoOn) {

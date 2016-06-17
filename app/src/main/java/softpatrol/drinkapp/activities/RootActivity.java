@@ -90,7 +90,7 @@ public class RootActivity extends BaseActivity {
 
         //TODO: When commenting out the reset look below for next TODO!!!!
         DatabaseHandler db = DatabaseHandler.getInstance(this);
-        db.onUpgrade(db.getWritableDatabase(), 1, 2);
+        //db.onUpgrade(db.getWritableDatabase(), 1, 2);
 
         String[] paths = new String[] { DATA_PATH, DATA_PATH + "tessdata/" };
 
@@ -160,7 +160,7 @@ public class RootActivity extends BaseActivity {
         else {
             Long currentAccountId = DatabaseHandler.getCurrentAccount(this);
             //First time user
-            if(currentAccountId == -1 || true) { //TODO: Remove true when database stops resetting
+            if(currentAccountId == -1) { //TODO: Remove true when database stops resetting
 //                MultipartEntityBuilder multiPartEntityBuilder = MultipartEntityBuilder.create();
 //                multiPartEntityBuilder.setCharset(Charset.forName("UTF-8"));
                 new Poster(new AccountCreation(this)).execute(Definitions.CREATE_MOBILE);

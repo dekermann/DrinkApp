@@ -25,6 +25,7 @@ import java.util.Set;
 public class DatabaseHandler extends SQLiteOpenHelper {
 
     private static DatabaseHandler databaseHandler;
+    private static Context context;
 
     // All Static variables
     // Current Account Defualt String
@@ -43,6 +44,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public static DatabaseHandler getInstance(Context context) {
+        DatabaseHandler.context = context;
         if(databaseHandler == null) databaseHandler = new DatabaseHandler(context);
         return databaseHandler;
     }
@@ -66,6 +68,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         RecipeTable.onUpgrade(db);
         // Create tables again
         onCreate(db);
+        setCurrentAccount(-1,context);
     }
 
     /**

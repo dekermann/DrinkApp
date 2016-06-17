@@ -64,7 +64,9 @@ public class Stash {
         ret += "Name: " + name + '\n';
         ret += "Picture ID: " + pictureId + '\n';
         ret += "Owner ID: " + ownerId + '\n';
+        ret += "Ingredient IDs: " + ownerId + '\n';
         for(Long l : ingredientIds) ret += "\t" + l.toString() + '\n';
+        ret += "Recipe IDs: " + ownerId + '\n';
         for(Long l : recipeIds) ret += "\t" + l.toString() + '\n';
         ret += "Access State: " + accessState + '\n';
         ret += "Created At: " + createdAt + '\n';

@@ -136,7 +136,7 @@ public class StashTable {
         values.put(STASH_NAME, stash.getName());
         values.put(STASH_OWNER_ID, stash.getOwnerId());
         values.put(STASH_INGREDIENTS_IDS, Utils.concatenate(stash.getIngredientsIds()));
-        values.put(STASH_INGREDIENTS_IDS, Utils.concatenate(stash.getResultingDrinks()));
+        values.put(STASH_RECIPE_IDS, Utils.concatenate(stash.getResultingDrinks()));
         values.put(STASH_ACCESS_STATE, stash.getAccessState());
         values.put(INGREDIENT_CREATED_AT, stash.getCreatedAt());
         values.put(INGREDIENT_LATEST_MODIFICATION, stash.getLatestModification());

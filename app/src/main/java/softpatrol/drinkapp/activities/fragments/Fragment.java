@@ -8,4 +8,5 @@ import android.util.Log;
 public class Fragment extends android.support.v4.app.Fragment{
     public void onFocused() {}
     public void onDeFocused() {}
+    public void refreshStash() {}
 }

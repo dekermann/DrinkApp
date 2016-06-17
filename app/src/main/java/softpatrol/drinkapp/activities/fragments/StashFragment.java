@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.activities.BaseActivity;
+import softpatrol.drinkapp.activities.MainActivity;
 import softpatrol.drinkapp.activities.RootActivity;
 import softpatrol.drinkapp.api.Analyzer;
 import softpatrol.drinkapp.api.Definitions;
@@ -101,6 +102,7 @@ public class StashFragment extends Fragment {
                         CURRENT_STASH = stash;
                         CURRENT_STASH_ID = stash.getId();
                         updateView();
+                        ((MainActivity) getActivity()).refreshStash();
                     }
                 });
                 if (i % 2 == 1) {
@@ -210,9 +212,7 @@ public class StashFragment extends Fragment {
             DatabaseHandler db = DatabaseHandler.getInstance(caller);
             ArrayList<Stash> serverStashes = new ArrayList<>();
             //Parse stashes
-            for(int i = 0;i<stashes.length();i++)
-                serverStashes.add(new Stash(stashes.getJSONObject(i)));
-
+            for(int i = 0;i<stashes.length();i++) serverStashes.add(new Stash(stashes.getJSONObject(i)));
             for(Stash s : serverStashes) {
                 Stash s2 = db.getServerStash(s.getServerId());
                 if(s2!= null) {

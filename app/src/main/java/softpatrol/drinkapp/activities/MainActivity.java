@@ -50,6 +50,7 @@ public class MainActivity extends BaseActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
+    private ViewPager mViewPager;
 
     //Singleton
     private static MainActivity mainActivity;
@@ -119,7 +120,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_root);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = (ViewPager) findViewById(R.id.container);
         assert mViewPager != null;
         mViewPager.setOffscreenPageLimit(5);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -152,21 +153,6 @@ public class MainActivity extends BaseActivity {
         super.onPause();
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -174,117 +160,42 @@ public class MainActivity extends BaseActivity {
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
         int currentPage = 2;
         int lastPage = 2;
-        public SectionsPagerAdapter(FragmentManager fm) { super(fm); }
+        SocialFragment socialFragment;
+        StashFragment stashFragment;
+        ScanFragment scanFragment;
+        ResultFragment resultFragment;
+        MyPageFragment myPageFragment;
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+            socialFragment = SocialFragment.newInstance(0);
+            stashFragment = StashFragment.newInstance(1);
+            scanFragment = ScanFragment.newInstance(2);
+            resultFragment = ResultFragment.newInstance(3);
+            myPageFragment = MyPageFragment.newInstance(4);
+        }
         public void setCurrentPage(int page) { lastPage = currentPage; currentPage = page; }
 
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0: return SocialFragment.newInstance(position);
-                case 1: return StashFragment.newInstance(position);
-                case 2: return ScanFragment.newInstance(position);
-                case 3: return ResultFragment.newInstance(position);
-                case 4: return MyPageFragment.newInstance(position);
-                default: return ScanFragment.newInstance(position);
+                case 0: return socialFragment;
+                case 1: return stashFragment;
+                case 2: return scanFragment;
+                case 3: return resultFragment;
+                case 4: return myPageFragment;
+                default: return null;
             }
         }
         @Override
         public int getCount() { return 5; }
 
-        //Bottom Action Bar
-        @Override
-        public CharSequence getPageTitle(int position) {
-            SpannableString sb;
-            Drawable image;
-            ImageSpan imageSpan;
-            switch (position) {
-                case 0:
-                    if(currentPage == position) {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
-                        image.setBounds(0, 0, 140, 140);
-                        ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
-                    }
-                    else {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
-                        image.setBounds(0, 0, 100, 100);
-                    }
-                    sb = new SpannableString(" ");
-                    imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
-                    sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    break;
-                case 1:
-                    if(currentPage == position) {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
-                        image.setBounds(0, 0, 140, 140);
-                        ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
-                    }
-                    else {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
-                        image.setBounds(0, 0, 100, 100);
-                    }
-                    sb = new SpannableString(" ");
-                    imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
-                    sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    break;
-                case 2:
-                    if(currentPage == position) {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
-                        image.setBounds(0, 0, 140, 140);
-                        ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
-                    }
-                    else {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
-                        image.setBounds(0, 0, 100, 100);
-                    }
-                    sb = new SpannableString(" ");
-                    imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
-                    sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    break;
-                case 3:
-                    if(currentPage == position) {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
-                        image.setBounds(0, 0, 140, 140);
-                        ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
-                    }
-                    else {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
-                        image.setBounds(0, 0, 100, 100);
-                    }
-                    sb = new SpannableString(" ");
-                    imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
-                    sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    break;
-                case 4:
-                    if(currentPage == position) {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
-                        image.setBounds(0, 0, 140, 140);
-                        ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
-                    }
-                    else {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
-                        image.setBounds(0, 0, 100, 100);
-                    }
-                    sb = new SpannableString(" ");
-                    imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
-                    sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    break;
-                default:
-                    if(currentPage == position) {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
-                        image.setBounds(0, 0, 140, 140);
-                        ((softpatrol.drinkapp.activities.fragments.Fragment) getItem(position)).onFocused();
-                    }
-                    else {
-                        image = ContextCompat.getDrawable(getBaseContext(), R.drawable.settings);
-                        image.setBounds(0, 0, 100, 100);
-                    }
-                    sb = new SpannableString(" ");
-                    imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
-                    sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    break;
-            }
-            return sb;
-        }
+    }
 
+    public void refreshStash() {
+        ((softpatrol.drinkapp.activities.fragments.Fragment) ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(0)).refreshStash();
+        ((softpatrol.drinkapp.activities.fragments.Fragment) ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(1)).refreshStash();
+        ((softpatrol.drinkapp.activities.fragments.Fragment) ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(2)).refreshStash();
+        ((softpatrol.drinkapp.activities.fragments.Fragment) ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(3)).refreshStash();
+        ((softpatrol.drinkapp.activities.fragments.Fragment) ((SectionsPagerAdapter) mViewPager.getAdapter()).getItem(4)).refreshStash();
     }
 }
