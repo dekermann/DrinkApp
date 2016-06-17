@@ -16,5 +16,5 @@ public class Definitions {
     public static final String POST_STASH = URL + "/stash";
     public static final String GET_INGREDIENTS = URL + "/ingredient";
     public static final String GET_RECIPES = URL + "/recipe";
-
+    public static final String GET_SEARCH = URL + "/search";
 }
