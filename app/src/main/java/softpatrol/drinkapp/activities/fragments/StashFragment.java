@@ -29,6 +29,7 @@ import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.layout.components.StashView;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
+import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
 import softpatrol.drinkapp.util.Debug;
 
 /**
@@ -78,7 +79,7 @@ public class StashFragment extends Fragment {
 
     private void updateView() {
         DatabaseHandler db = new DatabaseHandler(getContext());
-        stashes = ((ArrayList<Stash>)db.getAllStashes());
+        stashes = (db.getAllStashes());
         ((LinearLayout) this.rootView.findViewById(R.id.stash_item_container)).removeAllViews();
         LinearLayout row = new LinearLayout(getContext());
         ((LinearLayout) this.rootView.findViewById(R.id.stash_item_container)).addView(row);
@@ -94,7 +95,10 @@ public class StashFragment extends Fragment {
         row.addView(nextBox);
         if(stashes != null) {
             for (int i = 0; i < stashes.size(); i++) {
-                if(CURRENT_STASH_ID == stashes.get(i).getId())nextBox.setBackground(getActivity().getDrawable(R.drawable.button_border_selected));
+                if(CURRENT_STASH_ID == stashes.get(i).getId()) {
+                    somethingSelected = true;
+                    nextBox.setBackground(getActivity().getDrawable(R.drawable.button_border_selected));
+                }
                 else nextBox.setBackground(getActivity().getDrawable(R.drawable.button_border));
                 StashView stashView = new StashView(getContext());
                 stashView.setName(stashes.get(i).getName());
@@ -230,5 +234,36 @@ public class StashFragment extends Fragment {
 
             updateView();
         }
+    }
+
+    /*
+    * Messaging service between stuff
+     */
+
+    boolean somethingSelected = false;
+    @Subscribe
+    public void onEditStashEvent(EditCurrentStashEvent stashEvent) {
+        //TODO: Update wich one is selected (none prolly)
+        if(somethingSelected) {
+            somethingSelected = false;
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateView();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 }

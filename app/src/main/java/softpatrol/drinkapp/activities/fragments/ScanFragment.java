@@ -371,6 +371,13 @@ public class ScanFragment extends Fragment {
         StashFragment.CURRENT_STASH = new Stash();
         StashFragment.CURRENT_STASH.setName("New Stash!");
         StashFragment.CURRENT_STASH_ID = -1;
+        ((TestAdapter)mScannedItems.getAdapter()).clearItems();
+        DatabaseHandler db = DatabaseHandler.getInstance(getContext());
+        for(long l : StashFragment.CURRENT_STASH.getIngredientsIds()) {
+            ((TestAdapter)mScannedItems.getAdapter()).addItems(db.getIngredient(l).getName());
+        }
+        mFragmentName.setText(StashFragment.CURRENT_STASH.getName());
+        EventBus.getDefault().post(new EditCurrentStashEvent());
     }
 
     public ScanFragment() {}
