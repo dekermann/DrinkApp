@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,6 +46,9 @@ import android.widget.Toast;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -55,6 +59,9 @@ import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.activities.BaseActivity;
 import softpatrol.drinkapp.activities.RootActivity;
 import softpatrol.drinkapp.database.DatabaseHandler;
+import softpatrol.drinkapp.database.models.stash.Stash;
+import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
+import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
 import softpatrol.drinkapp.util.Debug;
 
 import static android.content.DialogInterface.*;
@@ -133,6 +140,7 @@ public class ScanFragment extends Fragment {
                             //Debug.debugMessage((BaseActivity) getActivity(), "FOUND INGREDIENT " + fakeId + ": " + DatabaseHandler.getInstance(getContext()).getServerIngredient(fakeId).getName());
                             ((TestAdapter)mScannedItems.getAdapter()).addItems(DatabaseHandler.getInstance(getContext()).getServerIngredient(fakeId).getName());
                             StashFragment.CURRENT_STASH.addIngredientId(fakeId);
+                            EventBus.getDefault().post(new EditCurrentStashEvent());
 
                         }
                     });
@@ -360,9 +368,9 @@ public class ScanFragment extends Fragment {
     }
 
     private void clearList() {
-        StashFragment.CURRENT_STASH.setIngredientsIds(new ArrayList<Long>());
+        StashFragment.CURRENT_STASH = new Stash();
+        StashFragment.CURRENT_STASH.setName("New Stash!");
         StashFragment.CURRENT_STASH_ID = -1;
-        refreshStash();
     }
 
     public ScanFragment() {}
@@ -374,6 +382,7 @@ public class ScanFragment extends Fragment {
         return fragment;
     }
 
+    TextView mFragmentName;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         fragmentId = getArguments().getInt(ARG_SECTION_NUMBER);
@@ -382,6 +391,10 @@ public class ScanFragment extends Fragment {
         mTextureView = (TextureView) rootView.findViewById(R.id.camera_texture);
 
         mScannedItems = (RecyclerView) rootView.findViewById(R.id.scanned_item_list);
+        mFragmentName = (TextView) rootView.findViewById(R.id.fragment_name);
+
+        Typeface type = Typeface.createFromAsset(getContext().getAssets(),"fonts/font.ttf");
+        mFragmentName.setTypeface(type);
         setUpRecyclerView();
         DatabaseHandler db = DatabaseHandler.getInstance(getContext());
         for(long l : StashFragment.CURRENT_STASH.getIngredientsIds()) {
@@ -443,15 +456,6 @@ public class ScanFragment extends Fragment {
         closeCamera();
         closeBackgroundThread();
         super.onPause();
-    }
-
-    @Override
-    public void refreshStash() {
-        ((TestAdapter)mScannedItems.getAdapter()).clearItems();
-        DatabaseHandler db = DatabaseHandler.getInstance(getContext());
-        for(long l : StashFragment.CURRENT_STASH.getIngredientsIds()) {
-            ((TestAdapter)mScannedItems.getAdapter()).addItems(db.getIngredient(l).getName());
-        }
     }
 
     private HandlerThread mBackgroundThread;
@@ -789,9 +793,34 @@ public class ScanFragment extends Fragment {
         public TestViewHolder(ViewGroup parent) {
             super(LayoutInflater.from(parent.getContext()).inflate(R.layout.scanned_item, parent, false));
             titleTextView = (TextView) itemView.findViewById(R.id.title_text_view);
-//            Typeface type = Typeface.createFromAsset(parent.getContext().getAssets(),"fonts/font.ttf");
-//            titleTextView.setTypeface(type);
+            Typeface type = Typeface.createFromAsset(parent.getContext().getAssets(),"fonts/font.ttf");
+            titleTextView.setTypeface(type);
         }
 
+    }
+    /*
+    * Messaging service between stuff
+     */
+
+    @Subscribe
+    public void onCurrentStashEvent(ChangeCurrentStashEvent stashEvent) {
+        ((TestAdapter)mScannedItems.getAdapter()).clearItems();
+        DatabaseHandler db = DatabaseHandler.getInstance(getContext());
+        for(long l : StashFragment.CURRENT_STASH.getIngredientsIds()) {
+            ((TestAdapter)mScannedItems.getAdapter()).addItems(db.getIngredient(l).getName());
+        }
+        mFragmentName.setText(StashFragment.CURRENT_STASH.getName());
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 }

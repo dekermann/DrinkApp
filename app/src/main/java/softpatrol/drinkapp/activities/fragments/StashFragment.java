@@ -2,12 +2,15 @@ package softpatrol.drinkapp.activities.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,6 +28,7 @@ import softpatrol.drinkapp.api.Poster;
 import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.layout.components.StashView;
+import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
 import softpatrol.drinkapp.util.Debug;
 
 /**
@@ -103,8 +107,8 @@ public class StashFragment extends Fragment {
                     public void onClick(View v) {
                         CURRENT_STASH = stash;
                         CURRENT_STASH_ID = stash.getId();
+                        EventBus.getDefault().post(new ChangeCurrentStashEvent());
                         updateView();
-                        ((MainActivity) getActivity()).refreshStash();
                     }
                 });
                 if (i % 2 == 1) {

@@ -76,14 +76,26 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="0.6"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
             android:background="@drawable/scanner_list">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="STASH!"
+                android:gravity="center"
+                android:id="@+id/fragment_name"
+                android:textSize="18sp"/>
 
             <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="22dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
                 android:padding="1dp"
+                android:background="@drawable/scanner_list_inner"
                 android:id="@+id/scanned_item_list">
             </android.support.v7.widget.RecyclerView>
 
