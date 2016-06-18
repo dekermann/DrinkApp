@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_weight="1">
-            <softpatrol.drinkapp.layout.components.BottomBarItem blrfl:name="My" blrfl:tab_id="0" android:id="@+id/activity_root_bottom_bar_tab_1" android:layout_width="wrap_content" android:layout_height="wrap_content"></softpatrol.drinkapp.layout.components.BottomBarItem>
+            <softpatrol.drinkapp.layout.components.BottomBarItem blrfl:name="Home" blrfl:tab_id="0" android:id="@+id/activity_root_bottom_bar_tab_1" android:layout_width="wrap_content" android:layout_height="wrap_content"></softpatrol.drinkapp.layout.components.BottomBarItem>
         </LinearLayout>
 
         <LinearLayout
@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_weight="1">
-            <softpatrol.drinkapp.layout.components.BottomBarItem blrfl:name="Search" blrfl:tab_id="2" android:id="@+id/activity_root_bottom_bar_tab_3" android:layout_width="wrap_content" android:layout_height="wrap_content"></softpatrol.drinkapp.layout.components.BottomBarItem>
+            <softpatrol.drinkapp.layout.components.BottomBarItem blrfl:name="Scan" blrfl:tab_id="2" android:id="@+id/activity_root_bottom_bar_tab_3" android:layout_width="wrap_content" android:layout_height="wrap_content"></softpatrol.drinkapp.layout.components.BottomBarItem>
         </LinearLayout>
 
         <LinearLayout
