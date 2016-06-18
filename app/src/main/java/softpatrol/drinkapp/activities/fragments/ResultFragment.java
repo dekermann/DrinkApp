@@ -52,6 +52,8 @@ public class ResultFragment extends Fragment {
     private RecyclerView mRecycleView;
     private ResultRecipeAdapter resultListAdapter;
 
+    private TextView showingText;
+
     public ResultFragment() {}
 
     /**
@@ -79,6 +81,9 @@ public class ResultFragment extends Fragment {
         resultListAdapter = new ResultRecipeAdapter(new ArrayList<ResultViewItem>());
         mRecycleView.setAdapter(resultListAdapter);
         mRecycleView.setHasFixedSize(true);
+
+        showingText = (TextView) rootView.findViewById(R.id.fragment_result_showing);
+        showingText.setText("No results found ...");
 
         return rootView;
     }
@@ -273,6 +278,7 @@ public class ResultFragment extends Fragment {
             item.setResult(result);
             items.add(item);
         }
+        showingText.setText("Showing " + items.size() + " out of " + items.size() + " found recipes...");
         resultListAdapter.clearAddRecipes(items);
     }
 

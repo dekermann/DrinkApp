@@ -15,6 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="Showing ..."
+            android:id="@+id/fragment_result_showing"
             android:padding="5dp"
             android:gravity="center_horizontal"
             android:layout_gravity="center_horizontal"/>
