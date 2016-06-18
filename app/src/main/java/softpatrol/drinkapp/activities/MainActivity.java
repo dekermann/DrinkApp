@@ -11,6 +11,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
@@ -118,7 +120,12 @@ public class MainActivity extends BaseActivity {
         DataSynchronizer dataSynchronizer = new DataSynchronizer(this);
         dataSynchronizer.syncIngredients();
         dataSynchronizer.syncRecipes();
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_root);
+
 
         /*
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());

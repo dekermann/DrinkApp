@@ -39,10 +39,15 @@ public class StashView extends RelativeLayout {
         this.icon = (ImageView)findViewById(R.id.icon);
     }
 
+
     public void setIcon(Drawable drawable) {
         icon.setImageDrawable(drawable);
+    }
+    public ImageView getIcon() {
+        return icon;
     }
     public void setName(String string) {
         name.setText(string);
     }
+
 }

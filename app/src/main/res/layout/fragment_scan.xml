@@ -80,18 +80,23 @@
             android:layout_marginRight="60dp"
             android:background="@drawable/scanner_list">
 
-            <TextView
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/new_stash"
+                android:inputType="textVisiblePassword"
+                android:hint="@string/new_stash"
+                android:background="@android:color/transparent"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:singleLine="true"
                 android:gravity="center"
-                android:id="@+id/fragment_name"
-                android:textSize="18sp"/>
+                android:id="@+id/fragment_scan_stash_name"
+                android:textSize="20sp"/>
 
             <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="22dp"
+                android:layout_marginTop="26dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:padding="1dp"
