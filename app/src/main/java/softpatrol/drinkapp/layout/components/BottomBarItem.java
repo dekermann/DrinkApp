@@ -5,15 +5,10 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +33,8 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
 
     private boolean isFocused = false;
     private int tabId = 0;
+
+    private int selectBgColor,unselectBgColor;
 
     public BottomBarItem(Context context,AttributeSet aSet) {
         super(context,aSet);
@@ -78,6 +75,8 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
 
         titleTextView.setVisibility(INVISIBLE);
 
+        selectBgColor = getResources().getColor(R.color.white);
+        unselectBgColor = getResources().getColor(R.color.white);
         listeners = new ArrayList<>();
     }
 
@@ -101,10 +100,11 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
             @Override
             public void onClick(View v) {
                 isFocused = true;
-                self.setScaleX(1.3f);
-                self.setScaleY(1.3f);
+                self.setScaleX(1.2f);
+                self.setScaleY(1.2f);
 
                 titleTextView.setVisibility(VISIBLE);
+                setBackgroundColor(selectBgColor);
                 fragmentViewPager.setCurrentItem(fragmentId,true);
 
                 self.notifyOutsideListeners();
@@ -150,6 +150,7 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
         this.setScaleY(1);
         this.setScaleX(1);
         titleTextView.setVisibility(INVISIBLE);
+        setBackgroundColor(unselectBgColor);
     }
 
     public int getBadges() {
@@ -173,5 +174,13 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
 
     public void setTabId(int tabId) {
         this.tabId = tabId;
+    }
+
+    public int getSelectBgColor() {
+        return selectBgColor;
+    }
+
+    public void setSelectBgColor(int selectBgColor) {
+        this.selectBgColor = selectBgColor;
     }
 }
