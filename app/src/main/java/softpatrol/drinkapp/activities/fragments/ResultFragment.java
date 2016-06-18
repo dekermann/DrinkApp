@@ -27,15 +27,12 @@ import softpatrol.drinkapp.api.Analyzer;
 import softpatrol.drinkapp.api.Definitions;
 import softpatrol.drinkapp.api.Getter;
 import softpatrol.drinkapp.database.DatabaseHandler;
-import softpatrol.drinkapp.database.models.ingredient.Category;
-import softpatrol.drinkapp.database.models.ingredient.Ingredient;
-import softpatrol.drinkapp.database.models.recipe.Recipe;
 import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.model.dto.ResultViewItem;
 import softpatrol.drinkapp.model.dto.SearchResult;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
-import softpatrol.drinkapp.model.event.RecipeSearchComplete;
+import softpatrol.drinkapp.model.event.EventRecipeSearchComplete;
 
 /**
  * David was here on 2016-06-08!
@@ -90,7 +87,7 @@ public class ResultFragment extends Fragment {
     private void stashChange(Stash stash) {
         if (stash.getIngredientsIds().size() > 0) {
             // clear old list
-            resultListAdapter.clear();
+            //resultListAdapter.clear();
             String strList = "";
 
             for (int i = 0; i < stash.getIngredientsIds().size(); i++) {
@@ -157,7 +154,7 @@ public class ResultFragment extends Fragment {
             }
 
             Collections.sort(results);
-            EventBus.getDefault().post(new RecipeSearchComplete(results));
+            EventBus.getDefault().post(new EventRecipeSearchComplete(results));
         }
     }
 
@@ -198,12 +195,18 @@ public class ResultFragment extends Fragment {
 
             TextView text = holder.text;
 
-            text.setText(dataSet.get(listPosition).getResult().getRecipieId());
+            text.setText(dataSet.get(listPosition).getResult().getRecipieId() + "");
         }
 
         public void addRecipe(ResultViewItem recipe) {
             dataSet.add(recipe);
             notifyItemInserted(dataSet.size()-1);
+        }
+
+        public void clearAddRecipes(List<ResultViewItem> items) {
+            dataSet.clear();
+            dataSet.addAll(items);
+            notifyDataSetChanged();
         }
 
         public void clear() {
@@ -232,7 +235,8 @@ public class ResultFragment extends Fragment {
     }
 
     @Subscribe
-    public void onRecipeComplete(RecipeSearchComplete event) {
+    public void onRecipeComplete(EventRecipeSearchComplete event) {
+        List<ResultViewItem> items = new ArrayList<ResultViewItem>();
         DatabaseHandler db = DatabaseHandler.getInstance(getContext());
 
         for (SearchResult result : event.results) {
@@ -255,22 +259,9 @@ public class ResultFragment extends Fragment {
             item.setMissingIngredients(noMatches);
             */
             item.setResult(result);
-            resultListAdapter.addRecipe(item);
+            items.add(item);
         }
-    }
-
-    private class AddRecipeOnUiThread implements Runnable {
-
-        private ResultViewItem item;
-
-        public AddRecipeOnUiThread(ResultViewItem item) {
-            this.item = item;
-        }
-
-        @Override
-        public void run() {
-            resultListAdapter.addRecipe(item);
-        }
+        resultListAdapter.clearAddRecipes(items);
     }
 
     @Override

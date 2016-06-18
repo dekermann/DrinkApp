@@ -24,7 +24,7 @@ import softpatrol.drinkapp.api.DataSynchronizer;
 import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.layout.components.BottomBarItem;
 import softpatrol.drinkapp.layout.components.CustomViewPager;
-import softpatrol.drinkapp.model.event.RecipeSearchComplete;
+import softpatrol.drinkapp.model.event.EventRecipeSearchComplete;
 import softpatrol.drinkapp.util.Utils;
 
 /**
@@ -242,7 +242,7 @@ public class MainActivity extends BaseActivity {
      */
 
     @Subscribe
-    public void onRecipeComplete(RecipeSearchComplete event) {
+    public void onRecipeComplete(EventRecipeSearchComplete event) {
         resultBottomBarItem.setBadges(event.results.size());
     }
 
