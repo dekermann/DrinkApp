@@ -16,15 +16,20 @@ import android.widget.TextView;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.api.Analyzer;
+import softpatrol.drinkapp.api.Definitions;
+import softpatrol.drinkapp.api.Getter;
 import softpatrol.drinkapp.database.models.recipe.Recipe;
 import softpatrol.drinkapp.layout.components.BottomBarItem;
+import softpatrol.drinkapp.model.dto.SearchResult;
 import softpatrol.drinkapp.model.event.BadgeEvent;
 
 /**
@@ -42,6 +47,8 @@ public class ResultFragment extends Fragment {
     private ResultRecipeAdapter resultListAdapter;
 
     private boolean hasTestResults = false;
+
+    private List<SearchResult> searchResults = new ArrayList<>();
 
     public ResultFragment() {}
 
@@ -67,7 +74,7 @@ public class ResultFragment extends Fragment {
         mRecycleView.setLayoutManager(layoutManager);
         mRecycleView.setItemAnimator(new DefaultItemAnimator());
 
-        resultListAdapter = new ResultRecipeAdapter(doRecipeSearch());
+        resultListAdapter = new ResultRecipeAdapter(new ArrayList<Recipe>());
         mRecycleView.setAdapter(resultListAdapter);
         mRecycleView.setHasFixedSize(true);
 
@@ -82,7 +89,47 @@ public class ResultFragment extends Fragment {
 
         @Override
         public void analyzeData(JSONObject result) throws Exception {
-            System.out.println(result.get("gg"));
+            JSONArray array = result.getJSONArray("data");
+
+            ArrayList<SearchResult> results = new ArrayList<>();
+
+            for (int i = 0; i < array.length();i++) {
+                JSONObject obj = (JSONObject) array.get(i);
+                int recipeId = obj.getInt("recipeId");
+
+                SearchResult sr = new SearchResult();
+
+
+                JSONArray ingredientMatches = obj.getJSONArray("ingredientMatches");
+
+                for (int k = 0;k < ingredientMatches.length();k++) {
+                    sr.getIngredientMatches().add((Integer) ingredientMatches.get(k));
+                }
+
+
+                JSONArray ingredientNoMatches = obj.getJSONArray("ingredientNoMatches");
+
+                for (int k = 0;k < ingredientMatches.length();k++) {
+                    sr.getIngredientNoMatches().add((Integer) ingredientMatches.get(k));
+                }
+
+                JSONArray categoryMatches = obj.getJSONArray("categoryMatches");
+
+                for (int k = 0;k < categoryMatches.length();k++) {
+                    sr.getCategoryMatches().add((Integer) ingredientMatches.get(k));
+                }
+
+                JSONArray categoryNoMatches = obj.getJSONArray("categoryNoMatches");
+
+                for (int k = 0;k < categoryNoMatches.length();k++) {
+                    sr.getCategoryNoMatches().add((Integer) ingredientMatches.get(k));
+                }
+
+                results.add(sr);
+            }
+
+            Collections.sort(results);
+            searchResults = results;
         }
     }
 
@@ -134,11 +181,6 @@ public class ResultFragment extends Fragment {
         }
     }
 
-    private List<Recipe> doRecipeSearch() {
-        List<Recipe> recipes = new ArrayList<Recipe>();
-        return recipes;
-    }
-
     @Override
     public void onFocused() {
         Log.d("Swapped to fragment","got stash: " + StashFragment.CURRENT_STASH.toString());
@@ -159,7 +201,7 @@ public class ResultFragment extends Fragment {
             if (!hasTestResults) {
 
                 hasTestResults = true;
-                //new Getter(new ResultParser(this.getContext()),nvps).execute(Definitions.GET_SEARCH);
+                new Getter(new ResultParser(this.getContext()),nvps).execute(Definitions.GET_SEARCH);
 
                 // mimic getter time
                 new CountDownTimer(1, 1) {

@@ -1,5 +1,6 @@
 package softpatrol.drinkapp.api;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Pair;
@@ -72,8 +73,19 @@ public class Getter extends AsyncTask<String, Void, ResponsePair> {
             }
 
             if (nvps != null) {
-                URI uri = new URIBuilder(httpGetRequest.getURI()).addParameters(nvps).build();
-                httpGetRequest.setURI(uri);
+                String url = httpGetRequest.getURI().toASCIIString();
+
+                for (int i = 0;i < nvps.size();i++) {
+                    if (i == 0) {
+                        url += "?";
+                    }
+                    url += nvps.get(i).toString();
+                    if (i < nvps.size()-1) {
+                        url += "&";
+                    }
+                }
+                System.out.println(url);
+                httpGetRequest.setURI(URI.create(url));
             }
             //if(postParameters != null) httpPostRequest.setEntity(new UrlEncodedFormEntity(postParameters));
 

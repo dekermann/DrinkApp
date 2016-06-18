@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -33,7 +34,7 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
     private ImageView badgeIcon;
     private TextView badgeText;
 
-    public boolean isFocused = false;
+    private boolean isFocused = false;
     private int tabId = 0;
 
     public BottomBarItem(Context context,AttributeSet aSet) {
@@ -41,6 +42,7 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
 
         TypedArray arr = context.obtainStyledAttributes(aSet, R.styleable.BottomBarItem);
         CharSequence titleName = arr.getString(R.styleable.BottomBarItem_name);
+        tabId = arr.getInt(R.styleable.BottomBarItem_tab_id,0);
         arr.recycle();
 
         inflate(getContext(), R.layout.bottom_bar_item, this);

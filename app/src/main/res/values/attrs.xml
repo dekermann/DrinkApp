@@ -2,5 +2,6 @@
     <declare-styleable name="BottomBarItem">
         <attr name="name" format="string" />
         <attr name="img_id" format="integer" />
-    </declare-styleable>
+        <attr name="tab_id" format="integer" />
+     </declare-styleable>
 </resources>
