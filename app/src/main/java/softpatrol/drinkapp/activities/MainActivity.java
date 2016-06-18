@@ -3,31 +3,16 @@ package softpatrol.drinkapp.activities;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.support.annotation.IdRes;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.LinearLayoutCompat;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-
-import java.util.ArrayList;
 
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.activities.fragments.MyPageFragment;
@@ -37,10 +22,9 @@ import softpatrol.drinkapp.activities.fragments.SocialFragment;
 import softpatrol.drinkapp.activities.fragments.StashFragment;
 import softpatrol.drinkapp.api.DataSynchronizer;
 import softpatrol.drinkapp.database.DatabaseHandler;
-import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.layout.components.BottomBarItem;
-import softpatrol.drinkapp.model.event.BadgeEvent;
 import softpatrol.drinkapp.layout.components.CustomViewPager;
+import softpatrol.drinkapp.model.event.RecipeSearchComplete;
 import softpatrol.drinkapp.util.Utils;
 
 /**
@@ -258,8 +242,8 @@ public class MainActivity extends BaseActivity {
      */
 
     @Subscribe
-    public void onBadgeEvent(BadgeEvent event) {
-        resultBottomBarItem.setBadges(event.numberOfBadges);
+    public void onRecipeComplete(RecipeSearchComplete event) {
+        resultBottomBarItem.setBadges(event.results.size());
     }
 
     @Override

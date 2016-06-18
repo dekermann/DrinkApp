@@ -1,13 +1,11 @@
 package softpatrol.drinkapp.activities.fragments;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.CountDownTimer;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +15,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
+import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -27,10 +26,16 @@ import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.api.Analyzer;
 import softpatrol.drinkapp.api.Definitions;
 import softpatrol.drinkapp.api.Getter;
+import softpatrol.drinkapp.database.DatabaseHandler;
+import softpatrol.drinkapp.database.models.ingredient.Category;
+import softpatrol.drinkapp.database.models.ingredient.Ingredient;
 import softpatrol.drinkapp.database.models.recipe.Recipe;
-import softpatrol.drinkapp.layout.components.BottomBarItem;
+import softpatrol.drinkapp.database.models.stash.Stash;
+import softpatrol.drinkapp.model.dto.ResultViewItem;
 import softpatrol.drinkapp.model.dto.SearchResult;
-import softpatrol.drinkapp.model.event.BadgeEvent;
+import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
+import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
+import softpatrol.drinkapp.model.event.RecipeSearchComplete;
 
 /**
  * David was here on 2016-06-08!
@@ -47,8 +52,6 @@ public class ResultFragment extends Fragment {
     private ResultRecipeAdapter resultListAdapter;
 
     private boolean hasTestResults = false;
-
-    private List<SearchResult> searchResults = new ArrayList<>();
 
     public ResultFragment() {}
 
@@ -74,13 +77,38 @@ public class ResultFragment extends Fragment {
         mRecycleView.setLayoutManager(layoutManager);
         mRecycleView.setItemAnimator(new DefaultItemAnimator());
 
-        resultListAdapter = new ResultRecipeAdapter(new ArrayList<Recipe>());
+        resultListAdapter = new ResultRecipeAdapter(new ArrayList<ResultViewItem>());
         mRecycleView.setAdapter(resultListAdapter);
         mRecycleView.setHasFixedSize(true);
 
         return rootView;
     }
 
+    /*
+    * On stash change, do a search on the server
+     */
+    private void stashChange(Stash stash) {
+        if (stash.getIngredientsIds().size() > 0) {
+            // clear old list
+            resultListAdapter.clear();
+            String strList = "";
+
+            for (int i = 0; i < stash.getIngredientsIds().size(); i++) {
+                strList += stash.getIngredientsIds().get(i);
+
+                if (i < stash.getIngredientsIds().size() - 1) {
+                    strList += ",";
+                }
+            }
+
+            NameValuePair nvp = new BasicNameValuePair("ingredientIds", strList);
+            new Getter(new ResultParser(this.getContext()), nvp).execute(Definitions.GET_SEARCH);
+        }
+    }
+
+    /*
+    * Analyzer
+     */
     class ResultParser extends Analyzer {
 
         public ResultParser(Context context) {
@@ -129,13 +157,16 @@ public class ResultFragment extends Fragment {
             }
 
             Collections.sort(results);
-            searchResults = results;
+            EventBus.getDefault().post(new RecipeSearchComplete(results));
         }
     }
 
+    /*
+    * Adapter
+     */
     class ResultRecipeAdapter extends RecyclerView.Adapter<ResultRecipeAdapter.MyViewHolder> {
 
-        private List<Recipe> dataSet;
+        private List<ResultViewItem> dataSet;
 
         class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -146,7 +177,7 @@ public class ResultFragment extends Fragment {
             }
         }
 
-        public ResultRecipeAdapter(List<Recipe> data) {
+        public ResultRecipeAdapter(List<ResultViewItem> data) {
             this.dataSet = data;
         }
 
@@ -167,12 +198,17 @@ public class ResultFragment extends Fragment {
 
             TextView text = holder.text;
 
-            text.setText(dataSet.get(listPosition).getName());
+            text.setText(dataSet.get(listPosition).getResult().getRecipieId());
         }
 
-        public void addRecipe(Recipe recipe) {
+        public void addRecipe(ResultViewItem recipe) {
             dataSet.add(recipe);
             notifyItemInserted(dataSet.size()-1);
+        }
+
+        public void clear() {
+            dataSet.clear();
+            notifyDataSetChanged();
         }
 
         @Override
@@ -181,59 +217,71 @@ public class ResultFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onFocused() {
-        Log.d("Swapped to fragment","got stash: " + StashFragment.CURRENT_STASH.toString());
+    /*
+    * Messaging service between stuff
+     */
+
+    @Subscribe
+    public void onCurrentStashEvent(ChangeCurrentStashEvent stashEvent) {
+        stashChange(StashFragment.CURRENT_STASH);
     }
 
-    @Override
-    public void setMenuVisibility(final boolean visible) {
-        super.setMenuVisibility(visible);
+    @Subscribe
+    public void onEditStashEvent(EditCurrentStashEvent stashEvent) {
+        stashChange(StashFragment.CURRENT_STASH);
+    }
 
-        // When the fragment is visible
-        if (visible) {
-            List<NameValuePair> nvps = new ArrayList<>();
+    @Subscribe
+    public void onRecipeComplete(RecipeSearchComplete event) {
+        DatabaseHandler db = DatabaseHandler.getInstance(getContext());
 
-            NameValuePair searchIds = new BasicNameValuePair("ingredientIds","1,2,3");
-            nvps.add(searchIds);
+        for (SearchResult result : event.results) {
+            ResultViewItem item = new ResultViewItem();
 
+            /*
+            item.setRecipe(db.getServerRecipe(result.getRecipieId()));
 
-            if (!hasTestResults) {
-
-                hasTestResults = true;
-                new Getter(new ResultParser(this.getContext()),nvps).execute(Definitions.GET_SEARCH);
-
-                // mimic getter time
-                new CountDownTimer(1, 1) {
-
-
-                    public void onTick(long millisUntilFinished) {
-                    }
-
-                    public void onFinish() {
-                        new CountDownTimer(1500, 250) {
-
-                            private String testNames[] = {"Gin och Tonic", "Bombay Sapphire", "Random shit", "Something gut"};
-                            private int index = 0;
-
-                            public void onTick(long millisUntilFinished) {
-                                if (index < testNames.length) {
-                                    Recipe testRecipe = new Recipe();
-                                    testRecipe.setName(testNames[index++]);
-                                    resultListAdapter.addRecipe(testRecipe);
-                                }
-                            }
-
-                            public void onFinish() {
-                                // TODO: change
-                                EventBus.getDefault().post(new BadgeEvent(10));
-                            }
-                        }.start();
-                    }
-                }.start();
+            List<Ingredient> noIngredientMatches = new ArrayList<>();
+            for (Integer ingredientId : result.getIngredientNoMatches()) {
+                noIngredientMatches.add(db.getServerIngredient(ingredientId));
             }
+            item.setMissingIngredients(noIngredientMatches);
+
+            /*
+            List<Category> noCategoryMatches = new ArrayList<>();
+            for (Integer categoryId : result.getCategoryMatches()) {
+                noCategoryMatches.add();
+            }
+            item.setMissingIngredients(noMatches);
+            */
+            item.setResult(result);
+            resultListAdapter.addRecipe(item);
         }
     }
 
+    private class AddRecipeOnUiThread implements Runnable {
 
+        private ResultViewItem item;
+
+        public AddRecipeOnUiThread(ResultViewItem item) {
+            this.item = item;
+        }
+
+        @Override
+        public void run() {
+            resultListAdapter.addRecipe(item);
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
 }

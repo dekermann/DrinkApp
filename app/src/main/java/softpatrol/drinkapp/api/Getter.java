@@ -51,6 +51,12 @@ public class Getter extends AsyncTask<String, Void, ResponsePair> {
         this.nvps = nvps;
     }
 
+    public Getter(Analyzer analyzer,NameValuePair nvp) {
+        this.analyzer = analyzer;
+        this.nvps = new ArrayList<>();
+        this.nvps.add(nvp);
+    }
+
     @Override
     protected ResponsePair doInBackground(String... params) {
         String src = params[0];
