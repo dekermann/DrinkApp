@@ -432,6 +432,12 @@ public class ScanFragment extends Fragment {
                 }
                 else {
                     manual_add.setImageDrawable(getContext().getDrawable(R.drawable.manual_add));
+                    //FAKE ADD
+                    long fakeId = (long) (Math.random()*10) + 1;
+                    //Debug.debugMessage((BaseActivity) getActivity(), "FOUND INGREDIENT " + fakeId + ": " + DatabaseHandler.getInstance(getContext()).getServerIngredient(fakeId).getName());
+                    ((TestAdapter)mScannedItems.getAdapter()).addItems(DatabaseHandler.getInstance(getContext()).getServerIngredient(fakeId).getName());
+                    StashFragment.CURRENT_STASH.addIngredientId(fakeId);
+                    EventBus.getDefault().post(new EditCurrentStashEvent());
                 }
                 manualAdd();
             }
