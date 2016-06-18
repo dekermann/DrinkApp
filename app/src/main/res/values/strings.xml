@@ -12,4 +12,5 @@
     </string>
     <string name="camera_error">This device doesn\\\'t support Camera2 API.</string>
     <string name="button_undo">undo</string>
+    <string name="new_stash">New Stash!</string>
 </resources>

@@ -42,9 +42,16 @@ public class DataSynchronizer {
             JSONArray ingredients = result.getJSONArray("data");
 
             DatabaseHandler db = DatabaseHandler.getInstance(caller);
-            //Parse Ingredients
-            for(int i = 0;i<ingredients.length();i++)
-                db.addIngredient(new Ingredient(ingredients.getJSONObject(i)));
+            ArrayList<Ingredient> serverIngredients = new ArrayList<>();
+            for(int i = 0;i<ingredients.length();i++) serverIngredients.add(new Ingredient(ingredients.getJSONObject(i)));
+            for(Ingredient i : serverIngredients) {
+                Ingredient i2 = db.getServerIngredient(i.getServerId());
+                if(i2!= null) {
+                    i.setId(i2.getId());
+                    db.updateIngredient(i);
+                }
+                else db.addIngredient(i);
+            }
 
             ArrayList<Ingredient> ingredients1 = new ArrayList<>(db.getAllIngredients());
             for(Ingredient i : ingredients1) Debug.debugMessage((BaseActivity) caller, i.toString());
@@ -59,11 +66,9 @@ public class DataSynchronizer {
             JSONArray recipes = result.getJSONArray("data");
 
             DatabaseHandler db = DatabaseHandler.getInstance(caller);
-            //Parse recipes
-            ArrayList<Recipe> serverStashes = new ArrayList<>();
-            //Parse stashes
-            for(int i = 0;i<recipes.length();i++) serverStashes.add(new Recipe(recipes.getJSONObject(i)));
-            for(Recipe r : serverStashes) {
+            ArrayList<Recipe> serverRecipes = new ArrayList<>();
+            for(int i = 0;i<recipes.length();i++) serverRecipes.add(new Recipe(recipes.getJSONObject(i)));
+            for(Recipe r : serverRecipes) {
                 Recipe r2 = db.getServerRecipe(r.getServerId());
                 if(r2!= null) {
                     r.setId(r2.getId());

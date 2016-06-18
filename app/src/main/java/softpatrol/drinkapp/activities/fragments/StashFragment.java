@@ -73,6 +73,7 @@ public class StashFragment extends Fragment {
             new Getter(new SynchronizeStash(getActivity()), null, headers).execute(Definitions.GET_STASH);
         }
         this.rootView = rootView;
+        CURRENT_STASH.setName("New Stash!");
         updateView();
         return rootView;
     }
@@ -158,7 +159,7 @@ public class StashFragment extends Fragment {
         //Fake load
         long serverId = 0;
         String pictureId = "picture0";
-        String name = "Home" + stashes.size();
+        String name = CURRENT_STASH.getName();
         String ownerId = "Account1";
         String accessState = "private";
         long createdAt = System.currentTimeMillis();
