@@ -172,28 +172,28 @@ public class MainActivity extends BaseActivity {
 
         BottomBarItem bbTab1 = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_1);
         bbTab1.setCustomClickListener(mViewPager,0);
-        bbTab1.setSelectBgColor(getResources().getColor(R.color.green));
+        bbTab1.setSelectBgColor(getResources().getColor(R.color.light_green));
         bbTab1.setIconImageView(getResources().getDrawable(R.drawable.fragment_home,null));
 
         BottomBarItem bbTab2 = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_2);
         bbTab2.setCustomClickListener(mViewPager,1);
-        bbTab2.setSelectBgColor(getResources().getColor(R.color.blue));
+        bbTab2.setSelectBgColor(getResources().getColor(R.color.Thistle));
         bbTab2.setIconImageView(getResources().getDrawable(R.drawable.search,null));
 
         BottomBarItem bbTab3 = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_3);
         bbTab3.setCustomClickListener(mViewPager,2);
-        bbTab3.setSelectBgColor(getResources().getColor(R.color.Pink));
+        bbTab3.setSelectBgColor(getResources().getColor(R.color.Wheat));
         bbTab3.setIconImageView(getResources().getDrawable(R.drawable.fragment_scan,null));
         bbTab3.getTitleTextView().setVisibility(View.VISIBLE);
 
         resultBottomBarItem = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_4);
         resultBottomBarItem.setCustomClickListener(mViewPager,3);
-        resultBottomBarItem.setSelectBgColor(getResources().getColor(R.color.Aqua));
+        resultBottomBarItem.setSelectBgColor(getResources().getColor(R.color.PaleTurquoise));
         resultBottomBarItem.setIconImageView(getResources().getDrawable(R.drawable.fragment_result,null));
 
         BottomBarItem bbTab5 = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_5);
         bbTab5.setCustomClickListener(mViewPager,4);
-        bbTab5.setSelectBgColor(getResources().getColor(R.color.yellow));
+        bbTab5.setSelectBgColor(getResources().getColor(R.color.light_yellow));
         bbTab5.setIconImageView(getResources().getDrawable(R.drawable.fragment_social,null));
 
 
