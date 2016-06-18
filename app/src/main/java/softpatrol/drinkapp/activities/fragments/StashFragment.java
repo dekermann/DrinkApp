@@ -2,7 +2,7 @@ package softpatrol.drinkapp.activities.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +41,8 @@ public class StashFragment extends Fragment {
     public static Stash CURRENT_STASH = new Stash();
     private ArrayList<Stash> stashes;
     private View rootView;
+    private LinearLayout mPopWindowMain;
+    private LinearLayout mPopWindowInner;
 
     /**
      * The fragment argument representing the section number for this
@@ -73,6 +75,23 @@ public class StashFragment extends Fragment {
             new Getter(new SynchronizeStash(getActivity()), null, headers).execute(Definitions.GET_STASH);
         }
         this.rootView = rootView;
+        mPopWindowMain = (LinearLayout) rootView.findViewById(R.id.fragment_stash_pop_up_main);
+        mPopWindowMain.setVisibility(View.GONE);
+        mPopWindowMain.setClickable(false);
+        mPopWindowMain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPopWindowMain.setVisibility(View.GONE);
+                mPopWindowMain.setClickable(false);
+            }
+        });
+        mPopWindowInner = (LinearLayout) rootView.findViewById(R.id.fragment_stash_pop_up_inner);
+        mPopWindowInner.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Absorb clicks
+            }
+        });
         CURRENT_STASH.setName("New Stash!");
         updateView();
         return rootView;
@@ -86,8 +105,10 @@ public class StashFragment extends Fragment {
         ((LinearLayout) this.rootView.findViewById(R.id.stash_item_container)).addView(row);
         //row.setPadding(10,10,10,10);
         row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, RootActivity.displayHeight / 4));
-        row.setPadding(25, 25, 25, 25);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) (RootActivity.displayHeight / 4.3f));
+        params.setMargins((int) (RootActivity.displayWidth / 15f), 0, (int) (RootActivity.displayWidth / 15f), 0);
+        row.setLayoutParams(params);
+        row.setPadding((int) (RootActivity.displayWidth / 40f), (int) (RootActivity.displayHeight / 60f), (int) (RootActivity.displayWidth / 40f), (int) (RootActivity.displayHeight / 60f));
 
         LinearLayout nextBox = new LinearLayout(getContext());
         nextBox.setLayoutParams(new LinearLayout.LayoutParams(
@@ -110,6 +131,10 @@ public class StashFragment extends Fragment {
                     private Stash stash = stashes.get(finalI);
                     @Override
                     public void onClick(View v) {
+                        if(CURRENT_STASH_ID == stash.getId()) {
+                            mPopWindowMain.setVisibility(View.VISIBLE);
+                            mPopWindowMain.setClickable(true);
+                        }
                         CURRENT_STASH = stash;
                         CURRENT_STASH_ID = stash.getId();
                         EventBus.getDefault().post(new ChangeCurrentStashEvent());
@@ -121,8 +146,9 @@ public class StashFragment extends Fragment {
                     ((LinearLayout) this.rootView.findViewById(R.id.stash_item_container)).addView(row);
                     //row.setPadding(10,10,10,10);
                     row.setOrientation(LinearLayout.HORIZONTAL);
-                    row.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, RootActivity.displayHeight / 4));
-                    row.setPadding(25, 25, 25, 25);
+                    params.setMargins((int) (RootActivity.displayWidth / 15f), 0, (int) (RootActivity.displayWidth / 15f), 0);
+                    row.setLayoutParams(params);
+                    row.setPadding((int) (RootActivity.displayWidth / 40f), (int) (RootActivity.displayHeight / 60f), (int) (RootActivity.displayWidth / 40f), (int) (RootActivity.displayHeight / 60f));
                 }
                 nextBox = new LinearLayout(getContext());
                 nextBox.setLayoutParams(new LinearLayout.LayoutParams(
@@ -191,6 +217,10 @@ public class StashFragment extends Fragment {
         headers.add(new Pair<>("Authorization", db.getAccount(DatabaseHandler.getCurrentAccount(getContext())).getToken()));
 
         new Poster(new PostStash(getActivity()), postParameters, headers).execute(Definitions.POST_STASH);
+    }
+
+    private void setupPopUpWindow(Stash stash) {
+        //mPopWindowInner
     }
 
     private class PostStash extends Analyzer {

@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -365,12 +364,12 @@ public class ScanFragment extends Fragment {
     boolean mManual = false;
     private void manualAdd() {
         mManual = !mManual;
-
     }
 
     private void clearList() {
         StashFragment.CURRENT_STASH = new Stash();
-        StashFragment.CURRENT_STASH.setName("New Stash!");
+        StashFragment.CURRENT_STASH.setName("");
+        mCurrentStashName.setHint("New Stash!");
         StashFragment.CURRENT_STASH_ID = -1;
         ((TestAdapter)mScannedItems.getAdapter()).clearItems();
         DatabaseHandler db = DatabaseHandler.getInstance(getContext());
@@ -572,7 +571,6 @@ public class ScanFragment extends Fragment {
     private boolean listIsAtTop()   {
         return (mLinearLayourManager.findFirstVisibleItemPosition() == 0);
     }
-
 
     /**
      * This is the standard support library way of implementing "swipe to delete" feature. You can do custom drawing in onChildDraw method
@@ -901,5 +899,12 @@ public class ScanFragment extends Fragment {
     public void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
+    }
+
+    @Override
+    public void onEntered() {
+        Log.d("ASLDKAJSLDJKLKASD", "ALSKJDLAKSJD");
+        if(CurrentStashNameFocused) changeStashNameState();
+        mCurrentStashName.setHint("New Stash!");
     }
 }
