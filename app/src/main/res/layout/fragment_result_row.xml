@@ -10,9 +10,16 @@
         android:id="@+id/fragment_result_cardview"
         android:layout_gravity="top"
         android:layout_width="match_parent"
-        android:layout_marginBottom="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginBottom="2dp"
+        card_view:cardBackgroundColor="@color/AliceBlue"
         android:layout_height="120dp"
-        card_view:cardCornerRadius="0dp">
+        card_view:cardCornerRadius="4dp"
+        card_view:contentPadding="5dp"
+        card_view:cardElevation="2dp">
+
 
         <LinearLayout
             android:orientation="horizontal"
@@ -51,7 +58,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:singleLine="true"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
                         android:text="Gin och Tonic"
                         android:layout_gravity="center_vertical"
                         android:id="@+id/fragment_result_row_title_text" />

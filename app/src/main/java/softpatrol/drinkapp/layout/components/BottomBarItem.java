@@ -101,8 +101,8 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
             @Override
             public void onClick(View v) {
                 isFocused = true;
-                self.setScaleX(1.2f);
-                self.setScaleY(1.2f);
+                self.setScaleX(1.3f);
+                self.setScaleY(1.3f);
 
                 titleTextView.setVisibility(VISIBLE);
                 fragmentViewPager.setCurrentItem(fragmentId,true);

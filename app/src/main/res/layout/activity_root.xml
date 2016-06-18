@@ -14,57 +14,72 @@
     <softpatrol.drinkapp.layout.components.CustomViewPager
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_weight="1"/>
+        android:layout_weight="0.83 "/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="900dp"
+        android:layout_height="0dp"
         android:id="@+id/activity_root_bottom_bar"
         android:orientation="horizontal"
-        android:layout_weight="9">
+        android:background="@drawable/top_border"
+        android:layout_weight="0.17">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <softpatrol.drinkapp.layout.components.BottomBarItem
+            blrfl:name="Home"
+            blrfl:tab_id="0"
+            android:id="@+id/activity_root_bottom_bar_tab_1"
+            android:layout_width="0dp"
             android:gravity="center"
-            android:layout_weight="1">
-            <softpatrol.drinkapp.layout.components.BottomBarItem blrfl:name="Home" blrfl:tab_id="0" android:id="@+id/activity_root_bottom_bar_tab_1" android:layout_width="wrap_content" android:layout_height="wrap_content"></softpatrol.drinkapp.layout.components.BottomBarItem>
-        </LinearLayout>
+            android:padding="15dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.2">
+        </softpatrol.drinkapp.layout.components.BottomBarItem>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <softpatrol.drinkapp.layout.components.BottomBarItem
+            blrfl:name="Stash"
+            blrfl:tab_id="1"
+            android:padding="15dp"
+            android:id="@+id/activity_root_bottom_bar_tab_2"
+            android:layout_width="0dp"
             android:gravity="center"
-            android:layout_weight="1">
-            <softpatrol.drinkapp.layout.components.BottomBarItem blrfl:name="Stash" blrfl:tab_id="1" android:id="@+id/activity_root_bottom_bar_tab_2" android:layout_width="wrap_content" android:layout_height="wrap_content"></softpatrol.drinkapp.layout.components.BottomBarItem>
-        </LinearLayout>
+            android:layout_height="match_parent"
+            android:layout_weight="0.2">
+        </softpatrol.drinkapp.layout.components.BottomBarItem>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <softpatrol.drinkapp.layout.components.BottomBarItem
+            blrfl:name="Scan"
+            blrfl:tab_id="2"
+            android:padding="15dp"
+            android:id="@+id/activity_root_bottom_bar_tab_3"
+            android:layout_width="0dp"
             android:gravity="center"
-            android:layout_weight="1">
-            <softpatrol.drinkapp.layout.components.BottomBarItem blrfl:name="Scan" blrfl:tab_id="2" android:id="@+id/activity_root_bottom_bar_tab_3" android:layout_width="wrap_content" android:layout_height="wrap_content"></softpatrol.drinkapp.layout.components.BottomBarItem>
-        </LinearLayout>
+            android:layout_height="match_parent"
+            android:layout_weight="0.2">
+        </softpatrol.drinkapp.layout.components.BottomBarItem>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <softpatrol.drinkapp.layout.components.BottomBarItem
+            blrfl:name="Result"
+            blrfl:tab_id="3"
+            android:padding="15dp"
+            android:id="@+id/activity_root_bottom_bar_tab_4"
+            android:layout_width="0dp"
             android:gravity="center"
-            android:layout_weight="1">
-            <softpatrol.drinkapp.layout.components.BottomBarItem blrfl:name="Result" blrfl:tab_id="3" android:id="@+id/activity_root_bottom_bar_tab_4" android:layout_width="wrap_content" android:layout_height="wrap_content"></softpatrol.drinkapp.layout.components.BottomBarItem>
-        </LinearLayout>
+            android:layout_height="match_parent"
+            android:layout_weight="0.2">
+        </softpatrol.drinkapp.layout.components.BottomBarItem>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <softpatrol.drinkapp.layout.components.BottomBarItem
+            blrfl:name="Social"
+            blrfl:tab_id="4"
+            android:padding="15dp"
+            android:id="@+id/activity_root_bottom_bar_tab_5"
+            android:layout_width="0dp"
             android:gravity="center"
-            android:layout_weight="1">
-            <softpatrol.drinkapp.layout.components.BottomBarItem blrfl:name="Social" blrfl:tab_id="4" android:id="@+id/activity_root_bottom_bar_tab_5" android:layout_width="wrap_content" android:layout_height="wrap_content"></softpatrol.drinkapp.layout.components.BottomBarItem>
-        </LinearLayout>
-
+            android:layout_height="match_parent"
+            android:layout_weight="0.2">
+        </softpatrol.drinkapp.layout.components.BottomBarItem>
     </LinearLayout>
 
 </LinearLayout>
