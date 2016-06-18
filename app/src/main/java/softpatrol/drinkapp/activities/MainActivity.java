@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.RotateAnimation;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -179,6 +181,7 @@ public class MainActivity extends BaseActivity {
         BottomBarItem bbTab3 = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_3);
         bbTab3.setCustomClickListener(mViewPager,2);
         bbTab3.setIconImageView(getResources().getDrawable(R.drawable.fragment_scan,null));
+        bbTab3.getTitleTextView().setVisibility(View.VISIBLE);
 
         resultBottomBarItem = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_4);
         resultBottomBarItem.setCustomClickListener(mViewPager,3);
@@ -250,6 +253,10 @@ public class MainActivity extends BaseActivity {
 
     @Subscribe
     public void onRecipeComplete(EventRecipeSearchComplete event) {
+        RotateAnimation rotate= new RotateAnimation(0,30);
+        rotate.setDuration(10);
+        rotate.setRepeatCount(10);
+        resultBottomBarItem.getBadgeText().startAnimation(rotate);
         resultBottomBarItem.setBadges(event.results.size());
     }
 

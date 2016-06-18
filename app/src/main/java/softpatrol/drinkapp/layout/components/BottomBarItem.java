@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,6 +85,10 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
         this.titleTextView.setText(titleTextView);
     }
 
+    public TextView getTitleTextView() {
+        return titleTextView;
+    }
+
 
     public void setIconImageView(Drawable drawable) {
         iconImageView.setImageDrawable(drawable);
@@ -110,6 +116,10 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
         for (IOutsideTabClicked listener : listeners) {
             listener.outsideClick(tabId);
         }
+    }
+
+    public TextView getBadgeText() {
+        return badgeText;
     }
 
     public void addOutsideTabListener(IOutsideTabClicked listener) {
