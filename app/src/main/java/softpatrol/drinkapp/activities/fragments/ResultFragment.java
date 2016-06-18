@@ -168,12 +168,18 @@ public class ResultFragment extends Fragment {
 
         class MyViewHolder extends RecyclerView.ViewHolder {
 
-            TextView text;
+            TextView titleText;
+            TextView likeText;
+            TextView commentText;
+            TextView percentText;
+
             ProgressBar progressBar;
             public MyViewHolder(View itemView) {
                 super(itemView);
-                this.text = (TextView) itemView.findViewById(R.id.fragment_result_row_text);
-                this.progressBar = (ProgressBar) itemView.findViewById(R.id.fragment_result_row_progress_percent);
+                this.titleText = (TextView) itemView.findViewById(R.id.fragment_result_row_title_text);
+                this.likeText = (TextView) itemView.findViewById(R.id.fragment_result_row_like_text);
+                this.commentText = (TextView) itemView.findViewById(R.id.fragment_result_row_comments_text);
+                this.percentText = (TextView) itemView.findViewById(R.id.fragment_result_row_title_percent);
             }
         }
 
@@ -196,12 +202,11 @@ public class ResultFragment extends Fragment {
         @Override
         public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
 
-            TextView text = holder.text;
-            ProgressBar percent = holder.progressBar;
-            percent.setMax(100);
 
-            text.setText(dataSet.get(listPosition).getRecipe().getName());
-            percent.setProgress((int) (dataSet.get(listPosition).getResult().matchPercent()*100));
+            holder.titleText.setText(dataSet.get(listPosition).getRecipe().getName());
+            holder.percentText.setText((int)(dataSet.get(listPosition).getResult().matchPercent()*100) + "%");
+            holder.commentText.setText("2 comments");
+            holder.likeText.setText("2 likeys");
         }
 
         public void addRecipe(ResultViewItem recipe) {

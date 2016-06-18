@@ -10,44 +10,138 @@
         android:id="@+id/fragment_result_cardview"
         android:layout_gravity="top"
         android:layout_width="match_parent"
-        android:layout_margin="5dp"
-        android:layout_height="100dp"
-        card_view:cardCornerRadius="4dp">
+        android:layout_marginBottom="5dp"
+        android:layout_height="120dp"
+        card_view:cardCornerRadius="0dp">
 
-        <RelativeLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+
             <ImageView
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:id="@+id/fragment_result_row_img"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:src="@drawable/abc_btn_check_to_on_mtrl_015" />
+                android:layout_weight="0.25"
+                android:padding="5dp"
+                android:src="@drawable/fragment_result" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.65">
+
+                <!-- Row 1 display text -->
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.3">
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.1"/>
 
 
-            <TextView
-                android:id="@+id/fragment_result_row_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_toRightOf="@+id/fragment_result_row_img"
-                android:textSize="20dp"
-                android:text="Gin och Tonic" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.7"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="Gin och Tonic"
+                        android:layout_gravity="center_vertical"
+                        android:id="@+id/fragment_result_row_title_text" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.2"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="100%"
+                        android:layout_gravity="center_vertical"
+                        android:id="@+id/fragment_result_row_title_percent" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.3">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:id="@+id/fragment_result_row_like_img"
+                        android:layout_weight="0.2"
+                        android:padding="5dp"
+                        android:src="@drawable/like" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.8"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:layout_gravity="center_vertical"
+                        android:text="2 likes"
+                        android:id="@+id/fragment_result_row_like_text" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.3">
+
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:id="@+id/fragment_result_row_comments_img"
+                        android:layout_weight="0.2"
+                        android:padding="5dp"
+                        android:src="@drawable/chat" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.8"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:layout_gravity="center_vertical"
+                        android:text="2 likes"
+                        android:id="@+id/fragment_result_row_comments_text" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.1"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="0.1">
 
 
-            <ProgressBar
-                android:id="@+id/fragment_result_row_progress_percent"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="100dip"
-                android:layout_height="40dp"
-                android:padding="10dip"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true" />
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:id="@+id/fragment_result_row_right_arrow"
+                    android:layout_weight="1"
+                    android:layout_gravity="right"
+                    android:src="@drawable/next" />
 
+            </LinearLayout>
 
-        </RelativeLayout>
+        </LinearLayout>
+
     </android.support.v7.widget.CardView>
+
 
 </LinearLayout>
