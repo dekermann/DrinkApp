@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import softpatrol.drinkapp.R;
+import softpatrol.drinkapp.activities.MainActivity;
+import softpatrol.drinkapp.activities.fragments.Fragment;
 
 
 /**
@@ -106,6 +108,7 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
                 titleTextView.setVisibility(VISIBLE);
                 setBackgroundColor(selectBgColor);
                 fragmentViewPager.setCurrentItem(fragmentId,true);
+                ((Fragment) ((MainActivity.SectionsPagerAdapter)fragmentViewPager.getAdapter()).getItem(fragmentId)).onEntered();
 
                 self.notifyOutsideListeners();
             }
