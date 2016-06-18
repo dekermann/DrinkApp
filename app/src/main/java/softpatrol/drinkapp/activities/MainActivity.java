@@ -182,7 +182,7 @@ public class MainActivity extends BaseActivity {
 
         BottomBarItem bbTab3 = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_3);
         bbTab3.setCustomClickListener(mViewPager,2);
-        bbTab1.setSelectBgColor(getResources().getColor(R.color.Pink));
+        bbTab3.setSelectBgColor(getResources().getColor(R.color.Pink));
         bbTab3.setIconImageView(getResources().getDrawable(R.drawable.fragment_scan,null));
         bbTab3.getTitleTextView().setVisibility(View.VISIBLE);
 

@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_weight="0.9 "/>
+        android:layout_weight="0.89"/>
 
 
 
@@ -27,7 +27,7 @@
         android:id="@+id/activity_root_bottom_bar"
         android:orientation="horizontal"
         android:background="@drawable/top_border"
-        android:layout_weight="0.1">
+        android:layout_weight="0.11">
 
         <softpatrol.drinkapp.layout.components.BottomBarItem
             blrfl:name="Home"
