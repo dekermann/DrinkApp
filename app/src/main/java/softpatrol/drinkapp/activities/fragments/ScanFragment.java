@@ -1,8 +1,7 @@
 package softpatrol.drinkapp.activities.fragments;
 
-import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -21,25 +20,29 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Size;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,8 +66,6 @@ import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
 import softpatrol.drinkapp.util.Debug;
-
-import static android.content.DialogInterface.*;
 
 /**
  * David was here on 2016-06-08!
@@ -376,8 +377,22 @@ public class ScanFragment extends Fragment {
         for(long l : StashFragment.CURRENT_STASH.getIngredientsIds()) {
             ((TestAdapter)mScannedItems.getAdapter()).addItems(db.getIngredient(l).getName());
         }
-        mFragmentName.setText(StashFragment.CURRENT_STASH.getName());
+        mCurrentStashName.setText(StashFragment.CURRENT_STASH.getName());
         EventBus.getDefault().post(new EditCurrentStashEvent());
+    }
+
+    boolean CurrentStashNameFocused = false;
+    private void changeStashNameState() {
+        CurrentStashNameFocused = !CurrentStashNameFocused;
+        Log.d("CurrentStashNameFocused", CurrentStashNameFocused + "");
+        if(!CurrentStashNameFocused) {
+            mScannedItems.requestFocus();
+            hideSoftKeyboard();
+        }
+    }
+    private void hideSoftKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager)  getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
     }
 
     public ScanFragment() {}
@@ -389,19 +404,32 @@ public class ScanFragment extends Fragment {
         return fragment;
     }
 
-    TextView mFragmentName;
+    EditText mCurrentStashName;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         fragmentId = getArguments().getInt(ARG_SECTION_NUMBER);
         View rootView = inflater.inflate(R.layout.fragment_scan, container, false);
 
         mTextureView = (TextureView) rootView.findViewById(R.id.camera_texture);
+        mTextureView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(CurrentStashNameFocused) changeStashNameState();
+            }
+        });
 
         mScannedItems = (RecyclerView) rootView.findViewById(R.id.scanned_item_list);
-        mFragmentName = (TextView) rootView.findViewById(R.id.fragment_name);
-
+        mScannedItems.requestFocus();
+        mCurrentStashName = (EditText) rootView.findViewById(R.id.fragment_scan_stash_name);
+        mCurrentStashName.setSelected(false);
+        mCurrentStashName.setFocusable(true);
+        mCurrentStashName.setFocusableInTouchMode(true);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+        InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
+        
         Typeface type = Typeface.createFromAsset(getContext().getAssets(),"fonts/font.ttf");
-        mFragmentName.setTypeface(type);
+        mCurrentStashName.setTypeface(type);
         setUpRecyclerView();
         DatabaseHandler db = DatabaseHandler.getInstance(getContext());
         for(long l : StashFragment.CURRENT_STASH.getIngredientsIds()) {
@@ -450,6 +478,45 @@ public class ScanFragment extends Fragment {
                 clearList();
             }
         });
+/*
+        mCurrentStashName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });*/
+        mCurrentStashName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                mCurrentStashName.setHint("");
+                if(!CurrentStashNameFocused) changeStashNameState();
+            }
+        });
+
+        mCurrentStashName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                StashFragment.CURRENT_STASH.setName(mCurrentStashName.getText().toString());
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        mCurrentStashName.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (event == null) {
+                    changeStashNameState();
+                    return true;
+                }
+                return false;
+            }
+        });
+
         return rootView;
     }
 
@@ -591,7 +658,6 @@ public class ScanFragment extends Fragment {
 
                 super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
             }
-
         };
         ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
         mItemTouchHelper.attachToRecyclerView(mScannedItems);
@@ -822,7 +888,7 @@ public class ScanFragment extends Fragment {
         for(long l : StashFragment.CURRENT_STASH.getIngredientsIds()) {
             ((TestAdapter)mScannedItems.getAdapter()).addItems(db.getIngredient(l).getName());
         }
-        mFragmentName.setText(StashFragment.CURRENT_STASH.getName());
+        mCurrentStashName.setText(StashFragment.CURRENT_STASH.getName());
     }
 
     @Override

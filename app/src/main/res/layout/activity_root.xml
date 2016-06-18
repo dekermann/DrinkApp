@@ -18,11 +18,15 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_weight="1"/>
 
+
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="900dp"
         android:id="@+id/activity_root_bottom_bar"
         android:orientation="horizontal"
+        android:background="@drawable/action_bar_background"
         android:layout_weight="9">
 
         <LinearLayout

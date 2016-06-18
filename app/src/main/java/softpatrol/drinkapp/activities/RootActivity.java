@@ -91,7 +91,7 @@ public class RootActivity extends BaseActivity {
 
         //TODO: When commenting out the reset look below for next TODO!!!!
         DatabaseHandler db = DatabaseHandler.getInstance(this);
-        //db.onUpgrade(db.getWritableDatabase(), 1, 2);
+        db.onUpgrade(db.getWritableDatabase(), 1, 2);
 
         String[] paths = new String[] { DATA_PATH, DATA_PATH + "tessdata/" };
 

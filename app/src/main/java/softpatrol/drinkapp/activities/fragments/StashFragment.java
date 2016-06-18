@@ -86,7 +86,7 @@ public class StashFragment extends Fragment {
         ((LinearLayout) this.rootView.findViewById(R.id.stash_item_container)).addView(row);
         //row.setPadding(10,10,10,10);
         row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, RootActivity.displayHeight / 5));
+        row.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, RootActivity.displayHeight / 4));
         row.setPadding(25, 25, 25, 25);
 
         LinearLayout nextBox = new LinearLayout(getContext());
@@ -96,12 +96,12 @@ public class StashFragment extends Fragment {
         row.addView(nextBox);
         if(stashes != null) {
             for (int i = 0; i < stashes.size(); i++) {
+                StashView stashView = new StashView(getContext());
                 if(CURRENT_STASH_ID == stashes.get(i).getId()) {
                     somethingSelected = true;
-                    nextBox.setBackground(getActivity().getDrawable(R.drawable.button_border_selected));
+                    stashView.getIcon().setBackground(getActivity().getDrawable(R.drawable.button_border_selected));
                 }
-                else nextBox.setBackground(getActivity().getDrawable(R.drawable.button_border));
-                StashView stashView = new StashView(getContext());
+                else stashView.getIcon().setBackground(getActivity().getDrawable(R.drawable.button_border));
                 stashView.setName(stashes.get(i).getName());
                 stashView.setIcon(getActivity().getDrawable(R.drawable.settings));
                 nextBox.addView(stashView);
@@ -121,7 +121,7 @@ public class StashFragment extends Fragment {
                     ((LinearLayout) this.rootView.findViewById(R.id.stash_item_container)).addView(row);
                     //row.setPadding(10,10,10,10);
                     row.setOrientation(LinearLayout.HORIZONTAL);
-                    row.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, RootActivity.displayHeight / 5));
+                    row.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, RootActivity.displayHeight / 4));
                     row.setPadding(25, 25, 25, 25);
                 }
                 nextBox = new LinearLayout(getContext());
@@ -131,10 +131,10 @@ public class StashFragment extends Fragment {
                 row.addView(nextBox);
             }
         }
-        nextBox.setBackground(getActivity().getDrawable(R.drawable.button_border));
         StashView stashView = new StashView(getContext());
+        stashView.getIcon().setBackground(getActivity().getDrawable(R.drawable.button_create_save_stash));
         stashView.setName("SAVE STASH!");
-        stashView.setIcon(getActivity().getDrawable(R.drawable.settings));
+        stashView.setIcon(getActivity().getDrawable(R.drawable.save_new_stash_icon));
         nextBox.addView(stashView);
         nextBox.setOnClickListener(new View.OnClickListener() {
             @Override
