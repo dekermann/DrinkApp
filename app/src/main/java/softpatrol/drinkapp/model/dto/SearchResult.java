@@ -64,9 +64,9 @@ public class SearchResult  implements Comparable{
     }
 
     public float matchPercent() {
-        float mathes = getIngredientMatches().size();
+        float matches = getIngredientMatches().size() + getCategoryMatches().size();
         float total = getIngredientMatches().size() + getCategoryNoMatches().size() + getIngredientNoMatches().size() + getCategoryMatches().size();
-        return mathes/total;
+        return matches/total;
     }
 
     @Override
@@ -77,11 +77,11 @@ public class SearchResult  implements Comparable{
         float comparePercent = compareage.matchPercent();
 
         if (myPercent > comparePercent) {
-            return 1;
+            return -1;
         } else if (myPercent == comparePercent) {
             return 0;
         } else {
-            return -1;
+            return 1;
         }
     }
 }

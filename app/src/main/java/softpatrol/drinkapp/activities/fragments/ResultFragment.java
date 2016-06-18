@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.apache.http.NameValuePair;
@@ -134,8 +135,8 @@ public class ResultFragment extends Fragment {
 
                 JSONArray ingredientNoMatches = obj.getJSONArray("ingredientNoMatches");
 
-                for (int k = 0;k < ingredientMatches.length();k++) {
-                    sr.getIngredientNoMatches().add((Integer) ingredientMatches.get(k));
+                for (int k = 0;k < ingredientNoMatches.length();k++) {
+                    sr.getIngredientNoMatches().add((Integer) ingredientNoMatches.get(k));
                 }
 
                 JSONArray categoryMatches = obj.getJSONArray("categoryMatches");
@@ -168,9 +169,11 @@ public class ResultFragment extends Fragment {
         class MyViewHolder extends RecyclerView.ViewHolder {
 
             TextView text;
+            ProgressBar progressBar;
             public MyViewHolder(View itemView) {
                 super(itemView);
                 this.text = (TextView) itemView.findViewById(R.id.fragment_result_row_text);
+                this.progressBar = (ProgressBar) itemView.findViewById(R.id.fragment_result_row_progress_percent);
             }
         }
 
@@ -194,8 +197,11 @@ public class ResultFragment extends Fragment {
         public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
 
             TextView text = holder.text;
+            ProgressBar percent = holder.progressBar;
+            percent.setMax(100);
 
             text.setText(dataSet.get(listPosition).getRecipe().getName());
+            percent.setProgress((int) (dataSet.get(listPosition).getResult().matchPercent()*100));
         }
 
         public void addRecipe(ResultViewItem recipe) {
