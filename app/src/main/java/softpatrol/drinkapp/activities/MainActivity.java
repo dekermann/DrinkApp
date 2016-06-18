@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.RotateAnimation;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
@@ -243,6 +245,10 @@ public class MainActivity extends BaseActivity {
 
     @Subscribe
     public void onRecipeComplete(EventRecipeSearchComplete event) {
+        RotateAnimation rotate= new RotateAnimation(0,30);
+        rotate.setDuration(10);
+        rotate.setRepeatCount(10);
+        resultBottomBarItem.getBadgeText().startAnimation(rotate);
         resultBottomBarItem.setBadges(event.results.size());
     }
 
