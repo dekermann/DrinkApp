@@ -27,6 +27,9 @@ import softpatrol.drinkapp.api.Analyzer;
 import softpatrol.drinkapp.api.Definitions;
 import softpatrol.drinkapp.api.Getter;
 import softpatrol.drinkapp.database.DatabaseHandler;
+import softpatrol.drinkapp.database.models.ingredient.Category;
+import softpatrol.drinkapp.database.models.ingredient.Ingredient;
+import softpatrol.drinkapp.database.models.recipe.Recipe;
 import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.model.dto.ResultViewItem;
 import softpatrol.drinkapp.model.dto.SearchResult;
@@ -47,8 +50,6 @@ public class ResultFragment extends Fragment {
 
     private RecyclerView mRecycleView;
     private ResultRecipeAdapter resultListAdapter;
-
-    private boolean hasTestResults = false;
 
     public ResultFragment() {}
 
@@ -120,9 +121,8 @@ public class ResultFragment extends Fragment {
 
             for (int i = 0; i < array.length();i++) {
                 JSONObject obj = (JSONObject) array.get(i);
-                int recipeId = obj.getInt("recipeId");
-
                 SearchResult sr = new SearchResult();
+                sr.setRecipieId(obj.getInt("recipeId"));
 
 
                 JSONArray ingredientMatches = obj.getJSONArray("ingredientMatches");
@@ -195,7 +195,7 @@ public class ResultFragment extends Fragment {
 
             TextView text = holder.text;
 
-            text.setText(dataSet.get(listPosition).getResult().getRecipieId() + "");
+            text.setText(dataSet.get(listPosition).getRecipe().getName());
         }
 
         public void addRecipe(ResultViewItem recipe) {
@@ -242,8 +242,8 @@ public class ResultFragment extends Fragment {
         for (SearchResult result : event.results) {
             ResultViewItem item = new ResultViewItem();
 
-            /*
-            item.setRecipe(db.getServerRecipe(result.getRecipieId()));
+            Recipe recipe = db.getServerRecipe(result.getRecipieId());
+            item.setRecipe(recipe);
 
             List<Ingredient> noIngredientMatches = new ArrayList<>();
             for (Integer ingredientId : result.getIngredientNoMatches()) {
@@ -254,10 +254,11 @@ public class ResultFragment extends Fragment {
             /*
             List<Category> noCategoryMatches = new ArrayList<>();
             for (Integer categoryId : result.getCategoryMatches()) {
-                noCategoryMatches.add();
+                noCategoryMatches.add(db);
             }
             item.setMissingIngredients(noMatches);
             */
+
             item.setResult(result);
             items.add(item);
         }
