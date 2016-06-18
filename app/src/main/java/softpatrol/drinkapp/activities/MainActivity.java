@@ -178,11 +178,11 @@ public class MainActivity extends BaseActivity {
 
         resultBottomBarItem = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_4);
         resultBottomBarItem.setCustomClickListener(mViewPager,3);
-        resultBottomBarItem.setIconImageView(getResources().getDrawable(R.drawable.fragment_home,null));
+        resultBottomBarItem.setIconImageView(getResources().getDrawable(R.drawable.fragment_result,null));
 
         BottomBarItem bbTab5 = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_5);
         bbTab5.setCustomClickListener(mViewPager,4);
-        bbTab5.setIconImageView(getResources().getDrawable(R.drawable.fragment_home,null));
+        bbTab5.setIconImageView(getResources().getDrawable(R.drawable.fragment_social,null));
 
 
         bbTab1.addOutsideTabListeners(bbTab2,bbTab3,resultBottomBarItem,bbTab5);
