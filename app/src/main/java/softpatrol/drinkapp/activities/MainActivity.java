@@ -9,10 +9,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
@@ -23,11 +23,12 @@ import softpatrol.drinkapp.activities.fragments.MyPageFragment;
 import softpatrol.drinkapp.activities.fragments.ResultFragment;
 import softpatrol.drinkapp.activities.fragments.ScanFragment;
 import softpatrol.drinkapp.activities.fragments.SocialFragment;
-import softpatrol.drinkapp.activities.fragments.StashFragment;
+import softpatrol.drinkapp.activities.fragments.stash.StashFragment;
 import softpatrol.drinkapp.api.DataSynchronizer;
 import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.layout.components.BottomBarItem;
 import softpatrol.drinkapp.layout.components.CustomViewPager;
+import softpatrol.drinkapp.model.event.EventCreatePopUp;
 import softpatrol.drinkapp.model.event.EventRecipeSearchComplete;
 import softpatrol.drinkapp.util.Utils;
 
@@ -125,33 +126,6 @@ public class MainActivity extends BaseActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_root);
-
-
-        /*
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        assert mViewPager != null;
-        mViewPager.setOffscreenPageLimit(5);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
-            @Override
-            public void onPageSelected(int position) {
-                mSectionsPagerAdapter.setCurrentPage(position);
-                mSectionsPagerAdapter.notifyDataSetChanged();
-            }
-            @Override
-            public void onPageScrollStateChanged(int state) {}
-        });
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        assert tabLayout != null;
-        tabLayout.setupWithViewPager(mViewPager);
-
-        mViewPager.setCurrentItem(2);
-        */
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -263,6 +237,24 @@ public class MainActivity extends BaseActivity {
         rotate.setRepeatCount(10);
         resultBottomBarItem.getBadgeText().startAnimation(rotate);
         resultBottomBarItem.setBadges(event.results.size());
+    }
+
+    @Subscribe
+    public void onPopUp(EventCreatePopUp event) {
+        final RelativeLayout r = (RelativeLayout) findViewById(R.id.popup_main);
+        r.setPadding(RootActivity.displayWidth / 10, RootActivity.displayHeight / 10, RootActivity.displayWidth / 10, RootActivity.displayHeight / 10);
+        event.popUpLayout.setParent(r);
+        r.addView(event.popUpLayout);
+        r.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                r.removeAllViews();
+                r.setVisibility(View.GONE);
+                r.invalidate();
+            }
+        });
+        r.setVisibility(View.VISIBLE);
+        r.invalidate();
     }
 
     @Override

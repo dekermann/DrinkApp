@@ -1,8 +1,7 @@
-package softpatrol.drinkapp.activities.fragments;
+package softpatrol.drinkapp.activities.fragments.stash;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,8 +18,8 @@ import java.util.ArrayList;
 
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.activities.BaseActivity;
-import softpatrol.drinkapp.activities.MainActivity;
 import softpatrol.drinkapp.activities.RootActivity;
+import softpatrol.drinkapp.activities.fragments.Fragment;
 import softpatrol.drinkapp.api.Analyzer;
 import softpatrol.drinkapp.api.Definitions;
 import softpatrol.drinkapp.api.Getter;
@@ -30,6 +29,7 @@ import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.layout.components.StashView;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
+import softpatrol.drinkapp.model.event.EventCreatePopUp;
 import softpatrol.drinkapp.util.Debug;
 
 /**
@@ -41,8 +41,6 @@ public class StashFragment extends Fragment {
     public static Stash CURRENT_STASH = new Stash();
     private ArrayList<Stash> stashes;
     private View rootView;
-    private LinearLayout mPopWindowMain;
-    private LinearLayout mPopWindowInner;
 
     /**
      * The fragment argument representing the section number for this
@@ -75,23 +73,6 @@ public class StashFragment extends Fragment {
             new Getter(new SynchronizeStash(getActivity()), null, headers).execute(Definitions.GET_STASH);
         }
         this.rootView = rootView;
-        mPopWindowMain = (LinearLayout) rootView.findViewById(R.id.fragment_stash_pop_up_main);
-        mPopWindowMain.setVisibility(View.GONE);
-        mPopWindowMain.setClickable(false);
-        mPopWindowMain.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mPopWindowMain.setVisibility(View.GONE);
-                mPopWindowMain.setClickable(false);
-            }
-        });
-        mPopWindowInner = (LinearLayout) rootView.findViewById(R.id.fragment_stash_pop_up_inner);
-        mPopWindowInner.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Absorb clicks
-            }
-        });
         CURRENT_STASH.setName("New Stash!");
         updateView();
         return rootView;
@@ -132,8 +113,9 @@ public class StashFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         if(CURRENT_STASH_ID == stash.getId()) {
-                            mPopWindowMain.setVisibility(View.VISIBLE);
-                            mPopWindowMain.setClickable(true);
+                            softpatrol.drinkapp.layout.components.popups.Stash stashPopUp = new softpatrol.drinkapp.layout.components.popups.Stash(getContext());
+                            stashPopUp.bindStash(stash);
+                            EventBus.getDefault().post(new EventCreatePopUp(stashPopUp));
                         }
                         CURRENT_STASH = stash;
                         CURRENT_STASH_ID = stash.getId();
