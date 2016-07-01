@@ -67,6 +67,8 @@ import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
 import softpatrol.drinkapp.network.IPacket;
 import softpatrol.drinkapp.network.ITcpResponse;
 import softpatrol.drinkapp.network.TcpRequest;
+import softpatrol.drinkapp.network.packet.IncomingError;
+import softpatrol.drinkapp.network.packet.IncomingMatchForImage;
 import softpatrol.drinkapp.network.packet.OutgoingMatchForImage;
 import softpatrol.drinkapp.util.Debug;
 
@@ -483,7 +485,13 @@ public class ScanFragment extends Fragment {
                 TcpRequest tr = new TcpRequest(new ITcpResponse() {
                     @Override
                     public void reponse(IPacket packet) {
-                        System.out.println(packet.getTag());
+                        if (packet == null) {
+
+                        } else if (packet.getTag() == IncomingMatchForImage.TAG) {
+
+                        } else {
+
+                        }
                     }
                 },ctx);
                 tr.execute(new OutgoingMatchForImage(1,1,null));

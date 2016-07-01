@@ -53,7 +53,7 @@ public class TcpRequest extends AsyncTask<IByteSerialization, Void, Void> {
             IPacket packetBuilder = builderRegistry.get(tag);
 
             if (packetBuilder == null) {
-                //response.reponse(null);
+                response.reponse(null);
             } else {
                 IPacket packet = packetBuilder.build(tr);
                 response.reponse(packet);
@@ -61,6 +61,7 @@ public class TcpRequest extends AsyncTask<IByteSerialization, Void, Void> {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        response.reponse(null);
         return null;
     }
 }
