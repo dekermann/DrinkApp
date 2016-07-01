@@ -3,12 +3,13 @@ package softpatrol.drinkapp.network.packet;
 
 import java.io.IOException;
 
+import softpatrol.drinkapp.network.IPacket;
 import softpatrol.drinkapp.network.TcpReader;
 
 /**
  * Created by root on 7/1/16.
  */
-public class IncomingError {
+public class IncomingError implements IPacket<IncomingError> {
 
     public static final short TAG = 666;
 
@@ -21,7 +22,8 @@ public class IncomingError {
         this.msg = msg;
     }
 
-    public IncomingError() {}
+    public IncomingError() {
+    }
 
     public short getErrorCode() {
         return errorCode;
@@ -39,14 +41,22 @@ public class IncomingError {
         this.msg = msg;
     }
 
-    public static IncomingError build(TcpReader tcpReader) {
+
+    @Override
+    public short getTag() {
+        return IncomingError.TAG;
+    }
+
+    @Override
+    public IncomingError build(TcpReader reader) {
         try {
-            short errorCode = tcpReader.readShort();
-            String msg = tcpReader.readAll();
-            return new IncomingError(errorCode,msg);
+            short errorCode = reader.readShort();
+            String msg = reader.readAll();
+            return new IncomingError(errorCode, msg);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
+
 }

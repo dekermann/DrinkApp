@@ -3,12 +3,13 @@ package softpatrol.drinkapp.network.packet;
 
 import java.io.IOException;
 
+import softpatrol.drinkapp.network.IPacket;
 import softpatrol.drinkapp.network.TcpReader;
 
 /**
  * Created by root on 7/1/16.
  */
-public class IncomingMatchForImage {
+public class IncomingMatchForImage implements IPacket<IncomingMatchForImage> {
 
     private int descriptorMatches;
     private int matchId;
@@ -22,7 +23,9 @@ public class IncomingMatchForImage {
         this.matchTime = matchTime;
     }
 
-    public static IncomingMatchForImage build(TcpReader tcpReader) {
+    public IncomingMatchForImage(){}
+
+    public IncomingMatchForImage build(TcpReader tcpReader) {
         try {
             int descriptorMatches = tcpReader.readInt();
             int matchId = tcpReader.readInt();
@@ -32,5 +35,10 @@ public class IncomingMatchForImage {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public short getTag() {
+        return IncomingMatchForImage.TAG;
     }
 }

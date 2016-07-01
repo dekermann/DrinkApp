@@ -13,4 +13,7 @@
     <string name="camera_error">This device doesn\\\'t support Camera2 API.</string>
     <string name="button_undo">undo</string>
     <string name="new_stash">New Stash!</string>
+
+    <string name="server.vision.ip">192.168.1.1</string>
+    <integer name="server.vision.port">6666</integer>
 </resources>

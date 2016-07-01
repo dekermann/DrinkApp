@@ -1,12 +1,14 @@
 package softpatrol.drinkapp.network.packet;
 
 import softpatrol.drinkapp.network.IByteSerialization;
+import softpatrol.drinkapp.network.IPacket;
+import softpatrol.drinkapp.network.TcpReader;
 import softpatrol.drinkapp.network.TcpWriter;
 
 /**
  * Created by root on 7/1/16.
  */
-public class OutgoingMatchForImage implements IByteSerialization {
+public class OutgoingMatchForImage implements IByteSerialization,IPacket<OutgoingMatchForImage> {
     public static final short TAG = 2;
 
 
@@ -14,6 +16,13 @@ public class OutgoingMatchForImage implements IByteSerialization {
     private int height;
 
     private byte[] imgData;
+
+
+    public OutgoingMatchForImage(int w,int h,byte[] imgData) {
+        this.width = w;
+        this.height = h;
+        this.imgData = imgData;
+    }
 
     public OutgoingMatchForImage() {
 
@@ -39,5 +48,15 @@ public class OutgoingMatchForImage implements IByteSerialization {
         tw.writeInt(height);
         tw.writeBytes(imgData);
         return tw.toByteArray();
+    }
+
+    @Override
+    public short getTag() {
+        return OutgoingMatchForImage.TAG;
+    }
+
+    @Override
+    public OutgoingMatchForImage build(TcpReader reader) {
+        throw new UnsupportedOperationException("The method is not implemented");
     }
 }

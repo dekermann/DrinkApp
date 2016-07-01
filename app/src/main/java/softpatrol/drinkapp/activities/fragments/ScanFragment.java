@@ -64,6 +64,10 @@ import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
+import softpatrol.drinkapp.network.IPacket;
+import softpatrol.drinkapp.network.ITcpResponse;
+import softpatrol.drinkapp.network.TcpRequest;
+import softpatrol.drinkapp.network.packet.OutgoingMatchForImage;
 import softpatrol.drinkapp.util.Debug;
 
 /**
@@ -160,6 +164,7 @@ public class ScanFragment extends Fragment {
      */
     private void setupCamera(int width, int height) {
         CameraManager cameraManager = (CameraManager) getActivity().getSystemService(Context.CAMERA_SERVICE);
+
         try {
             for(String cameraId : cameraManager.getCameraIdList()) {
                 CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
@@ -469,6 +474,23 @@ public class ScanFragment extends Fragment {
                 manualAdd();
             }
         });
+
+        final ImageView debugScan = (ImageView) rootView.findViewById(R.id.fragment_scan_btn_scan);
+        final Context ctx = this.getContext();
+        debugScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TcpRequest tr = new TcpRequest(new ITcpResponse() {
+                    @Override
+                    public void reponse(IPacket packet) {
+                        System.out.println(packet.getTag());
+                    }
+                },ctx);
+                tr.execute(new OutgoingMatchForImage(1,1,null));
+            }
+        });
+
+
 
         final ImageView clear = (ImageView) rootView.findViewById(R.id.clear);
         clear.setOnClickListener(new View.OnClickListener() {

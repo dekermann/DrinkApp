@@ -22,6 +22,7 @@ public class TcpReader {
         return bb.getShort();
     }
 
+    /*
     public int readUnsignedShort() throws IOException {
         byte[] bytes = new byte[2];
         ioStream.read(bytes,0,2);
@@ -35,6 +36,7 @@ public class TcpReader {
         ByteBuffer bb = ByteBuffer.wrap(bytes);
         return Integer.toUnsignedLong(bb.getInt());
     }
+    */
 
     public int readInt() throws IOException {
         byte[] bytes = new byte[4];
