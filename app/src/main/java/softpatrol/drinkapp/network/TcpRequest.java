@@ -2,6 +2,7 @@ package softpatrol.drinkapp.network;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -44,24 +45,29 @@ public class TcpRequest extends AsyncTask<IByteSerialization, Void, Void> {
     protected Void doInBackground(IByteSerialization... iByteSerializations) {
         try {
             Socket clientSocket = new Socket(ip,port);
+
+
+            byte[] bb = iByteSerializations[0].toByteArray();
+
+
             clientSocket.getOutputStream().write(iByteSerializations[0].toByteArray());
             clientSocket.getOutputStream().flush();
 
             TcpReader tr = new TcpReader(new BufferedInputStream(clientSocket.getInputStream()));
             int packetLength = tr.readInt();
-            int tag = tr.readShort();
+            short tag = tr.readShort();
             IPacket packetBuilder = builderRegistry.get(tag);
 
             if (packetBuilder == null) {
-                response.reponse(null);
+                response.response(null);
             } else {
                 IPacket packet = packetBuilder.build(tr);
-                response.reponse(packet);
+                response.response(packet);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        response.reponse(null);
+        response.response(null);
         return null;
     }
 }

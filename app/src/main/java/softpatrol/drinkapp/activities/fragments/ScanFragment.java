@@ -2,11 +2,13 @@ package softpatrol.drinkapp.activities.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.SurfaceTexture;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.camera2.CameraAccessException;
@@ -64,6 +66,7 @@ import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
+import softpatrol.drinkapp.network.Definitions;
 import softpatrol.drinkapp.network.IPacket;
 import softpatrol.drinkapp.network.ITcpResponse;
 import softpatrol.drinkapp.network.TcpRequest;
@@ -82,8 +85,10 @@ public class ScanFragment extends Fragment {
     private static final int STATE_PREVIEW = 0;
     private static final int STATE_WAIT_LOCK = 1;
     private int mState;
+    View rootView;
 
 
+    boolean AnalyzeInProgress = true;
     /**
      * TextureView
      */
@@ -91,7 +96,6 @@ public class ScanFragment extends Fragment {
     private TextureView.SurfaceTextureListener mSurfaceTextureListener =
             new TextureView.SurfaceTextureListener() {
                 long lastUpdate = 0;
-                boolean AnalyzeInProgress = false;
                 @Override
                 public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
                     setupCamera(width, height);
@@ -114,40 +118,48 @@ public class ScanFragment extends Fragment {
                     Thread thread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            Debug.debugMessage((BaseActivity) getActivity(), "Before baseApi");
-
-                            TessBaseAPI baseApi = new TessBaseAPI();
-                            baseApi.setDebug(true);
-                            baseApi.init(RootActivity.DATA_PATH, RootActivity.LANGUAGE);
-                            baseApi.setImage(mTextureView.getBitmap());
-
-                            String recognizedText = baseApi.getUTF8Text();
-
-                            baseApi.end();
-
-                            // You now have the text in recognizedText var, you can do anything with it.
-                            // We will display a stripped out trimmed alpha-numeric version of it (if lang is eng)
-                            // so that garbage doesn't make it to the display.
-
-                            //Debug.debugMessage((BaseActivity) getActivity(), "OCRED TEXT: " + recognizedText);
-
-                            if (RootActivity.LANGUAGE.equalsIgnoreCase("eng")) {
-                                recognizedText = recognizedText.replaceAll("[^a-zA-Z0-9]+", " ");
+                            final Bitmap bm = mTextureView.getBitmap();
+                            OutgoingMatchForImage outgoingMatchForImage = new OutgoingMatchForImage();
+                            outgoingMatchForImage.setHeight(bm.getHeight());
+                            outgoingMatchForImage.setWidth(bm.getWidth());
+                            //TODO: Dont convert to grayscale like this ffs
+                            byte[] bytes = new byte[bm.getHeight()*bm.getWidth()];
+                            for(int y = 0;y<bm.getHeight();y++) for(int x = 0;x<bm.getWidth();x++) {
+                                byte value = (byte) (((bm.getPixel(x,y) & 0x000000FF)*0.1114)+(((bm.getPixel(x,y)>>8) & 0x000000FF)*0.587)+(((bm.getPixel(x,y)>>16) & 0x000000FF)*0.299));
+                                bytes[y*bm.getWidth()+x] = (byte) (value & 0x000000FF);
                             }
+                            //TODO: Dont convert to grayscale like this ffs
+                            outgoingMatchForImage.setImgData(bytes);
 
-                            recognizedText = recognizedText.trim();
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ImageView imageView = (ImageView) rootView.findViewById(R.id.black_white);
+                                    imageView.setImageDrawable(new BitmapDrawable(bm));
+                                }
+                            });
 
-                            if (recognizedText.length() != 0) {
-                                //Debug.debugMessage((BaseActivity) getActivity(), "FINAL TEXT: " + recognizedText);
-                            }
-                            AnalyzeInProgress = false;
-                            //Fake Found
-                            long fakeId = (long) (Math.random()*10) + 1;
-                            //Debug.debugMessage((BaseActivity) getActivity(), "FOUND INGREDIENT " + fakeId + ": " + DatabaseHandler.getInstance(getContext()).getServerIngredient(fakeId).getName());
-                            ((TestAdapter)mScannedItems.getAdapter()).addItems(DatabaseHandler.getInstance(getContext()).getServerIngredient(fakeId).getName());
-                            StashFragment.CURRENT_STASH.addIngredientId(fakeId);
-                            EventBus.getDefault().post(new EditCurrentStashEvent());
+                            TcpRequest tcpRequest = new TcpRequest(new ITcpResponse() {
+                                @Override
+                                public void response(IPacket packet) {
+                                    if (packet == null) {
+                                        Log.d("network","error sending tcp request");
+                                    } else if (packet.getTag() == IncomingError.TAG) {
+                                        IncomingError error = (IncomingError) packet;
+                                        System.out.println(error.getMsg());
+                                    }  else {
+                                        IncomingMatchForImage imfi = (IncomingMatchForImage) packet;
 
+                                        if (imfi.getMatchId() != 0) {
+                                            Log.d("network","Found match with ingredient id = " + imfi.getMatchId());
+                                            Log.d("network","Match time = " + imfi.getMatchTime() + " seconds");
+                                        } else {
+                                            Log.d("network","No match was found :(");
+                                        }
+                                    }
+                                }
+                            }, Definitions.IP, Definitions.PORT);
+                            tcpRequest.execute(outgoingMatchForImage);
                         }
                     });
                     thread.start();
@@ -415,12 +427,14 @@ public class ScanFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         fragmentId = getArguments().getInt(ARG_SECTION_NUMBER);
         View rootView = inflater.inflate(R.layout.fragment_scan, container, false);
+        this.rootView = rootView;
 
         mTextureView = (TextureView) rootView.findViewById(R.id.camera_texture);
         mTextureView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(CurrentStashNameFocused) changeStashNameState();
+                AnalyzeInProgress = false;
             }
         });
 
@@ -476,29 +490,6 @@ public class ScanFragment extends Fragment {
                 manualAdd();
             }
         });
-
-        final ImageView debugScan = (ImageView) rootView.findViewById(R.id.fragment_scan_btn_scan);
-        final Context ctx = this.getContext();
-        debugScan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TcpRequest tr = new TcpRequest(new ITcpResponse() {
-                    @Override
-                    public void reponse(IPacket packet) {
-                        if (packet == null) {
-
-                        } else if (packet.getTag() == IncomingMatchForImage.TAG) {
-
-                        } else {
-
-                        }
-                    }
-                },ctx);
-                tr.execute(new OutgoingMatchForImage(1,1,null));
-            }
-        });
-
-
 
         final ImageView clear = (ImageView) rootView.findViewById(R.id.clear);
         clear.setOnClickListener(new View.OnClickListener() {

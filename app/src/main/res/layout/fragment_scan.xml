@@ -38,15 +38,6 @@
                 android:layout_width="40dp"
                 android:layout_height="35dp"
                 android:src="@drawable/new_scan_button"
-                android:layout_alignParentLeft="true"
-                android:padding="4dp"
-                android:layout_marginBottom="60dp"
-                android:background="@drawable/automatic_add_button"
-                android:id="@+id/fragment_scan_btn_scan"/>
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="35dp"
-                android:src="@drawable/new_scan_button"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:padding="4dp"
@@ -117,4 +108,9 @@
     </LinearLayout>
 
 
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="#55FFFFFF"
+        android:id="@+id/black_white"/>
 </RelativeLayout>
