@@ -4,7 +4,16 @@
     android:layout_height="match_parent"
     tools:context=".activities.fragments.MyPageFragment">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/fragment_mypage_toolbar"
+        android:minHeight="?attr/actionBarSize"
+        android:background="#2196F3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </android.support.v7.widget.Toolbar>
+
     <ImageView
+        android:layout_below="@id/fragment_mypage_toolbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/imageView2"

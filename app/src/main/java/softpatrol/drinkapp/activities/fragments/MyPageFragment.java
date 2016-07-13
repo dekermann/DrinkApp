@@ -1,6 +1,8 @@
 package softpatrol.drinkapp.activities.fragments;
 
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,8 @@ public class MyPageFragment extends Fragment {
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
+
+    private AppCompatActivity activity;
 
     public MyPageFragment() {
     }
@@ -37,7 +41,13 @@ public class MyPageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         int fragmentId = getArguments().getInt(ARG_SECTION_NUMBER);
-        View rootView = inflater.inflate(R.layout.fragment_social, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_mypage, container, false);
+
+        Toolbar tb = (Toolbar) rootView.findViewById(R.id.fragment_mypage_toolbar);
+        tb.setTitle("My page");
+
+        activity = (AppCompatActivity) getActivity();
+        activity.setSupportActionBar(tb);
         return rootView;
     }
 }

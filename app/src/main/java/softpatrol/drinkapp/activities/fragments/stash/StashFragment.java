@@ -2,6 +2,8 @@ package softpatrol.drinkapp.activities.fragments.stash;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +44,8 @@ public class StashFragment extends Fragment {
     private ArrayList<Stash> stashes;
     private View rootView;
 
+    private AppCompatActivity activity;
+
     /**
      * The fragment argument representing the section number for this
      * fragment.
@@ -75,6 +79,12 @@ public class StashFragment extends Fragment {
         this.rootView = rootView;
         CURRENT_STASH.setName("New Stash!");
         updateView();
+
+        Toolbar tb = (Toolbar) rootView.findViewById(R.id.fragment_stash_toolbar);
+        tb.setTitle("Stash");
+
+        activity = (AppCompatActivity) getActivity();
+        activity.setSupportActionBar(tb);
         return rootView;
     }
 
