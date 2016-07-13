@@ -2,10 +2,17 @@ package softpatrol.drinkapp.activities.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -52,6 +59,10 @@ public class ResultFragment extends Fragment {
     private ResultRecipeAdapter resultListAdapter;
 
     private TextView showingText;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle actionBarDrawerToggle;
+
+    private AppCompatActivity activity;
 
     public ResultFragment() {}
 
@@ -70,7 +81,9 @@ public class ResultFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         int fragmentId = getArguments().getInt(ARG_SECTION_NUMBER);
+
         View rootView = inflater.inflate(R.layout.fragment_result, container, false);
+        mDrawerLayout = (DrawerLayout) rootView;
 
         mRecycleView = (RecyclerView) rootView.findViewById(R.id.fragment_result_list);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
@@ -84,8 +97,23 @@ public class ResultFragment extends Fragment {
         showingText = (TextView) rootView.findViewById(R.id.fragment_result_showing);
         showingText.setText("No results found ...");
 
+
+
+        Toolbar tb = (Toolbar) rootView.findViewById(R.id.toolbar);
+        tb.setTitle("Result");
+
+        activity = (AppCompatActivity) getActivity();
+        activity.setSupportActionBar(tb);
+        activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.menu);
+        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        activity.getSupportActionBar().setHomeButtonEnabled(true);
+
+        actionBarDrawerToggle = new ActionBarDrawerToggle(getActivity(),mDrawerLayout,tb,R.string.app_name,R.string.app_name);
+        mDrawerLayout.setDrawerListener(actionBarDrawerToggle);
         return rootView;
     }
+
+
 
     /*
     * On stash change, do a search on the server

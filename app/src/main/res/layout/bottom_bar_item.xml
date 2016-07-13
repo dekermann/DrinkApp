@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="80dp"
-    android:layout_height="match_parent">
+    android:layout_height="56dp">
 
     <ImageView
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
         android:id="@+id/bottom_bar_menu_item_img"
         android:src="@drawable/fragment_home"/>
 
@@ -15,29 +16,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/bottom_bar_menu_item_img"
+        android:layout_centerHorizontal="true"
         android:textSize="10dp"
-        android:layout_gravity="center"
+        android:layout_marginBottom="10dp"
         android:text="Mystash"
         android:id="@+id/bottom_bar_menu_item_text" />
-
-
-    <TextView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="0"
-        android:id="@+id/bottom_bar_menu_item_badge_text"
-        android:layout_marginLeft="35dp"
-        android:background="@color/Aquamarine"
-        android:textSize="20dp" />
-    <!--
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/bottom_bar_menu_item_img_badge"
-        android:layout_alignTop="@id/bottom_bar_menu_item_img"
-        android:layout_marginLeft="25dp"
-        android:layout_alignParentTop="true"
-        android:src="@drawable/abc_btn_radio_to_on_mtrl_015" />
-        -->
-</LinearLayout>
+</RelativeLayout>

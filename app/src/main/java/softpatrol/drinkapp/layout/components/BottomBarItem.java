@@ -31,8 +31,6 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
     private List<IOutsideTabClicked> listeners;
 
     private int badges = 0;
-    private ImageView badgeIcon;
-    private TextView badgeText;
 
     private boolean isFocused = false;
     private int tabId = 0;
@@ -52,31 +50,7 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
         titleTextView.setText(titleName);
         iconImageView = (ImageView) findViewById(R.id.bottom_bar_menu_item_img);
 
-        /*
-        // Set the badge icon position
-        badgeIcon = (ImageView) findViewById(R.id.bottom_bar_menu_item_img_badge);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(100, 100);
-        params.leftMargin=iconImageView.getLayoutParams().width;
-        params.bottomMargin=iconImageView.getLayoutParams().height;
-        badgeIcon.setLayoutParams(params);
-        */
-
-
-        badgeText = (TextView) findViewById(R.id.bottom_bar_menu_item_badge_text);
-        /*
-        RelativeLayout.LayoutParams params1 = new RelativeLayout.LayoutParams(100, 100);
-        params1.leftMargin=iconImageView.getLayoutParams().width-30;
-        params1.bottomMargin=iconImageView.getLayoutParams().height-15;
-        badgeText.setLayoutParams(params1);
-        badgeText.setText(""+badges);
-        */
-
-        if (badges <= 0) {
-            //badgeIcon.setVisibility(INVISIBLE);
-            badgeText.setVisibility(INVISIBLE);
-        }
-
-        titleTextView.setVisibility(INVISIBLE);
+        titleTextView.setVisibility(VISIBLE);
 
         selectBgColor = getResources().getColor(R.color.white);
         unselectBgColor = getResources().getColor(R.color.white);
@@ -106,7 +80,6 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
                 self.setScaleX(1.2f);
                 self.setScaleY(1.2f);
 
-                titleTextView.setVisibility(VISIBLE);
                 setBackgroundColor(selectBgColor);
                 fragmentViewPager.setCurrentItem(fragmentId,true);
                 ((Fragment) ((MainActivity.SectionsPagerAdapter)fragmentViewPager.getAdapter()).getItem(fragmentId)).onEntered();
@@ -116,14 +89,18 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
         });
     }
 
+    public void select() {
+        setBackgroundColor(selectBgColor);
+    }
+
+    public void unselect() {
+        setBackgroundColor(unselectBgColor);
+    }
+
     private void notifyOutsideListeners() {
         for (IOutsideTabClicked listener : listeners) {
             listener.outsideClick(tabId);
         }
-    }
-
-    public TextView getBadgeText() {
-        return badgeText;
     }
 
     public void addOutsideTabListener(IOutsideTabClicked listener) {
@@ -153,23 +130,11 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
         isFocused = false;
         this.setScaleY(1);
         this.setScaleX(1);
-        titleTextView.setVisibility(INVISIBLE);
         setBackgroundColor(unselectBgColor);
     }
 
     public int getBadges() {
         return badges;
-    }
-
-    public void setBadges(int badges) {
-        if (badges > 0) {
-            //badgeIcon.setVisibility(VISIBLE);
-            badgeText.setVisibility(VISIBLE);
-        }
-        if (badgeText != null) {
-            badgeText.setText("" +badges);
-        }
-        this.badges = badges;
     }
 
     public int getTabId() {
