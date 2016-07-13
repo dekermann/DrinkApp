@@ -64,7 +64,7 @@ public class TcpWriter implements IByteSerialization {
         int length = bytesBuffer.size() + 4;
         byte[] intBytes = ByteBuffer.allocate(4).putInt(length).array();
 
-        byte[] total = new byte[bytesBuffer.size()+intBytes.length];
+        byte[] total = new byte[length];
 
         for (int j = 0;j < intBytes.length;j++) {
             total[j] = intBytes[j];

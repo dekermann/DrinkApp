@@ -41,4 +41,28 @@ public class IncomingMatchForImage implements IPacket<IncomingMatchForImage> {
     public short getTag() {
         return IncomingMatchForImage.TAG;
     }
+
+    public int getMatchId() {
+        return matchId;
+    }
+
+    public void setMatchId(int matchId) {
+        this.matchId = matchId;
+    }
+
+    public int getDescriptorMatches() {
+        return descriptorMatches;
+    }
+
+    public void setDescriptorMatches(int descriptorMatches) {
+        this.descriptorMatches = descriptorMatches;
+    }
+
+    public float getMatchTime() {
+        return matchTime;
+    }
+
+    public void setMatchTime(float matchTime) {
+        this.matchTime = matchTime;
+    }
 }

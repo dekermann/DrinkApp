@@ -5,5 +5,5 @@ package softpatrol.drinkapp.network;
  */
 public interface ITcpResponse {
 
-    void reponse(IPacket packet);
+    void response(IPacket packet);
 }
