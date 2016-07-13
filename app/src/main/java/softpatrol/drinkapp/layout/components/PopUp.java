@@ -57,4 +57,10 @@ public class PopUp extends RelativeLayout {
     public void setParent(RelativeLayout parent) {
         this.parent = parent;
     }
+
+    public void close() {
+        parent.removeAllViews();
+        parent.setVisibility(View.GONE);
+        parent.invalidate();
+    }
 }
