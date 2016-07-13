@@ -59,8 +59,6 @@ public class ResultFragment extends Fragment {
     private ResultRecipeAdapter resultListAdapter;
 
     private TextView showingText;
-    private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle actionBarDrawerToggle;
 
     private AppCompatActivity activity;
 
@@ -83,7 +81,6 @@ public class ResultFragment extends Fragment {
         int fragmentId = getArguments().getInt(ARG_SECTION_NUMBER);
 
         View rootView = inflater.inflate(R.layout.fragment_result, container, false);
-        mDrawerLayout = (DrawerLayout) rootView;
 
         mRecycleView = (RecyclerView) rootView.findViewById(R.id.fragment_result_list);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext());
@@ -104,12 +101,6 @@ public class ResultFragment extends Fragment {
 
         activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(tb);
-        activity.getSupportActionBar().setHomeAsUpIndicator(R.drawable.menu);
-        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        activity.getSupportActionBar().setHomeButtonEnabled(true);
-
-        actionBarDrawerToggle = new ActionBarDrawerToggle(getActivity(),mDrawerLayout,tb,R.string.app_name,R.string.app_name);
-        mDrawerLayout.setDrawerListener(actionBarDrawerToggle);
         return rootView;
     }
 
