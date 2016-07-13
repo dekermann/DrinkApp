@@ -3,8 +3,7 @@ package softpatrol.drinkapp.network.packet;
 
 import java.io.IOException;
 
-import softpatrol.drinkapp.network.IPacket;
-import softpatrol.drinkapp.network.TcpReader;
+import softpatrol.drinkapp.network.io.TcpReader;
 
 /**
  * Created by root on 7/1/16.
@@ -25,7 +24,7 @@ public class IncomingMatchForImage implements IPacket<IncomingMatchForImage> {
 
     public IncomingMatchForImage(){}
 
-    public IncomingMatchForImage build(TcpReader tcpReader) {
+    public IncomingMatchForImage buildPacketFromReader(TcpReader tcpReader) {
         try {
             int descriptorMatches = tcpReader.readInt();
             int matchId = tcpReader.readInt();

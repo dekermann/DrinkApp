@@ -1,4 +1,4 @@
-package softpatrol.drinkapp.network;
+package softpatrol.drinkapp.network.io;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;

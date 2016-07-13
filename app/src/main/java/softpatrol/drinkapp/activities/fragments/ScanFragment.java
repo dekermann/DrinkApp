@@ -47,8 +47,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.googlecode.tesseract.android.TessBaseAPI;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -59,21 +57,18 @@ import java.util.HashMap;
 import java.util.List;
 
 import softpatrol.drinkapp.R;
-import softpatrol.drinkapp.activities.BaseActivity;
-import softpatrol.drinkapp.activities.RootActivity;
 import softpatrol.drinkapp.activities.fragments.stash.StashFragment;
 import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
 import softpatrol.drinkapp.network.Definitions;
-import softpatrol.drinkapp.network.IPacket;
+import softpatrol.drinkapp.network.packet.IPacket;
 import softpatrol.drinkapp.network.ITcpResponse;
 import softpatrol.drinkapp.network.TcpRequest;
 import softpatrol.drinkapp.network.packet.IncomingError;
 import softpatrol.drinkapp.network.packet.IncomingMatchForImage;
 import softpatrol.drinkapp.network.packet.OutgoingMatchForImage;
-import softpatrol.drinkapp.util.Debug;
 
 /**
  * David was here on 2016-06-08!

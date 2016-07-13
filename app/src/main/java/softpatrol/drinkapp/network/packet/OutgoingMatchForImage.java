@@ -1,9 +1,10 @@
 package softpatrol.drinkapp.network.packet;
 
-import softpatrol.drinkapp.network.IByteSerialization;
-import softpatrol.drinkapp.network.IPacket;
-import softpatrol.drinkapp.network.TcpReader;
-import softpatrol.drinkapp.network.TcpWriter;
+import softpatrol.drinkapp.network.io.ByteWrapper;
+import softpatrol.drinkapp.network.io.IByteSerialization;
+import softpatrol.drinkapp.network.io.ITcpWriter;
+import softpatrol.drinkapp.network.io.TcpReader;
+import softpatrol.drinkapp.network.io.TcpWriterNio;
 
 /**
  * Created by root on 7/1/16.
@@ -14,6 +15,8 @@ public class OutgoingMatchForImage implements IByteSerialization,IPacket<Outgoin
 
     private int width;
     private int height;
+
+    private final int BUFFER_SIZE = 1024*32;
 
     private byte[] imgData;
 
@@ -41,13 +44,13 @@ public class OutgoingMatchForImage implements IByteSerialization,IPacket<Outgoin
     }
 
     @Override
-    public byte[] toByteArray() {
-        TcpWriter tw = new TcpWriter();
+    public ByteWrapper pack() {
+        ITcpWriter tw = new TcpWriterNio(BUFFER_SIZE);
         tw.writeShort(OutgoingMatchForImage.TAG);
         tw.writeInt(width);
         tw.writeInt(height);
         tw.writeBytes(imgData);
-        return tw.toByteArray();
+        return tw.pack();
     }
 
     @Override
@@ -56,7 +59,7 @@ public class OutgoingMatchForImage implements IByteSerialization,IPacket<Outgoin
     }
 
     @Override
-    public OutgoingMatchForImage build(TcpReader reader) {
+    public OutgoingMatchForImage buildPacketFromReader(TcpReader reader) {
         throw new UnsupportedOperationException("The method is not implemented");
     }
 }

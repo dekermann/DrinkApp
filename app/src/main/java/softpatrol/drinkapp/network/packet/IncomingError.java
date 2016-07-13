@@ -3,8 +3,7 @@ package softpatrol.drinkapp.network.packet;
 
 import java.io.IOException;
 
-import softpatrol.drinkapp.network.IPacket;
-import softpatrol.drinkapp.network.TcpReader;
+import softpatrol.drinkapp.network.io.TcpReader;
 
 /**
  * Created by root on 7/1/16.
@@ -48,7 +47,7 @@ public class IncomingError implements IPacket<IncomingError> {
     }
 
     @Override
-    public IncomingError build(TcpReader reader) {
+    public IncomingError buildPacketFromReader(TcpReader reader) {
         try {
             short errorCode = reader.readShort();
             String msg = reader.readAll();

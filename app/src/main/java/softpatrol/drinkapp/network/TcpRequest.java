@@ -2,7 +2,6 @@ package softpatrol.drinkapp.network;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -11,6 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import softpatrol.drinkapp.R;
+import softpatrol.drinkapp.network.io.ByteWrapper;
+import softpatrol.drinkapp.network.io.IByteSerialization;
+import softpatrol.drinkapp.network.io.TcpReader;
+import softpatrol.drinkapp.network.packet.IPacket;
 import softpatrol.drinkapp.network.packet.IncomingError;
 import softpatrol.drinkapp.network.packet.IncomingMatchForImage;
 
@@ -46,11 +49,10 @@ public class TcpRequest extends AsyncTask<IByteSerialization, Void, Void> {
         try {
             Socket clientSocket = new Socket(ip,port);
 
+            IByteSerialization serializer = iByteSerializations[0];
+            ByteWrapper bytes = serializer.pack();
 
-            byte[] bb = iByteSerializations[0].toByteArray();
-
-
-            clientSocket.getOutputStream().write(iByteSerializations[0].toByteArray());
+            clientSocket.getOutputStream().write(bytes.bytes,0,bytes.pos);
             clientSocket.getOutputStream().flush();
 
             TcpReader tr = new TcpReader(new BufferedInputStream(clientSocket.getInputStream()));
@@ -61,7 +63,7 @@ public class TcpRequest extends AsyncTask<IByteSerialization, Void, Void> {
             if (packetBuilder == null) {
                 response.response(null);
             } else {
-                IPacket packet = packetBuilder.build(tr);
+                IPacket packet = packetBuilder.buildPacketFromReader(tr);
                 response.response(packet);
             }
         } catch (IOException e) {

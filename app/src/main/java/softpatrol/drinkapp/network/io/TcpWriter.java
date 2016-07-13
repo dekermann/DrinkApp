@@ -1,4 +1,4 @@
-package softpatrol.drinkapp.network;
+package softpatrol.drinkapp.network.io;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ import java.util.List;
 public class TcpWriter implements IByteSerialization {
 
     private List<Byte> bytesBuffer;
+    private ByteBuffer bb;
 
     public TcpWriter() {
         bytesBuffer = new ArrayList<Byte>();
@@ -60,7 +61,7 @@ public class TcpWriter implements IByteSerialization {
     }
 
     @Override
-    public byte[] toByteArray() {
+    public ByteWrapper pack() {
         int length = bytesBuffer.size() + 4;
         byte[] intBytes = ByteBuffer.allocate(4).putInt(length).array();
 
@@ -75,6 +76,6 @@ public class TcpWriter implements IByteSerialization {
         for (int i = dataStart;i < total.length;i++) {
             total[i] = bytesBuffer.get(i-dataStart);
         }
-        return total;
+        return new ByteWrapper(total,total.length-1);
     }
 }
