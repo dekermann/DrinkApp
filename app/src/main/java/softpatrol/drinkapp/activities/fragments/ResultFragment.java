@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -38,10 +39,12 @@ import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.database.models.ingredient.Ingredient;
 import softpatrol.drinkapp.database.models.recipe.Recipe;
 import softpatrol.drinkapp.database.models.stash.Stash;
+import softpatrol.drinkapp.layout.components.popups.FragmentFilter;
 import softpatrol.drinkapp.model.dto.ResultViewItem;
 import softpatrol.drinkapp.model.dto.SearchResult;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
+import softpatrol.drinkapp.model.event.EventCreatePopUp;
 import softpatrol.drinkapp.model.event.EventRecipeSearchComplete;
 
 /**
@@ -94,9 +97,17 @@ public class ResultFragment extends Fragment {
         showingText = (TextView) rootView.findViewById(R.id.fragment_result_showing);
         showingText.setText("No results found ...");
 
+        Button b = (Button) rootView.findViewById(R.id.fragment_result_toolbar_filter_btn);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentFilter ff = new FragmentFilter(getActivity());
+                EventBus.getDefault().post(new EventCreatePopUp(ff));
+            }
+        });
 
 
-        Toolbar tb = (Toolbar) rootView.findViewById(R.id.toolbar);
+        Toolbar tb = (Toolbar) rootView.findViewById(R.id.fragment_result_toolbar);
         tb.setTitle("Result");
 
         activity = (AppCompatActivity) getActivity();
