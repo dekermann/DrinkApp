@@ -150,11 +150,24 @@ public class RecipeTable {
         recipe.setName(cursor.getString(2));
         recipe.setBody(cursor.getString(3));
         recipe.setPictureId(cursor.getString(4));
-        recipe.setPartIngredients(decodePartIngredients(cursor.getString(5)));
-        recipe.setPartCategories(decodePartCategories(cursor.getString(6)));
+
+        String partIngreds = cursor.getString(5);
+        if (isStringData(partIngreds)) {
+            recipe.setPartIngredients(decodePartIngredients(partIngreds));
+        }
+
+        String partCats = cursor.getString(6);
+        if (isStringData(partCats)) {
+            recipe.setPartCategories(decodePartCategories(partCats));
+        }
+
         recipe.setCreatedAt(cursor.getLong(7));
         recipe.setLatestModification(cursor.getLong(8));
         return recipe;
+    }
+
+    private static boolean isStringData(String s) {
+        return s != null && !s.isEmpty() && !s.equals("");
     }
 
     private static String encodePartIngredients(ArrayList<PartIngredient> partIngredients) {

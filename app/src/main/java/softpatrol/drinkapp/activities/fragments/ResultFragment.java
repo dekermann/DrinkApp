@@ -42,6 +42,7 @@ import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.layout.components.popups.FragmentFilter;
 import softpatrol.drinkapp.model.dto.ResultViewItem;
 import softpatrol.drinkapp.model.dto.SearchResult;
+import softpatrol.drinkapp.model.dto.SearchResult2;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EventCreatePopUp;
@@ -152,43 +153,14 @@ public class ResultFragment extends Fragment {
         public void analyzeData(JSONObject result) throws Exception {
             JSONArray array = result.getJSONArray("data");
 
-            ArrayList<SearchResult> results = new ArrayList<>();
+            ArrayList<SearchResult2> results = new ArrayList<>();
 
             for (int i = 0; i < array.length();i++) {
                 JSONObject obj = (JSONObject) array.get(i);
-                SearchResult sr = new SearchResult();
-                sr.setRecipieId(obj.getInt("recipeId"));
-
-
-                JSONArray ingredientMatches = obj.getJSONArray("ingredientMatches");
-
-                for (int k = 0;k < ingredientMatches.length();k++) {
-                    sr.getIngredientMatches().add((Integer) ingredientMatches.get(k));
-                }
-
-
-                JSONArray ingredientNoMatches = obj.getJSONArray("ingredientNoMatches");
-
-                for (int k = 0;k < ingredientNoMatches.length();k++) {
-                    sr.getIngredientNoMatches().add((Integer) ingredientNoMatches.get(k));
-                }
-
-                JSONArray categoryMatches = obj.getJSONArray("categoryMatches");
-
-                for (int k = 0;k < categoryMatches.length();k++) {
-                    sr.getCategoryMatches().add((Integer) ingredientMatches.get(k));
-                }
-
-                JSONArray categoryNoMatches = obj.getJSONArray("categoryNoMatches");
-
-                for (int k = 0;k < categoryNoMatches.length();k++) {
-                    sr.getCategoryNoMatches().add((Integer) ingredientMatches.get(k));
-                }
-
+                SearchResult2 sr = SearchResult2.deserialize(obj);
                 results.add(sr);
             }
 
-            Collections.sort(results);
             EventBus.getDefault().post(new EventRecipeSearchComplete(results));
         }
     }
@@ -207,7 +179,7 @@ public class ResultFragment extends Fragment {
             TextView commentText;
             TextView percentText;
 
-            ProgressBar progressBar;
+
             public MyViewHolder(View itemView) {
                 super(itemView);
                 this.titleText = (TextView) itemView.findViewById(R.id.fragment_result_row_title_text);
@@ -238,9 +210,9 @@ public class ResultFragment extends Fragment {
 
 
             holder.titleText.setText(dataSet.get(listPosition).getRecipe().getName());
-            holder.percentText.setText((int)(dataSet.get(listPosition).getResult().matchPercent()*100) + "%");
+            holder.percentText.setText("0%");
             holder.commentText.setText("2 comments");
-            holder.likeText.setText("2 likeys");
+            holder.likeText.setText("2 likes");
         }
 
         public void addRecipe(ResultViewItem recipe) {
@@ -281,31 +253,18 @@ public class ResultFragment extends Fragment {
 
     @Subscribe
     public void onRecipeComplete(EventRecipeSearchComplete event) {
-        List<ResultViewItem> items = new ArrayList<ResultViewItem>();
+        List<ResultViewItem> items = new ArrayList<>();
         DatabaseHandler db = DatabaseHandler.getInstance(getContext());
 
-        for (SearchResult result : event.results) {
+        for (SearchResult2 result : event.results) {
             ResultViewItem item = new ResultViewItem();
 
-            Recipe recipe = db.getServerRecipe(result.getRecipieId());
-            item.setRecipe(recipe);
+            Recipe recipe = db.getServerRecipe(result.getRecipeId());
 
-            List<Ingredient> noIngredientMatches = new ArrayList<>();
-            for (Integer ingredientId : result.getIngredientNoMatches()) {
-                noIngredientMatches.add(db.getServerIngredient(ingredientId));
+            if (recipe != null) {
+                item.setRecipe(recipe);
+                items.add(item);
             }
-            item.setMissingIngredients(noIngredientMatches);
-
-            /*
-            List<Category> noCategoryMatches = new ArrayList<>();
-            for (Integer categoryId : result.getCategoryMatches()) {
-                noCategoryMatches.add(db);
-            }
-            item.setMissingIngredients(noMatches);
-            */
-
-            item.setResult(result);
-            items.add(item);
         }
         showingText.setText("Showing " + items.size() + " out of " + items.size() + " found recipes...");
         resultListAdapter.clearAddRecipes(items);
