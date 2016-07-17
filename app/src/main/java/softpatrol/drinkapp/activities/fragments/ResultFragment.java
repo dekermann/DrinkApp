@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import softpatrol.drinkapp.R;
-import softpatrol.drinkapp.activities.fragments.stash.StashFragment;
 import softpatrol.drinkapp.api.Analyzer;
 import softpatrol.drinkapp.api.Definitions;
 import softpatrol.drinkapp.api.Getter;

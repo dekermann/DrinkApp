@@ -1,9 +1,10 @@
-package softpatrol.drinkapp.activities.fragments.stash;
+package softpatrol.drinkapp.activities.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.activities.BaseActivity;
 import softpatrol.drinkapp.activities.RootActivity;
-import softpatrol.drinkapp.activities.fragments.Fragment;
 import softpatrol.drinkapp.api.Analyzer;
 import softpatrol.drinkapp.api.Definitions;
 import softpatrol.drinkapp.api.Getter;
@@ -127,10 +127,12 @@ public class StashFragment extends Fragment {
                             stashPopUp.bindStash(stash);
                             EventBus.getDefault().post(new EventCreatePopUp(stashPopUp));
                         }
-                        CURRENT_STASH = stash;
-                        CURRENT_STASH_ID = stash.getId();
-                        EventBus.getDefault().post(new ChangeCurrentStashEvent());
-                        updateView();
+                        else {
+                            CURRENT_STASH = stash;
+                            CURRENT_STASH_ID = stash.getId();
+                            EventBus.getDefault().post(new ChangeCurrentStashEvent());
+                            updateView();
+                        }
                     }
                 });
                 if (i % 2 == 1) {
@@ -157,9 +159,16 @@ public class StashFragment extends Fragment {
         nextBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("SAVE STASH!");
-                addStash();
-                updateView();
+                boolean add = true;
+                for(Stash stash : stashes) if(stash.getId() == CURRENT_STASH.getId()) {
+                    add = false;
+                }
+                if(add) {
+                    if(CURRENT_STASH.getIngredientsIds().size() != 0) {
+                        addStash();
+                        updateView();
+                    }
+                }
             }
         });
         if(stashes == null || stashes.size() % 2 == 0) {
@@ -177,7 +186,7 @@ public class StashFragment extends Fragment {
         //Fake load
         long serverId = 0;
         String pictureId = "picture0";
-        String name = CURRENT_STASH.getName();
+        String name = (CURRENT_STASH.getName().equals("") ? "New Stash" : CURRENT_STASH.getName());
         String ownerId = "Account1";
         String accessState = "private";
         long createdAt = System.currentTimeMillis();
@@ -262,6 +271,12 @@ public class StashFragment extends Fragment {
     /*
     * Messaging service between stuff
      */
+
+
+    @Subscribe
+    public void onCurrentStashEvent(ChangeCurrentStashEvent stashEvent) {
+        updateView();
+    }
 
     boolean somethingSelected = false;
     @Subscribe

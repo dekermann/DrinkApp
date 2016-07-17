@@ -57,7 +57,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import softpatrol.drinkapp.R;
-import softpatrol.drinkapp.activities.fragments.stash.StashFragment;
 import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
@@ -361,7 +360,9 @@ public class ScanFragment extends Fragment {
     boolean mTorch = false;
     private void torch() {
         mTorch = !mTorch;
-        mPreviewCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
+        try {
+            mPreviewCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
+        } catch (Exception e) { return; }
         if(mTorch) mPreviewCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_TORCH);
         else mPreviewCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF);
 
@@ -383,7 +384,7 @@ public class ScanFragment extends Fragment {
     private void clearList() {
         StashFragment.CURRENT_STASH = new Stash();
         StashFragment.CURRENT_STASH.setName("");
-        mCurrentStashName.setHint("New Stash!");
+        mCurrentStashName.setHint("New Stash");
         StashFragment.CURRENT_STASH_ID = -1;
         ((TestAdapter)mScannedItems.getAdapter()).clearItems();
         DatabaseHandler db = DatabaseHandler.getInstance(getContext());
@@ -919,8 +920,7 @@ public class ScanFragment extends Fragment {
 
     @Override
     public void onEntered() {
-        Log.d("ASLDKAJSLDJKLKASD", "ALSKJDLAKSJD");
         if(CurrentStashNameFocused) changeStashNameState();
-        mCurrentStashName.setHint("New Stash!");
+        mCurrentStashName.setHint("New Stash");
     }
 }

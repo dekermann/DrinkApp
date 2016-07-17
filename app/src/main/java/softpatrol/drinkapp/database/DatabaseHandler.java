@@ -108,14 +108,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public Stash getServerStash(long serverId) {
         return StashTable.getServerStash(this.getReadableDatabase(), serverId);
     }
+    public int deleteStash(Stash stash) {
+        return StashTable.deleteStash(this.getWritableDatabase(), stash.getId());
+    }
     public ArrayList<Stash> getAllStashes() {
         return StashTable.getAllStashes(this.getWritableDatabase());
     }
     public int updateStash(Stash stash) {
         return StashTable.updateStash(this.getWritableDatabase(), stash);
-    }
-    public void deleteStash(Stash stash) {
-        //TODO: Delete stash
     }
     /*    INGREDIENTS     */
     public void addIngredient(Ingredient ingredient) {

@@ -110,6 +110,11 @@ public class StashTable {
         return stash;
     }
 
+    public static int deleteStash(SQLiteDatabase db, long id) {
+        if (id == -1) return -1;
+        return db.delete(TABLE_STASHES, STASH_ID + "=" + id, null);
+    }
+
     public static ArrayList<Stash> getAllStashes(SQLiteDatabase db) {
         ArrayList<Stash> stashes = new ArrayList<>();
 

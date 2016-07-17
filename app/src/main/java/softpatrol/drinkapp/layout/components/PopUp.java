@@ -47,9 +47,7 @@ public class PopUp extends RelativeLayout {
         cancelButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                parent.removeAllViews();
-                parent.setVisibility(View.GONE);
-                parent.invalidate();
+                close();
             }
         });
     }

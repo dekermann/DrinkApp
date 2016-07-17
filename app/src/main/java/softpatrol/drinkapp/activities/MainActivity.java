@@ -23,13 +23,14 @@ import softpatrol.drinkapp.activities.fragments.MyPageFragment;
 import softpatrol.drinkapp.activities.fragments.ResultFragment;
 import softpatrol.drinkapp.activities.fragments.ScanFragment;
 import softpatrol.drinkapp.activities.fragments.SocialFragment;
-import softpatrol.drinkapp.activities.fragments.stash.StashFragment;
+import softpatrol.drinkapp.activities.fragments.StashFragment;
 import softpatrol.drinkapp.api.DataSynchronizer;
 import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.layout.components.BottomBarItem;
 import softpatrol.drinkapp.layout.components.CustomViewPager;
 import softpatrol.drinkapp.model.event.EventCreatePopUp;
 import softpatrol.drinkapp.model.event.EventRecipeSearchComplete;
+import softpatrol.drinkapp.model.event.EventSwapFragment;
 import softpatrol.drinkapp.util.Utils;
 
 /**
@@ -238,7 +239,7 @@ public class MainActivity extends BaseActivity {
     }
 
     @Subscribe
-    public void onPopUp(EventCreatePopUp event) {
+    public void onPopUp(final EventCreatePopUp event) {
         final RelativeLayout r = (RelativeLayout) findViewById(R.id.popup_main);
         r.setPadding(RootActivity.displayWidth / 10, RootActivity.displayHeight / 10, RootActivity.displayWidth / 10, RootActivity.displayHeight / 10);
         event.popUpLayout.setParent(r);
@@ -246,13 +247,17 @@ public class MainActivity extends BaseActivity {
         r.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                r.removeAllViews();
-                r.setVisibility(View.GONE);
-                r.invalidate();
+                event.popUpLayout.close();
             }
         });
         r.setVisibility(View.VISIBLE);
         r.invalidate();
+    }
+
+    @Subscribe
+    public void onSwapFragment(final EventSwapFragment event) {
+        mViewPager.setCurrentItem(event.fragmentId);
+
     }
 
     @Override

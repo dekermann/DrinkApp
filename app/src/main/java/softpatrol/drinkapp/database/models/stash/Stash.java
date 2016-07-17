@@ -1,10 +1,13 @@
 package softpatrol.drinkapp.database.models.stash;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 /**
  * David was here on 2016-06-08!
@@ -55,7 +58,7 @@ public class Stash {
         }
     }
 
-    public Stash() {}
+    public Stash() { this.id = -1; }
 
     @Override
     public String toString() {
@@ -118,6 +121,10 @@ public class Stash {
     public void addIngredientId(Long ingredient) {
         for(Long l : this.ingredientIds) if(l.equals(ingredient)) return;
         this.ingredientIds.add(ingredient);
+    }
+
+    public void removeIngredientId(Long ingredient) {
+        for(int i = 0;i<this.ingredientIds.size();i++) if(this.ingredientIds.get(i).equals(ingredient)) this.ingredientIds.remove(i);
     }
 
     public ArrayList<Long> getResultingDrinks() {
