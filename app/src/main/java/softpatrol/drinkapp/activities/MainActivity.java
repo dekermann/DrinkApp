@@ -28,6 +28,7 @@ import softpatrol.drinkapp.api.DataSynchronizer;
 import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.layout.components.BottomBarItem;
 import softpatrol.drinkapp.layout.components.CustomViewPager;
+import softpatrol.drinkapp.model.event.BottomBarEvent;
 import softpatrol.drinkapp.model.event.EventCreatePopUp;
 import softpatrol.drinkapp.model.event.EventRecipeSearchComplete;
 import softpatrol.drinkapp.model.event.EventSwapFragment;
@@ -162,7 +163,6 @@ public class MainActivity extends BaseActivity {
         bottomButtonScan.setCustomClickListener(mViewPager,2);
         bottomButtonScan.setSelectBgColor(getResources().getColor(R.color.Wheat));
         bottomButtonScan.setIconImageView(getResources().getDrawable(R.drawable.fragment_scan,null));
-        bottomButtonScan.select();
 
         bottomButtonRecipe = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_4);
         bottomButtonRecipe.setCustomClickListener(mViewPager,3);
@@ -175,11 +175,6 @@ public class MainActivity extends BaseActivity {
         bottomButtonSocial.setIconImageView(getResources().getDrawable(R.drawable.fragment_social,null));
 
 
-        bottomButtonHome.addOutsideTabListeners(bottomButtonStash, bottomButtonScan,bottomButtonRecipe,bottomButtonSocial);
-        bottomButtonStash.addOutsideTabListeners(bottomButtonHome, bottomButtonScan,bottomButtonRecipe,bottomButtonSocial);
-        bottomButtonScan.addOutsideTabListeners(bottomButtonHome,bottomButtonStash,bottomButtonRecipe,bottomButtonSocial);
-        bottomButtonRecipe.addOutsideTabListeners(bottomButtonHome,bottomButtonStash, bottomButtonScan,bottomButtonSocial);
-        bottomButtonSocial.addOutsideTabListeners(bottomButtonHome,bottomButtonStash, bottomButtonScan,bottomButtonRecipe);
     }
 
     @Override
@@ -259,21 +254,7 @@ public class MainActivity extends BaseActivity {
 
     @Subscribe
     public void onSwapFragment(final EventSwapFragment event) {
-        mViewPager.setCurrentItem(event.fragmentId);
-        switch(event.fragmentId) {
-            case 0:
-                break;
-            case 1:
-                break;
-            case 2:
-                bottomButtonScan.select();
-                break;
-            case 3:
-                bottomButtonScan.select();
-                break;
-            case 4:
-                break;
-        }
+        EventBus.getDefault().post(new BottomBarEvent(event.fragmentId,true));
     }
 
     @Override

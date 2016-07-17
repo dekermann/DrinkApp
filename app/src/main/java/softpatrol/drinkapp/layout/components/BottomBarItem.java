@@ -3,7 +3,6 @@ package softpatrol.drinkapp.layout.components;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.shapes.RectShape;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.View;
@@ -11,35 +10,35 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.activities.MainActivity;
+import softpatrol.drinkapp.model.event.BottomBarEvent;
 import softpatrol.drinkapp.activities.fragments.Fragment;
-
 
 /**
  * Created by root on 6/17/16.
  */
 public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked {
 
+    private String titleName = "";
+
     private TextView titleTextView;
     private ImageView iconImageView;
-    private int fragmentActivityId;
+    private ViewPager fragmentViewPager;
 
-    private String titleName = "";
-    private List<IOutsideTabClicked> listeners;
-
-    private int badges = 0;
-
+    private int tabId = -1;
+    private int fragmentId = -1;
     private boolean isFocused = false;
-    private int tabId = 0;
 
     private int selectBgColor,unselectBgColor;
 
     public BottomBarItem(Context context,AttributeSet aSet) {
         super(context,aSet);
+
+        EventBus.getDefault().register(this);
 
         TypedArray arr = context.obtainStyledAttributes(aSet, R.styleable.BottomBarItem);
         CharSequence titleName = arr.getString(R.styleable.BottomBarItem_name);
@@ -55,7 +54,6 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
 
         selectBgColor = getResources().getColor(R.color.white);
         unselectBgColor = getResources().getColor(R.color.white);
-        listeners = new ArrayList<>();
     }
 
     public void setTitleTextView(String titleTextView) {
@@ -73,49 +71,30 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
 
     public void setCustomClickListener(final ViewPager fragmentViewPager, final int fragmentId) {
         final BottomBarItem self = this;
-        fragmentActivityId = fragmentId;
+        this.fragmentId = fragmentId;
+        this.fragmentViewPager = fragmentViewPager;
 
         this.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                self.select();
-                fragmentViewPager.setCurrentItem(fragmentId,true);
-                ((Fragment) ((MainActivity.SectionsPagerAdapter)fragmentViewPager.getAdapter()).getItem(fragmentId)).onEntered();
+                EventBus.getDefault().post(new BottomBarEvent(self.fragmentId,true));
             }
         });
     }
 
-    public void select() {
+    private void select() {
         isFocused = true;
         setScaleX(1.2f);
         setScaleY(1.2f);
         setBackgroundColor(selectBgColor);
-        notifyOutsideListeners();
     }
 
-    public void unselect() {
+    private void unselect() {
         isFocused = false;
         setScaleX(1);
         setScaleY(1);
         setBackgroundColor(unselectBgColor);
     }
-
-    private void notifyOutsideListeners() {
-        for (IOutsideTabClicked listener : listeners) {
-            listener.outsideClick(tabId);
-        }
-    }
-
-    public void addOutsideTabListener(IOutsideTabClicked listener) {
-        listeners.add(listener);
-    }
-
-    public void addOutsideTabListeners(BottomBarItem ... newListeners) {
-        for (IOutsideTabClicked listener : newListeners) {
-            addOutsideTabListener(listener);
-        }
-    }
-
 
     public String getTitleName() {
         return titleName;
@@ -133,10 +112,6 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
         unselect();
     }
 
-    public int getBadges() {
-        return badges;
-    }
-
     public int getTabId() {
         return tabId;
     }
@@ -151,5 +126,27 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
 
     public void setSelectBgColor(int selectBgColor) {
         this.selectBgColor = selectBgColor;
+    }
+
+    @Subscribe
+    public void onEditStashEvent(BottomBarEvent event) {
+        if (event.id == this.fragmentId)  {
+            select();
+            if (event.changeFragment) {
+                fragmentViewPager.setCurrentItem(fragmentId,true);
+                ((Fragment) ((MainActivity.SectionsPagerAdapter)fragmentViewPager.getAdapter()).getItem(fragmentId)).onEntered();
+            }
+        } else {
+            unselect();
+        }
+    }
+
+    @Override
+    public boolean isFocused() {
+        return isFocused;
+    }
+
+    public void setFocused(boolean focused) {
+        isFocused = focused;
     }
 }
