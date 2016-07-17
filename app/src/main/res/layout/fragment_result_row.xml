@@ -60,17 +60,6 @@
                         android:layout_gravity="center_vertical"
                         android:id="@+id/fragment_result_row_title_text" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.2"
-                        android:textSize="12dp"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:gravity="right"
-                        android:text="100%"
-                        android:layout_gravity="center_vertical"
-                        android:id="@+id/fragment_result_row_title_percent" />
-
                 </LinearLayout>
 
                 <LinearLayout
@@ -94,7 +83,7 @@
                         android:textSize="12dp"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:layout_gravity="center_vertical"
-                        android:text="2 likes"
+                        android:text="2 "
                         android:id="@+id/fragment_result_row_like_text" />
                 </LinearLayout>
 
@@ -119,7 +108,7 @@
                         android:textSize="12dp"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:layout_gravity="center_vertical"
-                        android:text="2 likes"
+                        android:text="2 comments"
                         android:id="@+id/fragment_result_row_comments_text" />
                 </LinearLayout>
 

@@ -2,22 +2,18 @@ package softpatrol.drinkapp.activities.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -27,7 +23,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import softpatrol.drinkapp.R;
@@ -36,13 +31,12 @@ import softpatrol.drinkapp.api.Analyzer;
 import softpatrol.drinkapp.api.Definitions;
 import softpatrol.drinkapp.api.Getter;
 import softpatrol.drinkapp.database.DatabaseHandler;
-import softpatrol.drinkapp.database.models.ingredient.Ingredient;
 import softpatrol.drinkapp.database.models.recipe.Recipe;
 import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.layout.components.popups.FragmentFilter;
+import softpatrol.drinkapp.layout.components.popups.FragmentResult;
 import softpatrol.drinkapp.model.dto.ResultViewItem;
-import softpatrol.drinkapp.model.dto.SearchResult;
-import softpatrol.drinkapp.model.dto.SearchResult2;
+import softpatrol.drinkapp.model.dto.SearchResultSimple;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EventCreatePopUp;
@@ -153,11 +147,11 @@ public class ResultFragment extends Fragment {
         public void analyzeData(JSONObject result) throws Exception {
             JSONArray array = result.getJSONArray("data");
 
-            ArrayList<SearchResult2> results = new ArrayList<>();
+            ArrayList<SearchResultSimple> results = new ArrayList<>();
 
             for (int i = 0; i < array.length();i++) {
                 JSONObject obj = (JSONObject) array.get(i);
-                SearchResult2 sr = SearchResult2.deserialize(obj);
+                SearchResultSimple sr = SearchResultSimple.deserialize(obj);
                 results.add(sr);
             }
 
@@ -177,7 +171,8 @@ public class ResultFragment extends Fragment {
             TextView titleText;
             TextView likeText;
             TextView commentText;
-            TextView percentText;
+
+            ResultViewItem item;
 
 
             public MyViewHolder(View itemView) {
@@ -185,7 +180,30 @@ public class ResultFragment extends Fragment {
                 this.titleText = (TextView) itemView.findViewById(R.id.fragment_result_row_title_text);
                 this.likeText = (TextView) itemView.findViewById(R.id.fragment_result_row_like_text);
                 this.commentText = (TextView) itemView.findViewById(R.id.fragment_result_row_comments_text);
-                this.percentText = (TextView) itemView.findViewById(R.id.fragment_result_row_title_percent);
+
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (item != null) {
+                            SearchResultSimple srs = item.getResult();
+                            Recipe recipe = item.getRecipe();
+                            String title = recipe.getName();
+                            String body = recipe.getBody();
+                            FragmentResult fr = new FragmentResult(getActivity(),title,body,"Missing "+srs.getTotalMisses(),"Time: fast","Level: Novice",recipe.getPartCategories(),recipe.getPartIngredients());
+                            EventBus.getDefault().post(new EventCreatePopUp(fr));
+                        } else {
+                            Toast.makeText(getContext(),"Could not open recipe, not loaded",Toast.LENGTH_LONG);
+                        }
+                    }
+                });
+            }
+
+            public void setItem(ResultViewItem item) {
+                this.item = item;
+            }
+
+            public ResultViewItem getItem() {
+                return item;
             }
         }
 
@@ -199,19 +217,19 @@ public class ResultFragment extends Fragment {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.fragment_result_row, parent, false);
 
-            //view.setOnClickListener(MainActivity.myOnClickListener);
-
             MyViewHolder myViewHolder = new MyViewHolder(view);
             return myViewHolder;
         }
 
         @Override
         public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
+            ResultViewItem item = dataSet.get(listPosition);
+            holder.setItem(item);
+            SearchResultSimple sr2 = item.getResult();
 
-
+            int missing = sr2.getTotalMisses();
             holder.titleText.setText(dataSet.get(listPosition).getRecipe().getName());
-            holder.percentText.setText("0%");
-            holder.commentText.setText("2 comments");
+            holder.commentText.setText("Missing " + missing + " ingredient" + (missing == 1 ? "" : "s"));
             holder.likeText.setText("2 likes");
         }
 
@@ -256,13 +274,14 @@ public class ResultFragment extends Fragment {
         List<ResultViewItem> items = new ArrayList<>();
         DatabaseHandler db = DatabaseHandler.getInstance(getContext());
 
-        for (SearchResult2 result : event.results) {
+        for (SearchResultSimple result : event.results) {
             ResultViewItem item = new ResultViewItem();
 
             Recipe recipe = db.getServerRecipe(result.getRecipeId());
 
             if (recipe != null) {
                 item.setRecipe(recipe);
+                item.setResult(result);
                 items.add(item);
             }
         }

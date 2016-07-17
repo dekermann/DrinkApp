@@ -38,6 +38,18 @@ public class PartCategory {
         unitName = data[2];
     }
 
+    public String getUnitName() {
+        return unitName;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
     @Override
     public String toString() {
         return categoryName + "&&" + quantity + "&&" + unitName;

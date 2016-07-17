@@ -1,9 +1,5 @@
 package softpatrol.drinkapp.model.dto;
 
-import java.util.List;
-
-import softpatrol.drinkapp.database.models.ingredient.Category;
-import softpatrol.drinkapp.database.models.ingredient.Ingredient;
 import softpatrol.drinkapp.database.models.recipe.Recipe;
 
 /**
@@ -12,10 +8,8 @@ import softpatrol.drinkapp.database.models.recipe.Recipe;
 public class ResultViewItem {
 
     private Recipe recipe;
-    private SearchResult result;
+    private SearchResultSimple result;
 
-    private List<Ingredient> missingIngredients;
-    private List<Category> missingCategories;
 
     public Recipe getRecipe() {
         return recipe;
@@ -25,27 +19,11 @@ public class ResultViewItem {
         this.recipe = recipe;
     }
 
-    public List<Ingredient> getMissingIngredients() {
-        return missingIngredients;
-    }
-
-    public void setMissingIngredients(List<Ingredient> missingIngredients) {
-        this.missingIngredients = missingIngredients;
-    }
-
-    public List<Category> getMissingCategories() {
-        return missingCategories;
-    }
-
-    public void setMissingCategories(List<Category> missingCategories) {
-        this.missingCategories = missingCategories;
-    }
-
-    public SearchResult getResult() {
+    public SearchResultSimple getResult() {
         return result;
     }
 
-    public void setResult(SearchResult result) {
+    public void setResult(SearchResultSimple result) {
         this.result = result;
     }
 }

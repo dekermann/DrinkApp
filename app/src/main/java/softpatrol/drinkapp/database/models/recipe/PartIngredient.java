@@ -35,6 +35,18 @@ public class PartIngredient {
         unitName = data[2];
     }
 
+    public long getIngredientId() {
+        return ingredientServerId;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public String getUnitName() {
+        return unitName;
+    }
+
     @Override
     public String toString() {
         return ingredientServerId + "&&" + quantity + "&&" + unitName;

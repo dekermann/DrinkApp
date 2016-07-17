@@ -6,7 +6,7 @@ import org.json.JSONObject;
 /**
  * Created by root on 7/15/16.
  */
-public class SearchResult2 {
+public class SearchResultSimple {
 
     private int recipeId;
     private int totalMisses;
@@ -45,8 +45,8 @@ public class SearchResult2 {
         this.recipeId = recipeId;
     }
 
-    public static SearchResult2 deserialize(JSONObject obj) throws JSONException {
-        SearchResult2 sr = new SearchResult2();
+    public static SearchResultSimple deserialize(JSONObject obj) throws JSONException {
+        SearchResultSimple sr = new SearchResultSimple();
 
         sr.setRecipeId(obj.getInt("recipe_id"));
 

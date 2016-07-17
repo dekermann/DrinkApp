@@ -90,10 +90,17 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
     }
 
     public void select() {
+        isFocused = true;
+        setScaleX(1.2f);
+        setScaleY(1.2f);
         setBackgroundColor(selectBgColor);
+        notifyOutsideListeners();
     }
 
     public void unselect() {
+        isFocused = false;
+        setScaleX(1.0f);
+        setScaleY(1.0f);
         setBackgroundColor(unselectBgColor);
     }
 
