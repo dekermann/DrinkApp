@@ -26,6 +26,7 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
 
     private TextView titleTextView;
     private ImageView iconImageView;
+    private int fragmentActivityId;
 
     private String titleName = "";
     private List<IOutsideTabClicked> listeners;
@@ -72,6 +73,7 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
 
     public void setCustomClickListener(final ViewPager fragmentViewPager, final int fragmentId) {
         final BottomBarItem self = this;
+        fragmentActivityId = fragmentId;
 
         this.setOnClickListener(new OnClickListener() {
             @Override
@@ -99,8 +101,8 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
 
     public void unselect() {
         isFocused = false;
-        setScaleX(1.0f);
-        setScaleY(1.0f);
+        setScaleX(1);
+        setScaleY(1);
         setBackgroundColor(unselectBgColor);
     }
 
@@ -134,10 +136,7 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
 
     @Override
     public void outsideClick(int tabIndex) {
-        isFocused = false;
-        this.setScaleY(1);
-        this.setScaleX(1);
-        setBackgroundColor(unselectBgColor);
+        unselect();
     }
 
     public int getBadges() {
