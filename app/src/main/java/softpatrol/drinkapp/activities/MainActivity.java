@@ -55,6 +55,12 @@ public class MainActivity extends BaseActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private CustomViewPager mViewPager;
 
+    private BottomBarItem bottomButtonHome;
+    private BottomBarItem bottomButtonStash;
+    private BottomBarItem bottomButtonScan;
+    private BottomBarItem bottomButtonRecipe;
+    private BottomBarItem bottomButtonSocial;
+
     //Singleton
     private static MainActivity mainActivity;
     public static MainActivity getMain(){
@@ -63,9 +69,6 @@ public class MainActivity extends BaseActivity {
         }
         return mainActivity;
     }
-
-
-    private BottomBarItem resultBottomBarItem;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -145,38 +148,38 @@ public class MainActivity extends BaseActivity {
         mViewPager.setCurrentItem(2);
 
 
-        BottomBarItem bbTab1 = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_1);
-        bbTab1.setCustomClickListener(mViewPager,0);
-        bbTab1.setSelectBgColor(getResources().getColor(R.color.light_green));
-        bbTab1.setIconImageView(getResources().getDrawable(R.drawable.fragment_home,null));
+        bottomButtonHome = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_1);
+        bottomButtonHome.setCustomClickListener(mViewPager,0);
+        bottomButtonHome.setSelectBgColor(getResources().getColor(R.color.light_green));
+        bottomButtonHome.setIconImageView(getResources().getDrawable(R.drawable.fragment_home,null));
 
-        BottomBarItem bbTab2 = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_2);
-        bbTab2.setCustomClickListener(mViewPager,1);
-        bbTab2.setSelectBgColor(getResources().getColor(R.color.Thistle));
-        bbTab2.setIconImageView(getResources().getDrawable(R.drawable.search,null));
+        bottomButtonStash = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_2);
+        bottomButtonStash.setCustomClickListener(mViewPager,1);
+        bottomButtonStash.setSelectBgColor(getResources().getColor(R.color.Thistle));
+        bottomButtonStash.setIconImageView(getResources().getDrawable(R.drawable.search,null));
 
-        BottomBarItem bbTab3 = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_3);
-        bbTab3.setCustomClickListener(mViewPager,2);
-        bbTab3.setSelectBgColor(getResources().getColor(R.color.Wheat));
-        bbTab3.setIconImageView(getResources().getDrawable(R.drawable.fragment_scan,null));
-        bbTab3.select();
+        bottomButtonScan = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_3);
+        bottomButtonScan.setCustomClickListener(mViewPager,2);
+        bottomButtonScan.setSelectBgColor(getResources().getColor(R.color.Wheat));
+        bottomButtonScan.setIconImageView(getResources().getDrawable(R.drawable.fragment_scan,null));
+        bottomButtonScan.select();
 
-        resultBottomBarItem = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_4);
-        resultBottomBarItem.setCustomClickListener(mViewPager,3);
-        resultBottomBarItem.setSelectBgColor(getResources().getColor(R.color.PaleTurquoise));
-        resultBottomBarItem.setIconImageView(getResources().getDrawable(R.drawable.fragment_result,null));
+        bottomButtonRecipe = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_4);
+        bottomButtonRecipe.setCustomClickListener(mViewPager,3);
+        bottomButtonRecipe.setSelectBgColor(getResources().getColor(R.color.PaleTurquoise));
+        bottomButtonRecipe.setIconImageView(getResources().getDrawable(R.drawable.fragment_result,null));
 
-        BottomBarItem bbTab5 = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_5);
-        bbTab5.setCustomClickListener(mViewPager,4);
-        bbTab5.setSelectBgColor(getResources().getColor(R.color.light_yellow));
-        bbTab5.setIconImageView(getResources().getDrawable(R.drawable.fragment_social,null));
+        bottomButtonSocial = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_5);
+        bottomButtonSocial.setCustomClickListener(mViewPager,4);
+        bottomButtonSocial.setSelectBgColor(getResources().getColor(R.color.light_yellow));
+        bottomButtonSocial.setIconImageView(getResources().getDrawable(R.drawable.fragment_social,null));
 
 
-        bbTab1.addOutsideTabListeners(bbTab2,bbTab3,resultBottomBarItem,bbTab5);
-        bbTab2.addOutsideTabListeners(bbTab1,bbTab3,resultBottomBarItem,bbTab5);
-        bbTab3.addOutsideTabListeners(bbTab1,bbTab2,resultBottomBarItem,bbTab5);
-        resultBottomBarItem.addOutsideTabListeners(bbTab1,bbTab2,bbTab3,bbTab5);
-        bbTab5.addOutsideTabListeners(bbTab1,bbTab2,bbTab3,resultBottomBarItem);
+        bottomButtonHome.addOutsideTabListeners(bottomButtonStash, bottomButtonScan,bottomButtonRecipe,bottomButtonSocial);
+        bottomButtonStash.addOutsideTabListeners(bottomButtonHome, bottomButtonScan,bottomButtonRecipe,bottomButtonSocial);
+        bottomButtonScan.addOutsideTabListeners(bottomButtonHome,bottomButtonStash,bottomButtonRecipe,bottomButtonSocial);
+        bottomButtonRecipe.addOutsideTabListeners(bottomButtonHome,bottomButtonStash, bottomButtonScan,bottomButtonSocial);
+        bottomButtonSocial.addOutsideTabListeners(bottomButtonHome,bottomButtonStash, bottomButtonScan,bottomButtonRecipe);
     }
 
     @Override
@@ -257,7 +260,20 @@ public class MainActivity extends BaseActivity {
     @Subscribe
     public void onSwapFragment(final EventSwapFragment event) {
         mViewPager.setCurrentItem(event.fragmentId);
-
+        switch(event.fragmentId) {
+            case 0:
+                break;
+            case 1:
+                break;
+            case 2:
+                bottomButtonScan.select();
+                break;
+            case 3:
+                bottomButtonScan.select();
+                break;
+            case 4:
+                break;
+        }
     }
 
     @Override
