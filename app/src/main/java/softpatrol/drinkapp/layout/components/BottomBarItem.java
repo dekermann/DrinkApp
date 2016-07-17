@@ -78,15 +78,9 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
         this.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                isFocused = true;
-                self.setScaleX(1.2f);
-                self.setScaleY(1.2f);
-
-                setBackgroundColor(selectBgColor);
+                self.select();
                 fragmentViewPager.setCurrentItem(fragmentId,true);
                 ((Fragment) ((MainActivity.SectionsPagerAdapter)fragmentViewPager.getAdapter()).getItem(fragmentId)).onEntered();
-
-                self.notifyOutsideListeners();
             }
         });
     }
