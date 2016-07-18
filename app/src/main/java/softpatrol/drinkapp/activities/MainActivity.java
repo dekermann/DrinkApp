@@ -20,7 +20,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.activities.fragments.MyPageFragment;
-import softpatrol.drinkapp.activities.fragments.ResultFragment;
+import softpatrol.drinkapp.activities.fragments.result.ResultFragment;
 import softpatrol.drinkapp.activities.fragments.ScanFragment;
 import softpatrol.drinkapp.activities.fragments.SocialFragment;
 import softpatrol.drinkapp.activities.fragments.StashFragment;
@@ -28,7 +28,7 @@ import softpatrol.drinkapp.api.DataSynchronizer;
 import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.layout.components.BottomBarItem;
 import softpatrol.drinkapp.layout.components.CustomViewPager;
-import softpatrol.drinkapp.model.event.BottomBarEvent;
+import softpatrol.drinkapp.model.event.EventBottomBar;
 import softpatrol.drinkapp.model.event.EventCreatePopUp;
 import softpatrol.drinkapp.model.event.EventRecipeSearchComplete;
 import softpatrol.drinkapp.model.event.EventSwapFragment;
@@ -254,7 +254,7 @@ public class MainActivity extends BaseActivity {
 
     @Subscribe
     public void onSwapFragment(final EventSwapFragment event) {
-        EventBus.getDefault().post(new BottomBarEvent(event.fragmentId,true));
+        EventBus.getDefault().post(new EventBottomBar(event.fragmentId,true));
     }
 
     @Override

@@ -1,4 +1,4 @@
-package softpatrol.drinkapp.activities.fragments;
+package softpatrol.drinkapp.activities.fragments.result;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,12 +8,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -23,18 +21,23 @@ import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import softpatrol.drinkapp.R;
+import softpatrol.drinkapp.activities.fragments.Fragment;
+import softpatrol.drinkapp.activities.fragments.StashFragment;
 import softpatrol.drinkapp.api.Analyzer;
 import softpatrol.drinkapp.api.Definitions;
 import softpatrol.drinkapp.api.Getter;
 import softpatrol.drinkapp.database.DatabaseHandler;
+import softpatrol.drinkapp.database.models.ingredient.Ingredient;
 import softpatrol.drinkapp.database.models.recipe.Recipe;
 import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.layout.components.popups.FragmentFilter;
-import softpatrol.drinkapp.layout.components.popups.FragmentResult;
-import softpatrol.drinkapp.model.dto.ResultViewItem;
 import softpatrol.drinkapp.model.dto.SearchResultSimple;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
@@ -56,8 +59,9 @@ public class ResultFragment extends Fragment {
     private ResultRecipeAdapter resultListAdapter;
 
     private TextView showingText;
-
     private AppCompatActivity activity;
+
+    private Set<Long> latestSearchParams = new HashSet<>();
 
     public ResultFragment() {}
 
@@ -84,7 +88,7 @@ public class ResultFragment extends Fragment {
         mRecycleView.setLayoutManager(layoutManager);
         mRecycleView.setItemAnimator(new DefaultItemAnimator());
 
-        resultListAdapter = new ResultRecipeAdapter(new ArrayList<ResultViewItem>());
+        resultListAdapter = new ResultRecipeAdapter(new ArrayList<ResultViewItem>(),getContext());
         mRecycleView.setAdapter(resultListAdapter);
         mRecycleView.setHasFixedSize(true);
 
@@ -109,28 +113,8 @@ public class ResultFragment extends Fragment {
         return rootView;
     }
 
-
-
-    /*
-    * On stash change, do a search on the server
-     */
-    private void stashChange(Stash stash) {
-        if (stash.getIngredientsIds().size() > 0) {
-            // clear old list
-            //resultListAdapter.clear();
-            String strList = "";
-
-            for (int i = 0; i < stash.getIngredientsIds().size(); i++) {
-                strList += stash.getIngredientsIds().get(i);
-
-                if (i < stash.getIngredientsIds().size() - 1) {
-                    strList += ",";
-                }
-            }
-
-            NameValuePair nvp = new BasicNameValuePair("ingredientIds", strList);
-            new Getter(new ResultParser(this.getContext()), nvp).execute(Definitions.GET_SEARCH);
-        }
+    public Set<Long> getLatestSearchParams() {
+        return latestSearchParams;
     }
 
     /*
@@ -159,102 +143,6 @@ public class ResultFragment extends Fragment {
     }
 
     /*
-    * Adapter
-     */
-    class ResultRecipeAdapter extends RecyclerView.Adapter<ResultRecipeAdapter.MyViewHolder> {
-
-        private List<ResultViewItem> dataSet;
-
-        class MyViewHolder extends RecyclerView.ViewHolder {
-
-            TextView titleText;
-            TextView likeText;
-            TextView commentText;
-
-            ResultViewItem item;
-
-
-            public MyViewHolder(View itemView) {
-                super(itemView);
-                this.titleText = (TextView) itemView.findViewById(R.id.fragment_result_row_title_text);
-                this.likeText = (TextView) itemView.findViewById(R.id.fragment_result_row_like_text);
-                this.commentText = (TextView) itemView.findViewById(R.id.fragment_result_row_comments_text);
-
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (item != null) {
-                            SearchResultSimple srs = item.getResult();
-                            Recipe recipe = item.getRecipe();
-                            String title = recipe.getName();
-                            String body = recipe.getBody();
-                            FragmentResult fr = new FragmentResult(getActivity(),title,body,"Missing "+srs.getTotalMisses(),"Time: fast","Level: Novice",recipe.getPartCategories(),recipe.getPartIngredients());
-                            EventBus.getDefault().post(new EventCreatePopUp(fr));
-                        } else {
-                            Toast.makeText(getContext(),"Could not open recipe, not loaded",Toast.LENGTH_LONG);
-                        }
-                    }
-                });
-            }
-
-            public void setItem(ResultViewItem item) {
-                this.item = item;
-            }
-
-            public ResultViewItem getItem() {
-                return item;
-            }
-        }
-
-        public ResultRecipeAdapter(List<ResultViewItem> data) {
-            this.dataSet = data;
-        }
-
-        @Override
-        public MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                               int viewType) {
-            View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.fragment_result_row, parent, false);
-
-            MyViewHolder myViewHolder = new MyViewHolder(view);
-            return myViewHolder;
-        }
-
-        @Override
-        public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
-            ResultViewItem item = dataSet.get(listPosition);
-            holder.setItem(item);
-            SearchResultSimple sr2 = item.getResult();
-
-            int missing = sr2.getTotalMisses();
-            holder.titleText.setText(dataSet.get(listPosition).getRecipe().getName());
-            holder.commentText.setText("Missing " + missing + " ingredient" + (missing == 1 ? "" : "s"));
-            holder.likeText.setText("2 likes");
-        }
-
-        public void addRecipe(ResultViewItem recipe) {
-            dataSet.add(recipe);
-            notifyItemInserted(dataSet.size()-1);
-        }
-
-        public void clearAddRecipes(List<ResultViewItem> items) {
-            dataSet.clear();
-            dataSet.addAll(items);
-            notifyDataSetChanged();
-        }
-
-        public void clear() {
-            dataSet.clear();
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public int getItemCount() {
-            return dataSet.size();
-        }
-    }
-
-    /*
     * Messaging service between stuff
      */
 
@@ -266,6 +154,25 @@ public class ResultFragment extends Fragment {
     @Subscribe
     public void onEditStashEvent(EditCurrentStashEvent stashEvent) {
         stashChange(StashFragment.CURRENT_STASH);
+    }
+
+    private void stashChange(Stash stash) {
+        if (stash.getIngredientsIds().size() > 0) {
+            String strList = "";
+            latestSearchParams.clear();
+
+            for (int i = 0; i < stash.getIngredientsIds().size(); i++) {
+                strList += stash.getIngredientsIds().get(i);
+                latestSearchParams.add(stash.getIngredientsIds().get(i));
+
+                if (i < stash.getIngredientsIds().size() - 1) {
+                    strList += ",";
+                }
+            }
+
+            NameValuePair nvp = new BasicNameValuePair("ingredientIds", strList);
+            new Getter(new ResultParser(this.getContext()), nvp).execute(Definitions.GET_SEARCH);
+        }
     }
 
     @Subscribe
@@ -285,7 +192,7 @@ public class ResultFragment extends Fragment {
             }
         }
         showingText.setText("Showing " + items.size() + " out of " + items.size() + " found recipes...");
-        resultListAdapter.clearAddRecipes(items);
+        resultListAdapter.clearAndAddRecipes(items);
     }
 
     @Override

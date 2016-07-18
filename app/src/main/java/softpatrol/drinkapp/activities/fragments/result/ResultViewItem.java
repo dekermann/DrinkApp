@@ -1,6 +1,7 @@
-package softpatrol.drinkapp.model.dto;
+package softpatrol.drinkapp.activities.fragments.result;
 
 import softpatrol.drinkapp.database.models.recipe.Recipe;
+import softpatrol.drinkapp.model.dto.SearchResultSimple;
 
 /**
  * Created by root on 6/18/16.

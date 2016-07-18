@@ -15,7 +15,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.activities.MainActivity;
-import softpatrol.drinkapp.model.event.BottomBarEvent;
+import softpatrol.drinkapp.model.event.EventBottomBar;
 import softpatrol.drinkapp.activities.fragments.Fragment;
 
 /**
@@ -77,7 +77,7 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
         this.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                EventBus.getDefault().post(new BottomBarEvent(self.fragmentId,true));
+                EventBus.getDefault().post(new EventBottomBar(self.fragmentId,true));
             }
         });
     }
@@ -129,7 +129,7 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
     }
 
     @Subscribe
-    public void onEditStashEvent(BottomBarEvent event) {
+    public void onEditStashEvent(EventBottomBar event) {
         if (event.id == this.fragmentId)  {
             select();
             if (event.changeFragment) {
