@@ -17,7 +17,9 @@ import java.util.List;
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.database.models.recipe.PartCategory;
 import softpatrol.drinkapp.database.models.recipe.PartIngredient;
+import softpatrol.drinkapp.database.models.recipe.Recipe;
 import softpatrol.drinkapp.model.dto.PartWrapper;
+import softpatrol.drinkapp.model.dto.SearchResultSimple;
 
 /**
  * Created by root on 7/17/16.
@@ -56,51 +58,23 @@ public class PopupRecipe extends RelativeLayout {
 
 
         ingredientsList = (LinearLayout) findViewById(R.id.fragment_result_recipe_popup_ingredient_item);
+        SearchResultSimple srs = item.getResult();
+        Recipe r = item.getRecipe();
 
         for (PartCategory pc : item.getRecipe().getPartCategories()) {
-            PartWrapper pw = PartWrapper.create(pc,PartWrapper.MISSING);
+            PartWrapper pw = PartWrapper.create(pc,PartWrapper.ItemStatus.HAVE_IT);
+
             PopupRecipeItem pri = new PopupRecipeItem(getContext());
             pri.setPartWrapper(pw);
             ingredientsList.addView(pri);
         }
 
         for (PartIngredient pi : item.getRecipe().getPartIngredients()) {
-            PartWrapper pw = PartWrapper.create(pi,PartWrapper.MISSING);
+            PartWrapper pw = PartWrapper.create(pi,PartWrapper.ItemStatus.HAVE_IT);
             PopupRecipeItem pri = new PopupRecipeItem(getContext());
             pri.setPartWrapper(pw);
             ingredientsList.addView(pri);
         }
-
-
-        /*
-        LayoutInflater inflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        for (PartWrapper pw : partWrappers) {
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.setMargins(0,0,0,20);
-            LinearLayout itemLayout = (LinearLayout)inflater.inflate(R.layout.fragment_result_popup_ingredient_item,this,false);
-            itemLayout.setLayoutParams(lp);
-
-            ((TextView) itemLayout.findViewById(R.id.fragment_result_popup_ingredient_item_name)).setText(pw.name);
-            ((TextView) itemLayout.findViewById(R.id.fragment_result_popup_ingredient_item_extra)).setText(pw.quantity + " " + pw.unit);
-
-            ImageButton ib =  ((ImageButton) itemLayout.findViewById(R.id.fragment_result_popup_ingredient_item_img_shopping));
-
-            switch (pw.status) {
-                case PartWrapper.ADDED_TO_CART:
-                    break;
-                case PartWrapper.HAVE_IT:
-                    ib.setVisibility(View.INVISIBLE);
-                    itemLayout.setBackgroundColor(getResources().getColor(R.color.light_green));
-                    break;
-                case PartWrapper.MISSING:
-                    ib.setVisibility(View.VISIBLE);
-                    itemLayout.setBackgroundColor(getResources().getColor(R.color.LightPink));
-                    break;
-            }
-            ingredientsList.addView(itemLayout);
-        }
-        */
     }
 
     public TextView getLevel() {

@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.model.dto.PartWrapper;
+import softpatrol.drinkapp.model.dto.PartWrapper.ItemStatus;
 
 /**
  * Created by root on 7/18/16.
@@ -60,14 +61,14 @@ public class PopupRecipeItem extends LinearLayout {
         twUnitAndQuantity.setText(pw.quantity + " " + pw.type);
 
         switch(pw.status) {
-            case PartWrapper.ADDED_TO_CART:
+            case ADDED_TO_CART:
                 setBackgroundColor(getContext().getResources().getColor(R.color.light_green));
                 ibShoppingCart.setVisibility(View.GONE);
-            case PartWrapper.HAVE_IT:
+            case HAVE_IT:
                 setBackgroundColor(getContext().getResources().getColor(R.color.light_green));
                 ibShoppingCart.setVisibility(View.GONE);
                 break;
-            case PartWrapper.MISSING:
+            case MISSING:
                 setBackgroundColor(getContext().getResources().getColor(R.color.LightPink));
                 ibShoppingCart.setVisibility(View.VISIBLE);
                 break;
