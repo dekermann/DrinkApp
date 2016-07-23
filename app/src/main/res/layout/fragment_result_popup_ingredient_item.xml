@@ -3,7 +3,6 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:layout_marginBottom="20dp"
-    android:background="@color/gray"
     android:layout_width="match_parent">
 
 <RelativeLayout

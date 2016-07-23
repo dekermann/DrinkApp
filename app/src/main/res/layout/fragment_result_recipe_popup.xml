@@ -131,7 +131,7 @@
                             android:textSize="20sp" />
 
                         <Button
-                            android:id="@+id/fragment_result_popup_ingredient_missing_btn"
+                            android:id="@+id/fragment_result_recipe_popup_ingredient_missing_btn"
                             android:layout_width="70dp"
                             android:layout_height="30dp"
                             android:background="@color/LightPink"
@@ -141,9 +141,10 @@
 
 
                         <Button
+                            android:id="@+id/fragment_result_recipe_popup_all_btn"
                             android:layout_width="70dp"
                             android:layout_height="30dp"
-                            android:layout_toLeftOf="@id/fragment_result_popup_ingredient_missing_btn"
+                            android:layout_toLeftOf="@id/fragment_result_recipe_popup_ingredient_missing_btn"
                             android:textSize="12dp"
                             android:layout_marginRight="5dp"
                             android:background="@color/light_green"

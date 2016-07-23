@@ -74,4 +74,8 @@ public class PopupRecipeItem extends LinearLayout {
                 break;
         }
     }
+
+    public PartWrapper getPartWrapper() {
+        return partWrapper;
+    }
 }

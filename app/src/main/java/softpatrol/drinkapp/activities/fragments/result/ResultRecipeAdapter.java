@@ -15,8 +15,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.List;
 
 import softpatrol.drinkapp.R;
-import softpatrol.drinkapp.database.models.recipe.Recipe;
-import softpatrol.drinkapp.model.dto.SearchResultSimple;
+import softpatrol.drinkapp.model.dto.SearchResult;
 /**
  * Created by root on 7/17/16.
  */
@@ -88,7 +87,7 @@ class ResultRecipeAdapter extends RecyclerView.Adapter<ResultRecipeAdapter.MyVie
     public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
         ResultViewItem item = dataSet.get(listPosition);
         holder.setItem(item);
-        SearchResultSimple sr2 = item.getResult();
+        SearchResult sr2 = item.getResult();
 
         int missing = sr2.getTotalMisses();
         holder.titleText.setText(dataSet.get(listPosition).getRecipe().getName());

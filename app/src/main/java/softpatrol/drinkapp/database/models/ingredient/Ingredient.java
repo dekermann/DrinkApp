@@ -117,4 +117,14 @@ public class Ingredient {
     public void setLatestModification(long latestModification) {
         this.latestModification = latestModification;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Ingredient) {
+            Ingredient i = (Ingredient) o;
+            return i.serverId == this.serverId || i.name == this.name;
+        }
+
+        return false;
+    }
 }
