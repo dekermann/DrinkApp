@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import softpatrol.drinkapp.activities.RootActivity;
 import softpatrol.drinkapp.database.models.account.Account;
@@ -115,6 +116,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return StashTable.getAllStashes(this.getWritableDatabase());
     }
     public int updateStash(Stash stash) {
+        Log.d("STASHD", ": " + stash.getId());
         return StashTable.updateStash(this.getWritableDatabase(), stash);
     }
     /*    INGREDIENTS     */
