@@ -1,7 +1,7 @@
 package softpatrol.drinkapp.activities.fragments.result;
 
 import softpatrol.drinkapp.database.models.recipe.Recipe;
-import softpatrol.drinkapp.model.dto.SearchResultSimple;
+import softpatrol.drinkapp.model.dto.SearchResult;
 
 /**
  * Created by root on 6/18/16.
@@ -9,7 +9,7 @@ import softpatrol.drinkapp.model.dto.SearchResultSimple;
 public class ResultViewItem {
 
     private Recipe recipe;
-    private SearchResultSimple result;
+    private SearchResult result;
 
 
     public Recipe getRecipe() {
@@ -20,11 +20,11 @@ public class ResultViewItem {
         this.recipe = recipe;
     }
 
-    public SearchResultSimple getResult() {
+    public SearchResult getResult() {
         return result;
     }
 
-    public void setResult(SearchResultSimple result) {
+    public void setResult(SearchResult result) {
         this.result = result;
     }
 }

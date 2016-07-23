@@ -4,20 +4,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
  * Created by root on 7/15/16.
  */
-public class SearchResultSimple {
+public class SearchResult {
 
     private int recipeId;
     private int totalMisses;
     private Set<Integer> categoryHits;
     private Set<Integer> ingredMisses;
+    private Set<Integer> categoryMisses;
 
     public int getTotalMisses() {
         return totalMisses;
@@ -35,8 +34,8 @@ public class SearchResultSimple {
         this.recipeId = recipeId;
     }
 
-    public static SearchResultSimple deserialize(JSONObject obj) throws JSONException {
-        SearchResultSimple sr = new SearchResultSimple();
+    public static SearchResult deserialize(JSONObject obj) throws JSONException {
+        SearchResult sr = new SearchResult();
 
         sr.setRecipeId(obj.getInt("recipeId"));
         sr.setTotalMisses(obj.getInt("totalMisses"));
@@ -76,5 +75,13 @@ public class SearchResultSimple {
 
     public void setIngredMisses(Set<Integer> ingredMisses) {
         this.ingredMisses = ingredMisses;
+    }
+
+    public Set<Integer> getCategoryMisses() {
+        return categoryMisses;
+    }
+
+    public void setCategoryMisses(Set<Integer> categoryMisses) {
+        this.categoryMisses = categoryMisses;
     }
 }

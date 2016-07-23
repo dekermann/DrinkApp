@@ -35,7 +35,7 @@ import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.database.models.recipe.Recipe;
 import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.layout.components.popups.FragmentFilter;
-import softpatrol.drinkapp.model.dto.SearchResultSimple;
+import softpatrol.drinkapp.model.dto.SearchResult;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EventCreatePopUp;
@@ -127,11 +127,11 @@ public class ResultFragment extends Fragment {
         public void analyzeData(JSONObject result) throws Exception {
             JSONArray array = result.getJSONArray("data");
 
-            ArrayList<SearchResultSimple> results = new ArrayList<>();
+            ArrayList<SearchResult> results = new ArrayList<>();
 
             for (int i = 0; i < array.length();i++) {
                 JSONObject obj = (JSONObject) array.get(i);
-                SearchResultSimple sr = SearchResultSimple.deserialize(obj);
+                SearchResult sr = SearchResult.deserialize(obj);
                 results.add(sr);
             }
 
@@ -177,7 +177,10 @@ public class ResultFragment extends Fragment {
         List<ResultViewItem> items = new ArrayList<>();
         DatabaseHandler db = DatabaseHandler.getInstance(getContext());
 
-        for (SearchResultSimple result : event.results) {
+        /*
+        * Iterate over the search results and add them together with their respective recipe
+         */
+        for (SearchResult result : event.results) {
             ResultViewItem item = new ResultViewItem();
 
             Recipe recipe = db.getServerRecipe(result.getRecipeId());
