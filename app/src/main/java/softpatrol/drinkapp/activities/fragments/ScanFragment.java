@@ -1,7 +1,9 @@
 package softpatrol.drinkapp.activities.fragments;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -26,10 +28,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.test.suitebuilder.annotation.Suppress;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -58,6 +62,7 @@ import java.util.List;
 
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.database.DatabaseHandler;
+import softpatrol.drinkapp.database.models.ingredient.Ingredient;
 import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
@@ -90,22 +95,26 @@ public class ScanFragment extends Fragment {
     private TextureView.SurfaceTextureListener mSurfaceTextureListener =
             new TextureView.SurfaceTextureListener() {
                 long lastUpdate = 0;
+
                 @Override
                 public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
                     setupCamera(width, height);
-                    if(mCameraId != null)openCamera();
+                    if (mCameraId != null) openCamera();
                 }
+
                 @Override
                 public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
 
                 }
+
                 @Override
                 public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
                     return false;
                 }
+
                 @Override
                 public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-                    if(AnalyzeInProgress) return;
+                    if (AnalyzeInProgress) return;
                     lastUpdate = System.currentTimeMillis();
 
                     AnalyzeInProgress = true;
@@ -117,11 +126,12 @@ public class ScanFragment extends Fragment {
                             outgoingMatchForImage.setHeight(bm.getHeight());
                             outgoingMatchForImage.setWidth(bm.getWidth());
                             //TODO: Dont convert to grayscale like this ffs
-                            byte[] bytes = new byte[bm.getHeight()*bm.getWidth()];
-                            for(int y = 0;y<bm.getHeight();y++) for(int x = 0;x<bm.getWidth();x++) {
-                                byte value = (byte) (((bm.getPixel(x,y) & 0x000000FF)*0.1114)+(((bm.getPixel(x,y)>>8) & 0x000000FF)*0.587)+(((bm.getPixel(x,y)>>16) & 0x000000FF)*0.299));
-                                bytes[y*bm.getWidth()+x] = (byte) (value & 0x000000FF);
-                            }
+                            byte[] bytes = new byte[bm.getHeight() * bm.getWidth()];
+                            for (int y = 0; y < bm.getHeight(); y++)
+                                for (int x = 0; x < bm.getWidth(); x++) {
+                                    byte value = (byte) (((bm.getPixel(x, y) & 0x000000FF) * 0.1114) + (((bm.getPixel(x, y) >> 8) & 0x000000FF) * 0.587) + (((bm.getPixel(x, y) >> 16) & 0x000000FF) * 0.299));
+                                    bytes[y * bm.getWidth() + x] = (byte) (value & 0x000000FF);
+                                }
                             //TODO: Dont convert to grayscale like this ffs
                             outgoingMatchForImage.setImgData(bytes);
 
@@ -137,18 +147,18 @@ public class ScanFragment extends Fragment {
                                 @Override
                                 public void response(IPacket packet) {
                                     if (packet == null) {
-                                        Log.d("network","error sending tcp request");
+                                        Log.d("network", "error sending tcp request");
                                     } else if (packet.getTag() == IncomingError.TAG) {
                                         IncomingError error = (IncomingError) packet;
                                         System.out.println(error.getMsg());
-                                    }  else {
+                                    } else {
                                         IncomingMatchForImage imfi = (IncomingMatchForImage) packet;
 
                                         if (imfi.getMatchId() != 0) {
-                                            Log.d("network","Found match with ingredient id = " + imfi.getMatchId());
-                                            Log.d("network","Match time = " + imfi.getMatchTime() + " seconds");
+                                            Log.d("network", "Found match with ingredient id = " + imfi.getMatchId());
+                                            Log.d("network", "Match time = " + imfi.getMatchTime() + " seconds");
                                         } else {
-                                            Log.d("network","No match was found :(");
+                                            Log.d("network", "No match was found :(");
                                         }
                                     }
                                 }
@@ -174,9 +184,9 @@ public class ScanFragment extends Fragment {
         CameraManager cameraManager = (CameraManager) getActivity().getSystemService(Context.CAMERA_SERVICE);
 
         try {
-            for(String cameraId : cameraManager.getCameraIdList()) {
+            for (String cameraId : cameraManager.getCameraIdList()) {
                 CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
-                if(cameraCharacteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK) {
+                if (cameraCharacteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK) {
                     StreamConfigurationMap map = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                     mPreviewSize = getPreferredPreviewSize(map.getOutputSizes(SurfaceTexture.class), width, height);
                     mCameraId = cameraId;
@@ -190,13 +200,14 @@ public class ScanFragment extends Fragment {
 
     private Size getPreferredPreviewSize(Size[] mapSizes, int width, int height) {
         List<Size> collectedSizes = new ArrayList<>();
-        for(Size option : mapSizes) {
-            if(width > height) {
-                if(option.getWidth() > width && option.getHeight() > height) collectedSizes.add(option);
-            }
-            else if(option.getWidth() > height && option.getHeight() > width) collectedSizes.add(option);
+        for (Size option : mapSizes) {
+            if (width > height) {
+                if (option.getWidth() > width && option.getHeight() > height)
+                    collectedSizes.add(option);
+            } else if (option.getWidth() > height && option.getHeight() > width)
+                collectedSizes.add(option);
         }
-        if(collectedSizes.size() > 0) {
+        if (collectedSizes.size() > 0) {
             return Collections.min(collectedSizes, new Comparator<Size>() {
                 @Override
                 public int compare(Size lhs, Size rhs) {
@@ -216,12 +227,14 @@ public class ScanFragment extends Fragment {
                     createCameraPreviewSession();
                     Toast.makeText(getContext(), "Camera Opened", Toast.LENGTH_SHORT).show();
                 }
+
                 @Override
                 public void onDisconnected(@NonNull CameraDevice camera) {
                     camera.close();
                     mCameraDevice = null;
                     Toast.makeText(getContext(), "Camera Disconnected", Toast.LENGTH_SHORT).show();
                 }
+
                 @Override
                 public void onError(@NonNull CameraDevice camera, int error) {
                     camera.close();
@@ -233,6 +246,16 @@ public class ScanFragment extends Fragment {
     private void openCamera() {
         CameraManager cameraManager = (CameraManager) getActivity().getSystemService(Context.CAMERA_SERVICE);
         try {
+            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
             cameraManager.openCamera(mCameraId, mCameraDeviceCallback, mBackgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -389,7 +412,7 @@ public class ScanFragment extends Fragment {
         ((TestAdapter)mScannedItems.getAdapter()).clearItems();
         DatabaseHandler db = DatabaseHandler.getInstance(getContext());
         for(long l : StashFragment.CURRENT_STASH.getIngredientsIds()) {
-            ((TestAdapter)mScannedItems.getAdapter()).addItems(db.getIngredient(l).getName());
+            ((TestAdapter)mScannedItems.getAdapter()).addItems(db.getIngredient(l));
         }
         mCurrentStashName.setText(StashFragment.CURRENT_STASH.getName());
         EventBus.getDefault().post(new EditCurrentStashEvent());
@@ -449,7 +472,7 @@ public class ScanFragment extends Fragment {
         setUpRecyclerView();
         DatabaseHandler db = DatabaseHandler.getInstance(getContext());
         for(long l : StashFragment.CURRENT_STASH.getIngredientsIds()) {
-            ((TestAdapter)mScannedItems.getAdapter()).addItems(db.getIngredient(l).getName());
+            ((TestAdapter)mScannedItems.getAdapter()).addItems(db.getIngredient(l));
         }
 
         final ImageView torch = (ImageView) rootView.findViewById(R.id.torch);
@@ -479,7 +502,7 @@ public class ScanFragment extends Fragment {
                     //FAKE ADD
                     long fakeId = (long) (Math.random()*10) + 1;
                     //Debug.debugMessage((BaseActivity) getActivity(), "FOUND INGREDIENT " + fakeId + ": " + DatabaseHandler.getInstance(getContext()).getServerIngredient(fakeId).getName());
-                    ((TestAdapter)mScannedItems.getAdapter()).addItems(DatabaseHandler.getInstance(getContext()).getServerIngredient(fakeId).getName());
+                    ((TestAdapter)mScannedItems.getAdapter()).addItems(DatabaseHandler.getInstance(getContext()).getServerIngredient(fakeId));
                     StashFragment.CURRENT_STASH.addIngredientId(fakeId);
                     EventBus.getDefault().post(new EditCurrentStashEvent());
                 }
@@ -769,12 +792,12 @@ public class ScanFragment extends Fragment {
 
         private static final int PENDING_REMOVAL_TIMEOUT = 3000; // 3sec
 
-        List<String> items;
-        List<String> itemsPendingRemoval;
+        List<Ingredient> items;
+        List<Ingredient> itemsPendingRemoval;
         boolean undoOn; // is undo on, you can turn it on from the toolbar menu
 
         private Handler handler = new Handler(); // hanlder for running delayed runnables
-        HashMap<String, Runnable> pendingRunnables = new HashMap<>(); // map of items to pending runnables, so we can cancel a removal if need be
+        HashMap<Ingredient, Runnable> pendingRunnables = new HashMap<>(); // map of items to pending runnables, so we can cancel a removal if need be
 
         public TestAdapter() {
             items = new ArrayList<>();
@@ -789,7 +812,7 @@ public class ScanFragment extends Fragment {
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             TestViewHolder viewHolder = (TestViewHolder)holder;
-            final String item = items.get(position);
+            final String item = items.get(position).getName();
 
             if (itemsPendingRemoval.contains(item)) {
                 // we need to show the "undo" state of the row
@@ -811,10 +834,10 @@ public class ScanFragment extends Fragment {
         /**
          *  Utility method to add some rows for testing purposes. You can add rows from the toolbar menu.
          */
-        public void addItems(String name) {
-            Log.d("ADAPTED", "Adding item: " + name);
-            for(String scannedItem : items) if(scannedItem.equals(name)) return; //Can only scan same type once
-            items.add(0, name);
+        public void addItems(Ingredient ingredient) {
+            Log.d("ADAPTED", "Adding item: " + ingredient.getName());
+            for(Ingredient scannedItem : items) if(scannedItem.getServerId() == ingredient.getServerId()) return; //Can only scan same type once
+            items.add(0, ingredient);
             if(listIsAtTop()) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -825,6 +848,9 @@ public class ScanFragment extends Fragment {
                 });
             }
             else notifyItemInserted(0);
+            StashFragment.CURRENT_STASH.addIngredientId(ingredient.getId());
+            DatabaseHandler db = DatabaseHandler.getInstance(getContext());
+            db.updateStash(StashFragment.CURRENT_STASH);
         }
 
         public void clearItems() {
@@ -843,7 +869,7 @@ public class ScanFragment extends Fragment {
         }
 
         public void pendingRemoval(int position) {
-            final String item = items.get(position);
+            final Ingredient item = items.get(position);
             if (!itemsPendingRemoval.contains(item)) {
                 itemsPendingRemoval.add(item);
                 // this will redraw row in "undo" state
@@ -861,18 +887,21 @@ public class ScanFragment extends Fragment {
         }
 
         public void remove(int position) {
-            String item = items.get(position);
+            Ingredient item = items.get(position);
             if (itemsPendingRemoval.contains(item)) {
                 itemsPendingRemoval.remove(item);
             }
             if (items.contains(item)) {
                 items.remove(position);
+                StashFragment.CURRENT_STASH.removeIngredientId(item.getServerId());
                 notifyItemRemoved(position);
+                DatabaseHandler db = DatabaseHandler.getInstance(getContext());
+                db.updateStash(StashFragment.CURRENT_STASH);
             }
         }
 
         public boolean isPendingRemoval(int position) {
-            String item = items.get(position);
+            Ingredient item = items.get(position);
             return itemsPendingRemoval.contains(item);
         }
     }
@@ -901,7 +930,7 @@ public class ScanFragment extends Fragment {
         ((TestAdapter)mScannedItems.getAdapter()).clearItems();
         DatabaseHandler db = DatabaseHandler.getInstance(getContext());
         for(long l : StashFragment.CURRENT_STASH.getIngredientsIds()) {
-            ((TestAdapter)mScannedItems.getAdapter()).addItems(db.getIngredient(l).getName());
+            ((TestAdapter)mScannedItems.getAdapter()).addItems(db.getIngredient(l));
         }
         mCurrentStashName.setText(StashFragment.CURRENT_STASH.getName());
     }

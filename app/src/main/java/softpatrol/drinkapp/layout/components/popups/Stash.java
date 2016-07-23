@@ -76,7 +76,7 @@ public class Stash extends PopUp {
         this.edit.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                defaultClose();
+                close();
                 EventBus.getDefault().post(new EventSwapFragment(2));
             }
         });
@@ -109,7 +109,7 @@ public class Stash extends PopUp {
         this.search.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                defaultClose();
+                close();
                 EventBus.getDefault().post(new EventSwapFragment(3));
             }
         });

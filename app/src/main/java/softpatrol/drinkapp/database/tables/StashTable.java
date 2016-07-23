@@ -3,10 +3,12 @@ package softpatrol.drinkapp.database.tables;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import softpatrol.drinkapp.database.models.ingredient.Ingredient;
 import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.util.Utils;
 
@@ -140,6 +142,9 @@ public class StashTable {
         values.put(STASH_PICTURE_ID, stash.getPictureId());
         values.put(STASH_NAME, stash.getName());
         values.put(STASH_OWNER_ID, stash.getOwnerId());
+        for(long i : stash.getIngredientsIds()) {
+            Log.d("STASHD", "id: " + i);
+        }
         values.put(STASH_INGREDIENTS_IDS, Utils.concatenate(stash.getIngredientsIds()));
         values.put(STASH_RECIPE_IDS, Utils.concatenate(stash.getResultingDrinks()));
         values.put(STASH_ACCESS_STATE, stash.getAccessState());

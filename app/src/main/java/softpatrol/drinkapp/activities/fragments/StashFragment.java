@@ -119,17 +119,17 @@ public class StashFragment extends Fragment {
                 nextBox.addView(stashView);
                 final int finalI = i;
                 nextBox.setOnClickListener(new View.OnClickListener() {
-                    private Stash stash = stashes.get(finalI);
                     @Override
                     public void onClick(View v) {
-                        if(CURRENT_STASH_ID == stash.getId()) {
+                        if(CURRENT_STASH_ID == stashes.get(finalI).getId()) {
                             softpatrol.drinkapp.layout.components.popups.Stash stashPopUp = new softpatrol.drinkapp.layout.components.popups.Stash(getContext());
-                            stashPopUp.bindStash(stash);
+                            stashPopUp.bindStash(CURRENT_STASH);
                             EventBus.getDefault().post(new EventCreatePopUp(stashPopUp));
                         }
                         else {
-                            CURRENT_STASH = stash;
-                            CURRENT_STASH_ID = stash.getId();
+                            DatabaseHandler db = DatabaseHandler.getInstance(getContext());
+                            CURRENT_STASH_ID = stashes.get(finalI).getId();
+                            CURRENT_STASH = db.getStash(CURRENT_STASH_ID);
                             EventBus.getDefault().post(new ChangeCurrentStashEvent());
                             updateView();
                         }
@@ -203,6 +203,7 @@ public class StashFragment extends Fragment {
         db.addStash(CURRENT_STASH);
 
         CURRENT_STASH_ID = db.getStash(name).getId();
+        CURRENT_STASH.setId(CURRENT_STASH_ID);
 
         JSONObject postParameters = new JSONObject();
         try {

@@ -20,6 +20,6 @@ public class PopupFilter extends RelativeLayout{
         inflate(getContext(), R.layout.fragment_result_filter_popup,this);
 
         layoutCategoryList = (GridView) findViewById(R.id.fragment_result_filter_include_categories);
-        
+
     }
 }
