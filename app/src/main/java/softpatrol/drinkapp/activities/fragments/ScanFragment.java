@@ -33,7 +33,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.test.suitebuilder.annotation.Suppress;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -61,6 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import softpatrol.drinkapp.R;
+import softpatrol.drinkapp.activities.fragments.stash.StashFragment;
 import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.database.models.ingredient.Ingredient;
 import softpatrol.drinkapp.database.models.stash.Stash;

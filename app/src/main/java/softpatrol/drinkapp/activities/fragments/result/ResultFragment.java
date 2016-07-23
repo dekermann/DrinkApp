@@ -21,20 +21,17 @@ import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.activities.fragments.Fragment;
-import softpatrol.drinkapp.activities.fragments.StashFragment;
+import softpatrol.drinkapp.activities.fragments.stash.StashFragment;
 import softpatrol.drinkapp.api.Analyzer;
 import softpatrol.drinkapp.api.Definitions;
 import softpatrol.drinkapp.api.Getter;
 import softpatrol.drinkapp.database.DatabaseHandler;
-import softpatrol.drinkapp.database.models.ingredient.Ingredient;
 import softpatrol.drinkapp.database.models.recipe.Recipe;
 import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.layout.components.popups.FragmentFilter;

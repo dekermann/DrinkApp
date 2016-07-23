@@ -23,7 +23,7 @@ import softpatrol.drinkapp.activities.fragments.MyPageFragment;
 import softpatrol.drinkapp.activities.fragments.result.ResultFragment;
 import softpatrol.drinkapp.activities.fragments.ScanFragment;
 import softpatrol.drinkapp.activities.fragments.SocialFragment;
-import softpatrol.drinkapp.activities.fragments.StashFragment;
+import softpatrol.drinkapp.activities.fragments.stash.StashFragment;
 import softpatrol.drinkapp.api.DataSynchronizer;
 import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.layout.components.BottomBarItem;

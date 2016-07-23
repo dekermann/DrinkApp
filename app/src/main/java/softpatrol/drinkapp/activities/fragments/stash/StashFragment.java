@@ -1,15 +1,18 @@
-package softpatrol.drinkapp.activities.fragments;
+package softpatrol.drinkapp.activities.fragments.stash;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -22,6 +25,7 @@ import java.util.ArrayList;
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.activities.BaseActivity;
 import softpatrol.drinkapp.activities.RootActivity;
+import softpatrol.drinkapp.activities.fragments.Fragment;
 import softpatrol.drinkapp.api.Analyzer;
 import softpatrol.drinkapp.api.Definitions;
 import softpatrol.drinkapp.api.Getter;
@@ -31,7 +35,6 @@ import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.layout.components.StashView;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
-import softpatrol.drinkapp.model.event.EventCreatePopUp;
 import softpatrol.drinkapp.util.Debug;
 
 /**
@@ -122,9 +125,20 @@ public class StashFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         if(CURRENT_STASH_ID == stashes.get(finalI).getId()) {
-                            softpatrol.drinkapp.layout.components.popups.Stash stashPopUp = new softpatrol.drinkapp.layout.components.popups.Stash(getContext());
-                            stashPopUp.bindStash(CURRENT_STASH);
-                            EventBus.getDefault().post(new EventCreatePopUp(stashPopUp));
+                            final PopUpStash popUpStash = new PopUpStash(getContext(),CURRENT_STASH);
+
+                            Dialog d = new MaterialDialog.Builder(getContext())
+                                    .customView(popUpStash,false)
+                                    .positiveColor(getContext().getResources().getColor(R.color.DarkGreen))
+                                    .positiveText("Close")
+                                    .show();
+                            d.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialogInterface) {
+                                    popUpStash.close();
+                                }
+                            });
+                            popUpStash.bindDialog(d);
                         }
                         else {
                             DatabaseHandler db = DatabaseHandler.getInstance(getContext());

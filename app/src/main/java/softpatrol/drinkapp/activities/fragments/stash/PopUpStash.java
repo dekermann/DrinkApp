@@ -1,6 +1,7 @@
-package softpatrol.drinkapp.layout.components.popups;
+package softpatrol.drinkapp.activities.fragments.stash;
 
 
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -19,7 +20,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import softpatrol.drinkapp.R;
-import softpatrol.drinkapp.activities.fragments.StashFragment;
+import softpatrol.drinkapp.activities.fragments.stash.StashFragment;
 import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.database.models.ingredient.Ingredient;
 import softpatrol.drinkapp.layout.components.PopUp;
@@ -41,24 +41,25 @@ import softpatrol.drinkapp.model.event.EventSwapFragment;
  * Created by MonsterMaskinen on 2016-06-08.
  */
 
-public class Stash extends PopUp {
+public class PopUpStash extends RelativeLayout {
     private TextView name;
     private Button edit;
     private Button share;
     private Button search;
     private Button delete;
+    private Dialog parent;
+    private boolean deleted = false;
     public RecyclerView stash_item_list;
     softpatrol.drinkapp.database.models.stash.Stash stash;
 
-    public Stash(Context context) {
+    public PopUpStash(Context context, softpatrol.drinkapp.database.models.stash.Stash stash) {
         super(context);
         init();
+        bindStash(stash);
     }
 
     private void init() {
-        LayoutInflater inflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View menuLayout = inflater.inflate(R.layout.popup_stash, this, false);
-        ((RelativeLayout) findViewById(R.id.popup_content)).addView(menuLayout);
+        inflate(getContext(),R.layout.popup_stash,this);
         this.name = (TextView)findViewById(R.id.name);
         this.edit = (Button)findViewById(R.id.edit);
         edit.setOnTouchListener(new OnTouchListener() {
@@ -76,7 +77,7 @@ public class Stash extends PopUp {
         this.edit.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                close();
+                parent.dismiss();
                 EventBus.getDefault().post(new EventSwapFragment(2));
             }
         });
@@ -109,7 +110,7 @@ public class Stash extends PopUp {
         this.search.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                close();
+                parent.dismiss();
                 EventBus.getDefault().post(new EventSwapFragment(3));
             }
         });
@@ -133,7 +134,8 @@ public class Stash extends PopUp {
                 Log.d("DELETE STASH", "RETURNS: " + db.deleteStash(stash));
                 StashFragment.CURRENT_STASH = new softpatrol.drinkapp.database.models.stash.Stash();
                 EventBus.getDefault().post(new ChangeCurrentStashEvent());
-                defaultClose();
+                deleted = true;
+                parent.dismiss();
             }
         });
         this.stash_item_list  = (RecyclerView) findViewById(R.id.stash_item_list);
@@ -150,17 +152,13 @@ public class Stash extends PopUp {
         }
 
     }
-    public void defaultClose() {
-        super.close();
-    }
-
-    @Override
     public void close() {
-        DatabaseHandler db = DatabaseHandler.getInstance(getContext());
-        db.updateStash(stash);
-        StashFragment.CURRENT_STASH = stash;
+        if(!deleted) {
+            DatabaseHandler db = DatabaseHandler.getInstance(getContext());
+            db.updateStash(stash);
+            StashFragment.CURRENT_STASH = stash;
+        }
         EventBus.getDefault().post(new ChangeCurrentStashEvent());
-        super.close();
     }
 
     public void setName(String string) {
@@ -351,6 +349,8 @@ public class Stash extends PopUp {
 
         });
     }
+
+    public void bindDialog(Dialog d) { parent = d; }
 
     /**
      * RecyclerView adapter enabling undo on a swiped away item.
