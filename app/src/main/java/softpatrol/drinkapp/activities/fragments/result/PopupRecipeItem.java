@@ -8,8 +8,6 @@ import android.widget.TextView;
 
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.model.dto.PartWrapper;
-import softpatrol.drinkapp.model.dto.PartWrapper.ItemStatus;
-
 /**
  * Created by root on 7/18/16.
  */

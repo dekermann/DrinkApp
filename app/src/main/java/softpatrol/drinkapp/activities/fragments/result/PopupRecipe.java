@@ -9,19 +9,26 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import softpatrol.drinkapp.R;
+import softpatrol.drinkapp.api.Analyzer;
 import softpatrol.drinkapp.database.models.recipe.PartCategory;
 import softpatrol.drinkapp.database.models.recipe.PartIngredient;
 import softpatrol.drinkapp.database.models.recipe.Recipe;
 import softpatrol.drinkapp.model.dto.PartWrapper;
 import softpatrol.drinkapp.model.dto.SearchResult;
+import softpatrol.drinkapp.model.event.EventRecipe;
 
 /**
  * Created by root on 7/17/16.
  */
 public class PopupRecipe extends RelativeLayout {
 
-    private TextView title;
+    private TextView textViewTitle;
     private ImageView imgViewTitle;
     private TextView txtViewBody;
     private LinearLayout layoutIngredientsList;
@@ -31,27 +38,49 @@ public class PopupRecipe extends RelativeLayout {
     private Button btnShowAll;
     private Button btnShowMissing;
 
-    public PopupRecipe(Context context, ResultViewItem item) {
+    private SearchResult latestSearchResult;
+
+    public PopupRecipe(Context context, SearchResult item) {
         super(context);
-        init(item);
+        init();
+        this.latestSearchResult = item;
     }
 
-    private void init(ResultViewItem item) {
+    public PopupRecipe(Context context,SearchResult item,Recipe recipe) {
+        super(context);
+        init();
+        this.latestSearchResult = item;
+    }
+
+    public void populateGui(SearchResult result,Recipe recipe) {
+        textViewTitle.setText(recipe.getName());
+        txtViewBody.setText(recipe.getBody());
+
+        // Loop over all parts and check what is missing or added in the cart
+        for (PartIngredient pi : recipe.getPartIngredients()) {
+
+        }
+
+        for (PartCategory pc : recipe.getPartCategories()) {
+
+        }
+    }
+
+    public void close() {
+        EventBus.getDefault().unregister(this);
+    }
+
+    private void init() {
         final PopupRecipe self = this;
 
         inflate(getContext(),R.layout.fragment_result_recipe_popup,this);
 
         imgViewTitle = (ImageView) findViewById(R.id.fragment_result_recipe_popup_image);
         txtViewBody = (TextView) findViewById(R.id.fragment_result_recipe_popup_body);
-        txtViewBody.setText(item.getRecipe().getBody());
-        title = (TextView) findViewById(R.id.fragment_result_recipe_popup_title);
-        title.setText(item.getRecipe().getName());
+        textViewTitle = (TextView) findViewById(R.id.fragment_result_recipe_popup_title);
         txtViewMissing = (TextView) findViewById(R.id.fragment_result_recipe_popup_missing);
-        txtViewMissing.setText(item.getResult().getTotalMisses() + "");
         txtViewTime = (TextView) findViewById(R.id.fragment_result_recipe_popup_time);
-        txtViewTime.setText("10 min");
         txtViewLevel = (TextView) findViewById(R.id.fragment_result_recipe_popup_level);
-        txtViewLevel.setText("Novice");
 
         btnShowAll = (Button) findViewById(R.id.fragment_result_recipe_popup_all_btn);
         btnShowAll.setOnClickListener(new OnClickListener() {
@@ -71,24 +100,11 @@ public class PopupRecipe extends RelativeLayout {
 
 
         layoutIngredientsList = (LinearLayout) findViewById(R.id.fragment_result_recipe_popup_ingredient_item);
-        SearchResult srs = item.getResult();
-        Recipe r = item.getRecipe();
 
-        for (PartCategory pc : item.getRecipe().getPartCategories()) {
-            PartWrapper pw = PartWrapper.create(pc,PartWrapper.ItemStatus.HAVE_IT);
-
-            PopupRecipeItem pri = new PopupRecipeItem(getContext());
-            pri.setPartWrapper(pw);
-            layoutIngredientsList.addView(pri);
-        }
-
-        for (PartIngredient pi : item.getRecipe().getPartIngredients()) {
-            PartWrapper pw = PartWrapper.create(pi,PartWrapper.ItemStatus.HAVE_IT);
-            PopupRecipeItem pri = new PopupRecipeItem(getContext());
-            pri.setPartWrapper(pw);
-            layoutIngredientsList.addView(pri);
-        }
+        EventBus.getDefault().register(this);
     }
+
+
 
     private void iteratePopupRecipeItem(PopupRecipeItemIterate iterate) {
         int length = layoutIngredientsList.getChildCount();
@@ -165,15 +181,33 @@ public class PopupRecipe extends RelativeLayout {
         this.imgViewTitle = imgViewTitle;
     }
 
-    public TextView getTitle() {
-        return title;
+    public TextView getTextViewTitle() {
+        return textViewTitle;
     }
 
-    public void setTitle(TextView title) {
-        this.title = title;
+    public void setTextViewTitle(TextView textViewTitle) {
+        this.textViewTitle = textViewTitle;
     }
 
     private interface PopupRecipeItemIterate {
         void onPopupRecipeItem(PopupRecipeItem item);
+    }
+
+    class ResultParser extends Analyzer {
+
+        public ResultParser(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void analyzeData(JSONObject result) throws Exception {
+            JSONArray array = result.getJSONArray("data");
+            EventBus.getDefault().post(new EventRecipe(null));
+        }
+    }
+
+    @Subscribe
+    public void onRecipeData(EventRecipe event) {
+        populateGui(latestSearchResult,event.recipe);
     }
 }

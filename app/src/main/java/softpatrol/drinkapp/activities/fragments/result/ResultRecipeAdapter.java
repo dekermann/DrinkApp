@@ -21,7 +21,7 @@ import softpatrol.drinkapp.model.dto.SearchResult;
  */
 class ResultRecipeAdapter extends RecyclerView.Adapter<ResultRecipeAdapter.MyViewHolder> {
 
-    private List<ResultViewItem> dataSet;
+    private List<SearchResult> dataSet;
     private Context ctx;
 
     class MyViewHolder extends RecyclerView.ViewHolder {
@@ -30,7 +30,7 @@ class ResultRecipeAdapter extends RecyclerView.Adapter<ResultRecipeAdapter.MyVie
         TextView likeText;
         TextView commentText;
 
-        ResultViewItem item;
+        SearchResult item;
 
 
         public MyViewHolder(View itemView, final Context ctx) {
@@ -59,16 +59,16 @@ class ResultRecipeAdapter extends RecyclerView.Adapter<ResultRecipeAdapter.MyVie
             });
         }
 
-        public void setItem(ResultViewItem item) {
+        public void setItem(SearchResult item) {
             this.item = item;
         }
 
-        public ResultViewItem getItem() {
+        public SearchResult getItem() {
             return item;
         }
     }
 
-    public ResultRecipeAdapter(List<ResultViewItem> data,Context ctx) {
+    public ResultRecipeAdapter(List<SearchResult> data,Context ctx) {
         this.dataSet = data;
         this.ctx = ctx;
     }
@@ -85,22 +85,20 @@ class ResultRecipeAdapter extends RecyclerView.Adapter<ResultRecipeAdapter.MyVie
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int listPosition) {
-        ResultViewItem item = dataSet.get(listPosition);
+        SearchResult item = dataSet.get(listPosition);
         holder.setItem(item);
-        SearchResult sr2 = item.getResult();
 
-        int missing = sr2.getTotalMisses();
-        holder.titleText.setText(dataSet.get(listPosition).getRecipe().getName());
-        holder.commentText.setText("Missing " + missing + " ingredient" + (missing == 1 ? "" : "s"));
+        holder.titleText.setText(item.getName());
+        holder.commentText.setText("Missing " + item.getTotalMisses() + " ingredient" + (item.getTotalMisses() == 1 ? "" : "s"));
         holder.likeText.setText("2 likes");
     }
 
-    public void addRecipe(ResultViewItem recipe) {
+    public void addRecipe(SearchResult recipe) {
         dataSet.add(recipe);
         notifyItemInserted(dataSet.size()-1);
     }
 
-    public void clearAndAddRecipes(List<ResultViewItem> items) {
+    public void clearAndAddRecipes(List<SearchResult> items) {
         dataSet.clear();
         dataSet.addAll(items);
         notifyDataSetChanged();

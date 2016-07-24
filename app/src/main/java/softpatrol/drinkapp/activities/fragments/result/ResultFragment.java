@@ -85,7 +85,7 @@ public class ResultFragment extends Fragment {
         mRecycleView.setLayoutManager(layoutManager);
         mRecycleView.setItemAnimator(new DefaultItemAnimator());
 
-        resultListAdapter = new ResultRecipeAdapter(new ArrayList<ResultViewItem>(),getContext());
+        resultListAdapter = new ResultRecipeAdapter(new ArrayList<SearchResult>(),getContext());
         mRecycleView.setAdapter(resultListAdapter);
         mRecycleView.setHasFixedSize(true);
 
@@ -174,25 +174,8 @@ public class ResultFragment extends Fragment {
 
     @Subscribe
     public void onRecipeComplete(EventRecipeSearchComplete event) {
-        List<ResultViewItem> items = new ArrayList<>();
-        DatabaseHandler db = DatabaseHandler.getInstance(getContext());
-
-        /*
-        * Iterate over the search results and add them together with their respective recipe
-         */
-        for (SearchResult result : event.results) {
-            ResultViewItem item = new ResultViewItem();
-
-            Recipe recipe = db.getServerRecipe(result.getRecipeId());
-
-            if (recipe != null) {
-                item.setRecipe(recipe);
-                item.setResult(result);
-                items.add(item);
-            }
-        }
-        showingText.setText("Showing " + items.size() + " out of " + items.size() + " found recipes...");
-        resultListAdapter.clearAndAddRecipes(items);
+        showingText.setText("Showing " + event.results.size() + " out of " + event.results.size() + " found recipes...");
+        resultListAdapter.clearAndAddRecipes(event.results);
     }
 
     @Override

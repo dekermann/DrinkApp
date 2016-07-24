@@ -12,6 +12,7 @@ import java.util.Set;
  */
 public class SearchResult {
 
+    private String name;
     private int recipeId;
     private int totalMisses;
     private Set<Integer> categoryHits;
@@ -39,6 +40,7 @@ public class SearchResult {
 
         sr.setRecipeId(obj.getInt("recipeId"));
         sr.setTotalMisses(obj.getInt("totalMisses"));
+        sr.setName(obj.getString("name"));
 
         // Set ingredient misses
         HashSet<Integer> ingredMisses = new HashSet<>();
@@ -83,5 +85,13 @@ public class SearchResult {
 
     public void setCategoryMisses(Set<Integer> categoryMisses) {
         this.categoryMisses = categoryMisses;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
