@@ -1,6 +1,5 @@
 package softpatrol.drinkapp.api;
 
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Pair;
@@ -9,9 +8,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
@@ -27,20 +23,15 @@ public class Getter extends AsyncTask<String, Void, ResponsePair> {
 
     private Analyzer analyzer;
     private ArrayList<Pair<String, String>> headers;
-    private JSONObject postParameters;
 
-    private List<NameValuePair> nvps;
+    private List<NameValuePair> urlParameters;
 
-    public Getter(Analyzer analyzer, JSONObject postParameters, ArrayList<Pair<String, String>> headers) {
+
+    public Getter(Analyzer analyzer, ArrayList<Pair<String, String>> headers) {
         this.analyzer = analyzer;
-        this.postParameters = postParameters;
         this.headers = headers;
     }
 
-    public Getter(Analyzer analyzer, JSONObject postParameters) {
-        this.analyzer = analyzer;
-        this.postParameters = postParameters;
-    }
 
     public Getter(Analyzer analyzer) {
         this.analyzer = analyzer;
@@ -48,14 +39,22 @@ public class Getter extends AsyncTask<String, Void, ResponsePair> {
 
     public Getter(Analyzer analyzer, List<NameValuePair> nvps) {
         this.analyzer = analyzer;
-        this.nvps = nvps;
+        this.urlParameters = nvps;
     }
 
     public Getter(Analyzer analyzer,NameValuePair nvp) {
         this.analyzer = analyzer;
-        this.nvps = new ArrayList<>();
-        this.nvps.add(nvp);
+        this.urlParameters = new ArrayList<>();
+        this.urlParameters.add(nvp);
     }
+
+    public Getter(Analyzer analyzer,NameValuePair nvp,ArrayList<Pair<String, String>> headers) {
+        this.analyzer = analyzer;
+        this.headers = headers;
+        this.urlParameters = new ArrayList<>();
+        this.urlParameters.add(nvp);
+    }
+
 
     @Override
     protected ResponsePair doInBackground(String... params) {
@@ -73,24 +72,18 @@ public class Getter extends AsyncTask<String, Void, ResponsePair> {
         try {
             //TODO: WTF happened to multipartEntityBuilder?
 
-            //if(postParameters != null) httpPostRequest.setEntity(new StringEntity(postParameters.toString(), "UTF8"));
-            if(postParameters != null) {
-                Log.d("NEXTWORK: ", postParameters.toString());
-            }
-
-            if (nvps != null) {
+            if (urlParameters != null) {
                 String url = httpGetRequest.getURI().toASCIIString();
 
-                for (int i = 0;i < nvps.size();i++) {
+                for (int i = 0; i < urlParameters.size(); i++) {
                     if (i == 0) {
                         url += "?";
                     }
-                    url += nvps.get(i).toString();
-                    if (i < nvps.size()-1) {
+                    url += urlParameters.get(i).toString();
+                    if (i < urlParameters.size()-1) {
                         url += "&";
                     }
                 }
-                System.out.println(url);
                 httpGetRequest.setURI(URI.create(url));
             }
             //if(postParameters != null) httpPostRequest.setEntity(new UrlEncodedFormEntity(postParameters));

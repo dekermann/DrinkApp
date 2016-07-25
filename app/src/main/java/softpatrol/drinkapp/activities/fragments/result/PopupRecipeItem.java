@@ -56,7 +56,7 @@ public class PopupRecipeItem extends LinearLayout {
     public void setPartWrapper(PartWrapper pw) {
         this.partWrapper = pw;
         twName.setText(pw.name);
-        twUnitAndQuantity.setText(pw.quantity + " " + pw.type);
+        twUnitAndQuantity.setText(pw.quantity + " " + pw.unit);
 
         switch(pw.status) {
             case ADDED_TO_CART:

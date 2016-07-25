@@ -17,7 +17,6 @@ public class SearchResult {
     private int totalMisses;
     private Set<Integer> categoryHits;
     private Set<Integer> ingredMisses;
-    private Set<Integer> categoryMisses;
 
     public int getTotalMisses() {
         return totalMisses;
@@ -77,14 +76,6 @@ public class SearchResult {
 
     public void setIngredMisses(Set<Integer> ingredMisses) {
         this.ingredMisses = ingredMisses;
-    }
-
-    public Set<Integer> getCategoryMisses() {
-        return categoryMisses;
-    }
-
-    public void setCategoryMisses(Set<Integer> categoryMisses) {
-        this.categoryMisses = categoryMisses;
     }
 
     public String getName() {

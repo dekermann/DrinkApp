@@ -77,7 +77,7 @@ public class StashFragment extends Fragment {
             headers.add(new Pair<>("Content-Type", "application/json"));
             DatabaseHandler db = DatabaseHandler.getInstance(getContext());
             headers.add(new Pair<>("Authorization", db.getAccount(DatabaseHandler.getCurrentAccount(getContext())).getToken()));
-            new Getter(new SynchronizeStash(getActivity()), null, headers).execute(Definitions.GET_STASH);
+            new Getter(new SynchronizeStash(getActivity()), headers).execute(Definitions.GET_STASH);
         }
         this.rootView = rootView;
         CURRENT_STASH.setName("New Stash!");

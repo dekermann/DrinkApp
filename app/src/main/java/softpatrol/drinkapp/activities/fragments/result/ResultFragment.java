@@ -7,6 +7,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,6 +92,10 @@ public class ResultFragment extends Fragment {
 
         showingText = (TextView) rootView.findViewById(R.id.fragment_result_showing);
         showingText.setText("No results found ...");
+            ArrayList<Pair<String, String>> headers = new ArrayList<>();
+            headers.add(new Pair<>("Content-Type", "application/json"));
+            DatabaseHandler db = DatabaseHandler.getInstance(getContext());
+            headers.add(new Pair<>("Authorization", db.getAccount(DatabaseHandler.getCurrentAccount(getContext())).getToken()));
 
         Button b = (Button) rootView.findViewById(R.id.fragment_result_toolbar_filter_btn);
         b.setOnClickListener(new View.OnClickListener() {
@@ -168,7 +173,13 @@ public class ResultFragment extends Fragment {
             }
 
             NameValuePair nvp = new BasicNameValuePair("ingredientIds", strList);
-            new Getter(new ResultParser(this.getContext()), nvp).execute(Definitions.GET_SEARCH);
+
+            ArrayList<Pair<String, String>> headers = new ArrayList<>();
+            headers.add(new Pair<>("Content-Type", "application/json"));
+            DatabaseHandler db = DatabaseHandler.getInstance(getContext());
+            headers.add(new Pair<>("Authorization", db.getAccount(DatabaseHandler.getCurrentAccount(getContext())).getToken()));
+
+            new Getter(new ResultParser(this.getContext()), nvp,headers).execute(Definitions.GET_SEARCH);
         }
     }
 

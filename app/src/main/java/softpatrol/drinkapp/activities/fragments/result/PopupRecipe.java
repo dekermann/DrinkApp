@@ -11,11 +11,12 @@ import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.api.Analyzer;
+import softpatrol.drinkapp.api.Definitions;
+import softpatrol.drinkapp.api.Getter;
 import softpatrol.drinkapp.database.models.recipe.PartCategory;
 import softpatrol.drinkapp.database.models.recipe.PartIngredient;
 import softpatrol.drinkapp.database.models.recipe.Recipe;
@@ -38,18 +39,21 @@ public class PopupRecipe extends RelativeLayout {
     private Button btnShowAll;
     private Button btnShowMissing;
 
-    private SearchResult latestSearchResult;
+    private SearchResult item;
 
     public PopupRecipe(Context context, SearchResult item) {
         super(context);
         init();
-        this.latestSearchResult = item;
+        this.item = item;
+
+        // search for the recipe
+        new Getter(new ResultParser(this.getContext())).execute(Definitions.GET_RECIPES + "/" + item.getRecipeId());
     }
 
     public PopupRecipe(Context context,SearchResult item,Recipe recipe) {
         super(context);
         init();
-        this.latestSearchResult = item;
+        this.item = item;
     }
 
     public void populateGui(SearchResult result,Recipe recipe) {
@@ -58,12 +62,33 @@ public class PopupRecipe extends RelativeLayout {
 
         // Loop over all parts and check what is missing or added in the cart
         for (PartIngredient pi : recipe.getPartIngredients()) {
+            PartWrapper pw = null;
 
+            // check if it is a miss
+            if (item.getIngredMisses().contains(pi.getIngredientId())) {
+                pw = PartWrapper.create(pi, PartWrapper.ItemStatus.MISSING,getContext());
+            } else {
+                pw = PartWrapper.create(pi, PartWrapper.ItemStatus.HAVE_IT,getContext());
+            }
+            addPart(pw);
         }
 
         for (PartCategory pc : recipe.getPartCategories()) {
-
+            PartWrapper pw = null;
+            // check for hit here, since server returns category hits
+            if (item.getCategoryHits().contains(pc.getCategoryServerId())) {
+                pw = PartWrapper.create(pc, PartWrapper.ItemStatus.HAVE_IT,getContext());
+            } else {
+                pw = PartWrapper.create(pc, PartWrapper.ItemStatus.MISSING,getContext());
+            }
+            addPart(pw);
         }
+    }
+
+    private void addPart(PartWrapper pw) {
+        PopupRecipeItem popupRecipeItem = new PopupRecipeItem(getContext());
+        popupRecipeItem.setPartWrapper(pw);
+        layoutIngredientsList.addView(popupRecipeItem);
     }
 
     public void close() {
@@ -201,13 +226,14 @@ public class PopupRecipe extends RelativeLayout {
 
         @Override
         public void analyzeData(JSONObject result) throws Exception {
-            JSONArray array = result.getJSONArray("data");
-            EventBus.getDefault().post(new EventRecipe(null));
+            JSONObject data = result.getJSONObject("data");
+            Recipe recipe = new Recipe(data);
+            EventBus.getDefault().post(new EventRecipe(recipe));
         }
     }
 
     @Subscribe
     public void onRecipeData(EventRecipe event) {
-        populateGui(latestSearchResult,event.recipe);
+        populateGui(item,event.recipe);
     }
 }

@@ -23,7 +23,7 @@
         android:id="@+id/fragment_result_popup_ingredient_item_extra"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/fragment_result_popup_ingredient_item_name"
+        android:layout_alignParentRight="true"
         android:textSize="16dp"
         android:layout_marginLeft="20dp"
         android:textColor="@color/black"
@@ -34,7 +34,7 @@
         android:id="@+id/fragment_result_popup_ingredient_item_img_shopping"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_alignParentRight="true"
+        android:layout_toLeftOf="@id/fragment_result_popup_ingredient_item_extra"
         android:layout_centerVertical="true"
         android:src="@drawable/shopping_cart" />
 
