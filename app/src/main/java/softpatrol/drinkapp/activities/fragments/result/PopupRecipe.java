@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -39,6 +40,8 @@ public class PopupRecipe extends RelativeLayout {
     private Button btnShowAll;
     private Button btnShowMissing;
 
+    private ProgressBar progressBar;
+
     private SearchResult item;
 
     public PopupRecipe(Context context, SearchResult item) {
@@ -47,6 +50,7 @@ public class PopupRecipe extends RelativeLayout {
         this.item = item;
 
         // search for the recipe
+        progressBar.setVisibility(View.VISIBLE);
         new Getter(new ResultParser(this.getContext())).execute(Definitions.GET_RECIPES + "/" + item.getRecipeId());
     }
 
@@ -65,7 +69,7 @@ public class PopupRecipe extends RelativeLayout {
             PartWrapper pw = null;
 
             // check if it is a miss
-            if (item.getIngredMisses().contains(pi.getIngredientId())) {
+            if (result.getIngredMisses().contains(pi.getIngredientId())) {
                 pw = PartWrapper.create(pi, PartWrapper.ItemStatus.MISSING,getContext());
             } else {
                 pw = PartWrapper.create(pi, PartWrapper.ItemStatus.HAVE_IT,getContext());
@@ -76,13 +80,14 @@ public class PopupRecipe extends RelativeLayout {
         for (PartCategory pc : recipe.getPartCategories()) {
             PartWrapper pw = null;
             // check for hit here, since server returns category hits
-            if (item.getCategoryHits().contains(pc.getCategoryServerId())) {
+            if (result.getCategoryHits().contains(pc.getCategoryServerId())) {
                 pw = PartWrapper.create(pc, PartWrapper.ItemStatus.HAVE_IT,getContext());
             } else {
                 pw = PartWrapper.create(pc, PartWrapper.ItemStatus.MISSING,getContext());
             }
             addPart(pw);
         }
+        progressBar.setVisibility(View.GONE);
     }
 
     private void addPart(PartWrapper pw) {
@@ -114,6 +119,8 @@ public class PopupRecipe extends RelativeLayout {
                 self.showAllIngredients();
             }
         });
+
+        progressBar = (ProgressBar) findViewById(R.id.fragment_result_recipe_popup_progress_bar);
 
         btnShowMissing = (Button) findViewById(R.id.fragment_result_recipe_popup_ingredient_missing_btn);
         btnShowMissing.setOnClickListener(new OnClickListener() {
@@ -170,48 +177,31 @@ public class PopupRecipe extends RelativeLayout {
         return txtViewLevel;
     }
 
-    public void setLevel(TextView level) {
-        this.txtViewLevel = level;
-    }
-
     public TextView getTxtViewTime() {
         return txtViewTime;
-    }
-
-    public void setTxtViewTime(TextView txtViewTime) {
-        this.txtViewTime = txtViewTime;
     }
 
     public TextView getTxtViewMissing() {
         return txtViewMissing;
     }
 
-    public void setTxtViewMissing(TextView txtViewMissing) {
-        this.txtViewMissing = txtViewMissing;
-    }
 
     public TextView getTxtViewBody() {
         return txtViewBody;
     }
 
-    public void setTxtViewBody(TextView txtViewBody) {
-        this.txtViewBody = txtViewBody;
-    }
 
     public ImageView getImgViewTitle() {
         return imgViewTitle;
-    }
-
-    public void setImgViewTitle(ImageView imgViewTitle) {
-        this.imgViewTitle = imgViewTitle;
     }
 
     public TextView getTextViewTitle() {
         return textViewTitle;
     }
 
-    public void setTextViewTitle(TextView textViewTitle) {
-        this.textViewTitle = textViewTitle;
+
+    public ProgressBar getProgressBar() {
+        return progressBar;
     }
 
     private interface PopupRecipeItemIterate {

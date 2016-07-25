@@ -108,7 +108,7 @@ public class ResultFragment extends Fragment {
 
 
         Toolbar tb = (Toolbar) rootView.findViewById(R.id.fragment_result_toolbar);
-        tb.setTitle("Result");
+        tb.setTitle("");
 
         activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(tb);

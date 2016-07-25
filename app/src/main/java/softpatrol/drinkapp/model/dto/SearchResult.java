@@ -13,10 +13,10 @@ import java.util.Set;
 public class SearchResult {
 
     private String name;
-    private int recipeId;
+    private Long recipeId;
     private int totalMisses;
-    private Set<Integer> categoryHits;
-    private Set<Integer> ingredMisses;
+    private Set<Long> categoryHits;
+    private Set<Long> ingredMisses;
 
     public int getTotalMisses() {
         return totalMisses;
@@ -26,55 +26,55 @@ public class SearchResult {
         this.totalMisses = totalMisses;
     }
 
-    public int getRecipeId() {
+    public Long getRecipeId() {
         return recipeId;
     }
 
-    public void setRecipeId(int recipeId) {
+    public void setRecipeId(Long recipeId) {
         this.recipeId = recipeId;
     }
 
     public static SearchResult deserialize(JSONObject obj) throws JSONException {
         SearchResult sr = new SearchResult();
 
-        sr.setRecipeId(obj.getInt("recipeId"));
+        sr.setRecipeId(obj.getLong("recipeId"));
         sr.setTotalMisses(obj.getInt("totalMisses"));
         sr.setName(obj.getString("name"));
 
         // Set ingredient misses
-        HashSet<Integer> ingredMisses = new HashSet<>();
+        HashSet<Long> ingredMisses = new HashSet<>();
         JSONArray ingredArr = obj.getJSONArray("ingredientMisses");
 
         for (int i = 0; i < ingredArr.length();i++) {
-            ingredMisses.add(ingredArr.getInt(i));
+            ingredMisses.add(ingredArr.getLong(i));
         }
         sr.setIngredMisses(ingredMisses);
 
         // Set category misses
-        HashSet<Integer> categoryHits = new HashSet<>();
+        HashSet<Long> categoryHits = new HashSet<>();
         JSONArray categoryArr = obj.getJSONArray("categoryHits");
 
         for (int i = 0; i < categoryArr.length();i++) {
-            categoryHits.add(ingredArr.getInt(i));
+            categoryHits.add(ingredArr.getLong(i));
         }
         sr.setCategoryHits(categoryHits);
 
         return sr;
     }
 
-    public Set<Integer> getCategoryHits() {
+    public Set<Long> getCategoryHits() {
         return categoryHits;
     }
 
-    public void setCategoryHits(Set<Integer> categoryHits) {
+    public void setCategoryHits(Set<Long> categoryHits) {
         this.categoryHits = categoryHits;
     }
 
-    public Set<Integer> getIngredMisses() {
+    public Set<Long> getIngredMisses() {
         return ingredMisses;
     }
 
-    public void setIngredMisses(Set<Integer> ingredMisses) {
+    public void setIngredMisses(Set<Long> ingredMisses) {
         this.ingredMisses = ingredMisses;
     }
 

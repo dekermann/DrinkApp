@@ -89,8 +89,12 @@ class ResultRecipeAdapter extends RecyclerView.Adapter<ResultRecipeAdapter.MyVie
         holder.setItem(item);
 
         holder.titleText.setText(item.getName());
-        holder.commentText.setText("Missing " + item.getTotalMisses() + " ingredient" + (item.getTotalMisses() == 1 ? "" : "s"));
-        holder.likeText.setText("2 likes");
+        if (item.getTotalMisses() > 0) {
+            holder.commentText.setText("Missing " + item.getTotalMisses() + " ingredient" + (item.getTotalMisses() == 1 ? "" : "s"));
+        } else {
+            holder.commentText.setText("Not missing any ingredients");
+        }
+        holder.likeText.setText("- likes");
     }
 
     public void addRecipe(SearchResult recipe) {

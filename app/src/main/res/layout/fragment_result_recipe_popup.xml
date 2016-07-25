@@ -15,15 +15,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="5dp"
-            android:text="Recipe textViewTitle"
+            android:layout_marginBottom="10dp"
+            android:text="Title"
             android:textColor="@color/black"
             android:textStyle="normal"
-            android:textSize="20sp" />
+            android:textSize="24sp" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:layout_below="@id/fragment_result_filter_popup_title"
             android:background="@android:color/darker_gray" />
 
@@ -50,7 +52,7 @@
                     <View
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.1"></View>
+                        android:layout_weight="0.01"></View>
 
                     <ImageView
                         android:id="@+id/fragment_result_recipe_popup_image"
@@ -59,7 +61,6 @@
                         android:layout_height="wrap_content"
                         android:adjustViewBounds="true"
                         android:background="@drawable/image_border"
-                        android:padding="10dp"
                         android:scaleType="fitCenter"
                         android:src="@drawable/drink" />
 
@@ -67,7 +68,7 @@
                     <View
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="0.1"></View>
+                        android:layout_weight="0.01"></View>
 
                 </LinearLayout>
 
@@ -114,7 +115,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="20dp"
-                        android:text="Blanda citron och lime.\nHäll sedan i gin och tonic"
+                        android:text="Lorem ipsum dolor sit amet, ei has vivendum iudicabit sententiae. Detraxit signiferumque cu nec, ceteros sententiae temporibus quo ut. Paulo intellegat eos eu, oblique scaevola intellegebat cu nec, quo eu diceret concludaturque. Ad homero doming vivendo mei. Fabulas appetere et nec."
                         android:textColor="@color/black"
                         android:textSize="16dp" />
 
@@ -165,4 +166,12 @@
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/fragment_result_recipe_popup_progress_bar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>
