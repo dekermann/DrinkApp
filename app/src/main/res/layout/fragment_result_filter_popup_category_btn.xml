@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ToggleButton
+        android:id="@+id/fragment_result_filter_popup_category_btn_btn"
+        android:layout_height="100dp"
+        android:layout_width="100dp"
+        android:textOff="Some category"
+        android:text="Some category" />
+
+</LinearLayout>

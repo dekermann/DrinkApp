@@ -1,5 +1,6 @@
 package softpatrol.drinkapp.activities.fragments.result;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -101,8 +104,17 @@ public class ResultFragment extends Fragment {
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentFilter ff = new FragmentFilter(getActivity());
-                EventBus.getDefault().post(new EventCreatePopUp(ff));
+                PopupFilter pf = new PopupFilter(getContext());
+                final Dialog d = new MaterialDialog.Builder(getContext())
+                        .customView(pf,false)
+                        .show();
+
+                pf.getBtnApply().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        d.cancel();
+                    }
+                });
             }
         });
 

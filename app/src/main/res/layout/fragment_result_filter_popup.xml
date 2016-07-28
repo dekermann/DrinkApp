@@ -68,7 +68,7 @@
                 android:textColor="@color/black"
                 android:textAllCaps="true"
                 android:layout_marginBottom="5dp"
-                android:text="Min match percent:"/>
+                android:text="Max missing items:"/>
 
 
             <LinearLayout
@@ -82,7 +82,8 @@
                 <SeekBar
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.9"
+                    android:max="11"
+                    android:layout_weight="0.85"
                     android:id="@+id/fragment_result_filter_popup_slider_percent"
                     android:layout_gravity="center_horizontal" />
 
@@ -90,12 +91,12 @@
                     android:id="@+id/fragment_result_filter_slider_percent_text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.1"
+                    android:layout_weight="0.15"
                     android:textColor="@color/black"
                     android:textSize="16dp"
                     android:textAllCaps="true"
                     android:layout_marginBottom="5dp"
-                    android:text="0%"/>
+                    android:text="0"/>
             </LinearLayout>
 
 
@@ -134,7 +135,8 @@
                 android:horizontalSpacing="10dp"
                 android:stretchMode="columnWidth"
                 android:gravity="center"
-                />
+                >
+            </GridView>
 
 
         </RelativeLayout>
