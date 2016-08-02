@@ -13,22 +13,34 @@ import softpatrol.drinkapp.database.models.ingredient.Category;
 public class FilterSettings {
 
     public enum FilterSortBy {
-        MATCH_PERCENT
+        MAX_MATCH,MIN_MATCH
     }
 
-    public List<Category> categoriesInSearch;
+    public ArrayList<Category> categoriesInSearch;
     public FilterSortBy sortBy;
     public int maxMissing;
 
     public FilterSettings() {
+        reset();
+    }
+
+    public void reset() {
         categoriesInSearch = new ArrayList<>();
-        sortBy = FilterSortBy.MATCH_PERCENT;
+        sortBy = FilterSortBy.MAX_MATCH;
         maxMissing = Integer.MAX_VALUE;
+    }
+
+    public FilterSettings clone() {
+        FilterSettings fs = new FilterSettings();
+        fs.sortBy = sortBy;
+        fs.maxMissing = maxMissing;
+        fs.categoriesInSearch = (ArrayList<Category>) categoriesInSearch.clone();
+        return fs;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof LayoutInflater.Filter) {
+        if (o instanceof FilterSettings) {
             FilterSettings fs = (FilterSettings) o;
 
             if (maxMissing != fs.maxMissing) {

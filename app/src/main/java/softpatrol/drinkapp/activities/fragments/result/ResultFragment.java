@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -43,6 +44,7 @@ import softpatrol.drinkapp.model.dto.SearchResult;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EventCreatePopUp;
+import softpatrol.drinkapp.model.event.EventFilterPopupClose;
 import softpatrol.drinkapp.model.event.EventRecipeSearchComplete;
 
 /**
@@ -63,6 +65,9 @@ public class ResultFragment extends Fragment {
     private AppCompatActivity activity;
 
     private Set<Long> latestSearchParams = new HashSet<>();
+    private FilterSettings searchSettings = new FilterSettings();
+
+    private Dialog filterDialog;
 
     public ResultFragment() {}
 
@@ -104,17 +109,10 @@ public class ResultFragment extends Fragment {
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PopupFilter pf = new PopupFilter(getContext());
-                final Dialog d = new MaterialDialog.Builder(getContext())
+                PopupFilter pf = new PopupFilter(getContext(),searchSettings);
+                filterDialog = new MaterialDialog.Builder(getContext())
                         .customView(pf,false)
                         .show();
-
-                pf.getBtnApply().setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        d.cancel();
-                    }
-                });
             }
         });
 
@@ -199,6 +197,21 @@ public class ResultFragment extends Fragment {
     public void onRecipeComplete(EventRecipeSearchComplete event) {
         showingText.setText("Showing " + event.results.size() + " out of " + event.results.size() + " found recipes...");
         resultListAdapter.clearAndAddRecipes(event.results);
+    }
+
+    @Subscribe
+    public void onFilterSettingsClose(EventFilterPopupClose event) {
+        filterDialog.cancel();
+
+        FilterSettings fs = event.fs;
+
+        // no settings has changed
+        if (fs.equals(searchSettings)) {
+            Toast.makeText(getContext(),"No filer settings changed",Toast.LENGTH_SHORT).show();
+        } else {
+            searchSettings = fs;
+            Toast.makeText(getContext(),"Filer settings changed, should make new query...",Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

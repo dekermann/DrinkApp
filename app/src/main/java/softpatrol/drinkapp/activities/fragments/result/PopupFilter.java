@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -15,11 +16,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
-import java.util.Set;
 
 import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.database.models.ingredient.Category;
+import softpatrol.drinkapp.model.event.EventFilterPopupClose;
 
 /**
  * Created by rasmus on 7/23/16.
@@ -32,32 +35,57 @@ public class PopupFilter extends RelativeLayout{
     private Spinner spinnerSortBy;
     private Button btnApply;
 
-    private FilterSettings refSettings;
+    private FilterSettings fsSettings;
 
 
-    public PopupFilter(Context context) {
+    public PopupFilter(Context context,FilterSettings filterSettings) {
         super(context);
 
-        refSettings = new FilterSettings();
+        fsSettings = filterSettings.clone();
 
         inflate(getContext(), R.layout.fragment_result_filter_popup,this);
 
         layoutCategoryList = (GridView) findViewById(R.id.fragment_result_filter_include_categories);
-        seekBarMatchPercent = (SeekBar) findViewById(R.id.fragment_result_filter_popup_slider_percent);
+
         txtViewMatchPercent = (TextView) findViewById(R.id.fragment_result_filter_slider_percent_text);
+
         spinnerSortBy = (Spinner) findViewById(R.id.fragment_result_filter_sortby_spinner);
+        final ArrayAdapter<FilterSettings.FilterSortBy> dataAdapter = new ArrayAdapter<FilterSettings.FilterSortBy>(getContext(),
+                android.R.layout.simple_spinner_dropdown_item, FilterSettings.FilterSortBy.values());
+        spinnerSortBy.setAdapter(dataAdapter);
+        spinnerSortBy.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // your code here
+                fsSettings.sortBy = dataAdapter.getItem(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // your code here
+            }
+
+        });
+        spinnerSortBy.setSelection(dataAdapter.getPosition(fsSettings.sortBy),true);
+
         btnApply = (Button) findViewById(R.id.fragment_result_filter_popup_apply_btn);
+        btnApply.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EventBus.getDefault().post(new EventFilterPopupClose(fsSettings));
+            }
+        });
 
-
+        seekBarMatchPercent = (SeekBar) findViewById(R.id.fragment_result_filter_popup_slider_percent);
         seekBarMatchPercent.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (seekBar.getMax() == progress) {
-                    refSettings.maxMissing = Integer.MAX_VALUE;
+                    fsSettings.maxMissing = Integer.MAX_VALUE;
                     txtViewMatchPercent.setText("all");
                 } else {
                     txtViewMatchPercent.setText(progress + "");
-                    refSettings.maxMissing = progress;
+                    fsSettings.maxMissing = progress;
                 }
             }
 
@@ -71,6 +99,8 @@ public class PopupFilter extends RelativeLayout{
 
             }
         });
+
+        seekBarMatchPercent.setProgress(fsSettings.maxMissing);
     }
 
     public Button getBtnApply() {
@@ -133,7 +163,7 @@ public class PopupFilter extends RelativeLayout{
                 tb.setTextOff(c.getName());
 
                 // find out if the buttons category is already filtered from previous search
-                if (refSettings.categoriesInSearch.contains(c)) {
+                if (fsSettings.categoriesInSearch.contains(c)) {
                     tb.setChecked(true);
                 } else {
                     tb.setChecked(false);
@@ -143,12 +173,12 @@ public class PopupFilter extends RelativeLayout{
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         if (isChecked) {
-                            if (!refSettings.categoriesInSearch.contains(c)) {
-                                refSettings.categoriesInSearch.add(c);
+                            if (!fsSettings.categoriesInSearch.contains(c)) {
+                                fsSettings.categoriesInSearch.add(c);
                             }
                         } else {
-                            if (!refSettings.categoriesInSearch.contains(c)) {
-                                refSettings.categoriesInSearch.remove(c);
+                            if (!fsSettings.categoriesInSearch.contains(c)) {
+                                fsSettings.categoriesInSearch.remove(c);
                             }
                         }
                     }

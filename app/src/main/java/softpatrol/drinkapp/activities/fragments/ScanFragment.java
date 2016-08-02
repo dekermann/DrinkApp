@@ -143,6 +143,7 @@ public class ScanFragment extends Fragment {
                                 }
                             });
 
+                            /*
                             TcpRequest tcpRequest = new TcpRequest(new ITcpResponse() {
                                 @Override
                                 public void response(IPacket packet) {
@@ -164,6 +165,7 @@ public class ScanFragment extends Fragment {
                                 }
                             }, Definitions.IP, Definitions.PORT);
                             tcpRequest.execute(outgoingMatchForImage);
+                            */
                         }
                     });
                     thread.start();
