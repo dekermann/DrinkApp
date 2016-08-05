@@ -178,9 +178,6 @@ public class MainActivity extends BaseActivity {
         bottomButtonSocial.setFragmentId(FRAGMENT_ID_SOCIAL);
         bottomButtonSocial.setSelectBgColor(getResources().getColor(R.color.light_yellow));
         bottomButtonSocial.setIconImageView(getResources().getDrawable(R.drawable.fragment_social,null));
-
-
-        EventBus.getDefault().post(new EventSwapFragment(FRAGMENT_ID_SCAN));
     }
 
     @Override
@@ -267,6 +264,7 @@ public class MainActivity extends BaseActivity {
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+        EventBus.getDefault().post(new EventSwapFragment(FRAGMENT_ID_SCAN));
     }
 
     @Override
