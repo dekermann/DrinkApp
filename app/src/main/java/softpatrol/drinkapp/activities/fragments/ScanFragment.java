@@ -1,61 +1,36 @@
 package softpatrol.drinkapp.activities.fragments;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.SurfaceTexture;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraCharacteristics;
-import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CameraMetadata;
-import android.hardware.camera2.CaptureFailure;
-import android.hardware.camera2.CaptureRequest;
-import android.hardware.camera2.CaptureResult;
-import android.hardware.camera2.TotalCaptureResult;
-import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.util.Size;
-import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -63,358 +38,33 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
 import softpatrol.drinkapp.R;
+import softpatrol.drinkapp.activities.fragments.result.ResultFragment;
+import softpatrol.drinkapp.activities.fragments.scan.Manual;
+import softpatrol.drinkapp.activities.fragments.scan.Scanner;
 import softpatrol.drinkapp.activities.fragments.stash.StashFragment;
 import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.database.models.ingredient.Ingredient;
 import softpatrol.drinkapp.database.models.stash.Stash;
+import softpatrol.drinkapp.layout.components.CustomViewPager;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
-import softpatrol.drinkapp.network.Definitions;
-import softpatrol.drinkapp.network.packet.IPacket;
-import softpatrol.drinkapp.network.ITcpResponse;
-import softpatrol.drinkapp.network.TcpRequest;
-import softpatrol.drinkapp.network.packet.IncomingError;
-import softpatrol.drinkapp.network.packet.IncomingMatchForImage;
-import softpatrol.drinkapp.network.packet.OutgoingMatchForImage;
 
 /**
  * David was here on 2016-06-08!
  * Copy this code for instant regret...
  */
 public class ScanFragment extends Fragment {
-    int fragmentId;
     private static final String ARG_SECTION_NUMBER = "section_number";
-    private static final int STATE_PREVIEW = 0;
-    private static final int STATE_WAIT_LOCK = 1;
-    private int mState;
+    int fragmentId;
     View rootView;
+    private CustomViewPager mViewPager;
     com.sothree.slidinguppanel.SlidingUpPanelLayout mScrollView;
+    private SectionsPagerAdapter mSectionsPagerAdapter;
 
-
-    boolean AnalyzeInProgress = true;
-    /**
-     * TextureView
-     */
-    TextureView mTextureView;
-    private TextureView.SurfaceTextureListener mSurfaceTextureListener =
-            new TextureView.SurfaceTextureListener() {
-                long lastUpdate = 0;
-
-                @Override
-                public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-                    setupCamera(width, height);
-                    if (mCameraId != null) openCamera();
-                }
-
-                @Override
-                public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-
-                }
-
-                @Override
-                public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-                    return false;
-                }
-
-                @Override
-                public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-                    if (AnalyzeInProgress) return;
-                    lastUpdate = System.currentTimeMillis();
-
-                    AnalyzeInProgress = true;
-                    Thread thread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            final Bitmap bm = mTextureView.getBitmap();
-                            OutgoingMatchForImage outgoingMatchForImage = new OutgoingMatchForImage();
-                            outgoingMatchForImage.setHeight(bm.getHeight());
-                            outgoingMatchForImage.setWidth(bm.getWidth());
-                            //TODO: Dont convert to grayscale like this ffs
-                            byte[] bytes = new byte[bm.getHeight() * bm.getWidth()];
-                            for (int y = 0; y < bm.getHeight(); y++)
-                                for (int x = 0; x < bm.getWidth(); x++) {
-                                    byte value = (byte) (((bm.getPixel(x, y) & 0x000000FF) * 0.1114) + (((bm.getPixel(x, y) >> 8) & 0x000000FF) * 0.587) + (((bm.getPixel(x, y) >> 16) & 0x000000FF) * 0.299));
-                                    bytes[y * bm.getWidth() + x] = (byte) (value & 0x000000FF);
-                                }
-                            //TODO: Dont convert to grayscale like this ffs
-                            outgoingMatchForImage.setImgData(bytes);
-
-                            /*getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    ImageView imageView = (ImageView) rootView.findViewById(R.id.black_white);
-                                    imageView.setImageDrawable(new BitmapDrawable(bm));
-                                }
-                            });*/
-
-                            /*
-                            TcpRequest tcpRequest = new TcpRequest(new ITcpResponse() {
-                                @Override
-                                public void response(IPacket packet) {
-                                    if (packet == null) {
-                                        Log.d("network", "error sending tcp request");
-                                    } else if (packet.getTag() == IncomingError.TAG) {
-                                        IncomingError error = (IncomingError) packet;
-                                        System.out.println(error.getMsg());
-                                    } else {
-                                        IncomingMatchForImage imfi = (IncomingMatchForImage) packet;
-
-                                        if (imfi.getMatchId() != 0) {
-                                            Log.d("network", "Found match with ingredient id = " + imfi.getMatchId());
-                                            Log.d("network", "Match time = " + imfi.getMatchTime() + " seconds");
-                                        } else {
-                                            Log.d("network", "No match was found :(");
-                                        }
-                                    }
-                                }
-                            }, Definitions.IP, Definitions.PORT);
-                            tcpRequest.execute(outgoingMatchForImage);
-                            */
-                        }
-                    });
-                    thread.start();
-                }
-            };
-
-    /** Texture View End */
-
-    private Size mPreviewSize;
-    private String mCameraId;
-
-    /**
-     * Sets up the camera to match texture width/height
-     * @param width for camera
-     * @param height for camera
-     */
-    private void setupCamera(int width, int height) {
-        CameraManager cameraManager = (CameraManager) getActivity().getSystemService(Context.CAMERA_SERVICE);
-
-        try {
-            for (String cameraId : cameraManager.getCameraIdList()) {
-                CameraCharacteristics cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId);
-                if (cameraCharacteristics.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK) {
-                    StreamConfigurationMap map = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-                    mPreviewSize = getPreferredPreviewSize(map.getOutputSizes(SurfaceTexture.class), width, height);
-                    mCameraId = cameraId;
-                    return;
-                }
-            }
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private Size getPreferredPreviewSize(Size[] mapSizes, int width, int height) {
-        List<Size> collectedSizes = new ArrayList<>();
-        for (Size option : mapSizes) {
-            if (width > height) {
-                if (option.getWidth() > width && option.getHeight() > height)
-                    collectedSizes.add(option);
-            } else if (option.getWidth() > height && option.getHeight() > width)
-                collectedSizes.add(option);
-        }
-        if (collectedSizes.size() > 0) {
-            return Collections.min(collectedSizes, new Comparator<Size>() {
-                @Override
-                public int compare(Size lhs, Size rhs) {
-                    return Long.signum(lhs.getWidth() * lhs.getHeight() - rhs.getWidth() * rhs.getHeight());
-                }
-            });
-        }
-        return mapSizes[0];
-    }
-
-    private CameraDevice mCameraDevice;
-    private CameraDevice.StateCallback mCameraDeviceCallback =
-            new CameraDevice.StateCallback() {
-                @Override
-                public void onOpened(@NonNull CameraDevice camera) {
-                    mCameraDevice = camera;
-                    createCameraPreviewSession();
-                    Toast.makeText(getContext(), "Camera Opened", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onDisconnected(@NonNull CameraDevice camera) {
-                    camera.close();
-                    mCameraDevice = null;
-                    Toast.makeText(getContext(), "Camera Disconnected", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onError(@NonNull CameraDevice camera, int error) {
-                    camera.close();
-                    mCameraDevice = null;
-                    Toast.makeText(getContext(), "Camera Error", Toast.LENGTH_SHORT).show();
-                }
-            };
-
-    private void openCamera() {
-        CameraManager cameraManager = (CameraManager) getActivity().getSystemService(Context.CAMERA_SERVICE);
-        try {
-            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            cameraManager.openCamera(mCameraId, mCameraDeviceCallback, mBackgroundHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-    private void closeCamera() {
-        if(mCameraCaptureSession != null) {
-            mCameraCaptureSession.close();
-            mCameraCaptureSession = null;
-        }
-        if(mCameraDevice != null) {
-            mCameraDevice.close();
-            mCameraDevice = null;
-        }
-    }
-
-    /**
-     * Setup link between surface and CameraDevice using CaptureRequestBuilder
-     */
-    private CaptureRequest mPreviewCaptureRequest;
-    private CaptureRequest.Builder mPreviewCaptureRequestBuilder;
-    private CameraCaptureSession mCameraCaptureSession;
-    private CameraCaptureSession.CaptureCallback mCameraSessionCaptureCallback =
-            new CameraCaptureSession.CaptureCallback() {
-                private void process(CaptureResult captureResult) {
-                    switch (mState) {
-                        case STATE_PREVIEW:
-                            //Do nothing
-                            break;
-                        case STATE_WAIT_LOCK:
-                            Integer afState = captureResult.get(CaptureResult.CONTROL_AF_STATE);
-                            if(afState == CaptureRequest.CONTROL_AF_STATE_FOCUSED_LOCKED) {
-                                unlockFocus();
-                                Toast.makeText(getContext(), "Focus Locked", Toast.LENGTH_SHORT).show();
-                            }
-                            break;
-                    }
-                }
-                @Override
-                public void onCaptureStarted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, long timestamp, long frameNumber) {
-                    super.onCaptureStarted(session, request, timestamp, frameNumber);
-                }
-                @Override
-                public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
-                    super.onCaptureCompleted(session, request, result);
-                    process(result);
-                }
-                @Override
-                public void onCaptureFailed(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull CaptureFailure failure) {
-                    super.onCaptureFailed(session, request, failure);
-                    Toast.makeText(getContext(), "Focus Lock Failed", Toast.LENGTH_SHORT).show();
-                }
-            };
-    private ArrayList<Surface> displaySurfaces = new ArrayList<>();
-    private void createCameraPreviewSession() {
-        try {
-            SurfaceTexture surfaceTexture = mTextureView.getSurfaceTexture();
-            surfaceTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
-            Surface previewSurface = new Surface(surfaceTexture);
-            mPreviewCaptureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            if(mTorch) mPreviewCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_TORCH);
-            else mPreviewCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF);
-            mPreviewCaptureRequestBuilder.addTarget(previewSurface);
-            displaySurfaces.add(previewSurface);
-            exportCaptureRequest();
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void exportCaptureRequest() {
-        try {
-        mCameraDevice.createCaptureSession(displaySurfaces, new CameraCaptureSession.StateCallback() {
-            @Override
-            public void onConfigured(@NonNull CameraCaptureSession session) {
-                if(mCameraDevice == null) return;
-                try {
-                    mPreviewCaptureRequest = mPreviewCaptureRequestBuilder.build();
-                    mCameraCaptureSession = session;
-                    mCameraCaptureSession.setRepeatingRequest(
-                            mPreviewCaptureRequest,
-                            mCameraSessionCaptureCallback,
-                            mBackgroundHandler
-                    );
-                } catch (CameraAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-            @Override
-            public void onConfigureFailed(@NonNull CameraCaptureSession session) {
-                Toast.makeText(getContext(), "onConfigureFailed", Toast.LENGTH_SHORT).show();
-            }
-        }, null);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-    /** Setup Complete */
-
-    /**
-     * Lock Focus
-     */
-
-    private void lockFocus() {
-        mState = STATE_WAIT_LOCK;
-        mPreviewCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
-                CaptureRequest.CONTROL_AF_TRIGGER_START);
-        try {
-            mCameraCaptureSession.capture(mPreviewCaptureRequestBuilder.build(), mCameraSessionCaptureCallback, mBackgroundHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void unlockFocus() {
-        mState = STATE_PREVIEW;
-        mPreviewCaptureRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
-                CaptureRequest.CONTROL_AF_TRIGGER_CANCEL);
-        try {
-            mCameraCaptureSession.capture(mPreviewCaptureRequestBuilder.build(), mCameraSessionCaptureCallback, mBackgroundHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-    boolean mTorch = false;
-    private void torch() {
-        mTorch = !mTorch;
-        try {
-            mPreviewCaptureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CameraMetadata.CONTROL_AE_MODE_ON);
-        } catch (Exception e) { return; }
-        if(mTorch) mPreviewCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_TORCH);
-        else mPreviewCaptureRequestBuilder.set(CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF);
-
-        mPreviewCaptureRequest = mPreviewCaptureRequestBuilder.build();
-        try {
-            mCameraCaptureSession.setRepeatingRequest(
-                    mPreviewCaptureRequest,
-                    mCameraSessionCaptureCallback,
-                    mBackgroundHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
-    boolean mManual = false;
-    private void manualAdd() {
-        mManual = !mManual;
-    }
 
     private void clearList() {
         StashFragment.CURRENT_STASH = new Stash();
@@ -454,25 +104,25 @@ public class ScanFragment extends Fragment {
     }
 
     EditText mCurrentStashName;
+    ImageView mScannerButton;
+    ImageView mManualButton;
+    boolean mScanning = true;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         fragmentId = getArguments().getInt(ARG_SECTION_NUMBER);
         View rootView = inflater.inflate(R.layout.fragment_scan, container, false);
         this.rootView = rootView;
+        mViewPager = (CustomViewPager) rootView.findViewById(R.id.fragment_scan_container);
+        mScannerButton = (ImageView) rootView.findViewById(R.id.scanner);
+        mManualButton = (ImageView) rootView.findViewById(R.id.manual);
 
-        mTextureView = (TextureView) rootView.findViewById(R.id.camera_texture);
-        mTextureView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(CurrentStashNameFocused) changeStashNameState();
-                AnalyzeInProgress = false;
-            }
-        });
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getActivity().getSupportFragmentManager());
+        mViewPager.setAdapter(mSectionsPagerAdapter);
         mScrollView = (com.sothree.slidinguppanel.SlidingUpPanelLayout) rootView.findViewById(R.id.scrollView);
         mScrollView.setOverlayed(true);
         mScrollView.setShadowHeight(0);
         mScrollView.setTouchEnabled(true);
-        mScrollView.setPanelHeight(250);
+        mScrollView.setPanelHeight(375);
         mScrollView.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
@@ -494,9 +144,44 @@ public class ScanFragment extends Fragment {
                 Log.d("ASD", "State changed: " + newState.toString());
             }
         });
-        //mScrollView.setAnchorPoint(0.7f);
+        mScannerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                scan();
+            }
+        });
+        mManualButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                manual();
+            }
+        });
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-        //mScrollView.setParallaxOffset(500);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position == 0) scan();
+                else manual();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        final ImageView clear = (ImageView) rootView.findViewById(R.id.clear);
+
+        clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearList();
+            }
+        });
 
         mScannedItems = (RecyclerView) rootView.findViewById(R.id.scanned_item_list);
         mScannedItems.requestFocus();
@@ -506,58 +191,15 @@ public class ScanFragment extends Fragment {
         InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
         
-        Typeface type = Typeface.createFromAsset(getContext().getAssets(),"fonts/font.ttf");
-        mCurrentStashName.setTypeface(type);
+        //Typeface type = Typeface.createFromAsset(getContext().getAssets(),"fonts/font.ttf");
+        //mCurrentStashName.setTypeface(type);
         setUpRecyclerView();
         DatabaseHandler db = DatabaseHandler.getInstance(getContext());
         for(long l : StashFragment.CURRENT_STASH.getIngredientsIds()) {
             ((TestAdapter)mScannedItems.getAdapter()).addItems(db.getIngredient(l));
         }
 
-        final ImageView torch = (ImageView) rootView.findViewById(R.id.torch);
-        torch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!mTorch) {
-                    torch.setImageDrawable(getContext().getDrawable(R.drawable.flashlight_on_white));
-                    torch.setBackground(getContext().getDrawable(R.drawable.torch_button_on));
-                }
-                else {
-                    torch.setImageDrawable(getContext().getDrawable(R.drawable.flashlight_off_white));
-                    torch.setBackground(getContext().getDrawable(R.drawable.torch_button_off));
-                }
-                torch();
-            }
-        });
-        final ImageView manual_add = (ImageView) rootView.findViewById(R.id.manual_add);
-        manual_add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!mManual) {
-                    manual_add.setImageDrawable(getContext().getDrawable(R.drawable.automatic_add_button));
-                }
-                else {
-                    manual_add.setImageDrawable(getContext().getDrawable(R.drawable.manual_add));
-                    //FAKE ADD
-                    long fakeId = (long) (Math.random()*10) + 1;
-                    fakeId = 1;
-                    //Debug.debugMessage((BaseActivity) getActivity(), "FOUND INGREDIENT " + fakeId + ": " + DatabaseHandler.getInstance(getContext()).getServerIngredient(fakeId).getName());
-                    //((TestAdapter)mScannedItems.getAdapter()).addItems(DatabaseHandler.getInstance(getContext()).getServerIngredient(fakeId));
-                    ((TestAdapter)mScannedItems.getAdapter()).addItems(new Ingredient());
-                    StashFragment.CURRENT_STASH.addIngredientId(fakeId);
-                    EventBus.getDefault().post(new EditCurrentStashEvent());
-                }
-                manualAdd();
-            }
-        });
 
-        final ImageView clear = (ImageView) rootView.findViewById(R.id.clear);
-        clear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clearList();
-            }
-        });
 /*
         mCurrentStashName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -600,41 +242,53 @@ public class ScanFragment extends Fragment {
         return rootView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        openBackgroundThread();
-        if(mTextureView.isAvailable()) {
-            setupCamera(mTextureView.getWidth(), mTextureView.getHeight());
-            openCamera();
-        } else {
-            mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+    private void scan() {
+        if(mScanning) return;
+        else {
+            mScannerButton.setBackground(getResources().getDrawable(R.drawable.fragment_scan_scan_button_background));
+            mScannerButton.setImageDrawable(getResources().getDrawable(R.drawable.scan_white));
+            mManualButton.setImageDrawable(getResources().getDrawable(R.drawable.manual_black));
+            mManualButton.setBackground(null);
+            mScanning = !mScanning;
+            mViewPager.setCurrentItem(0);
         }
     }
-    @Override
-    public void onPause() {
-        closeCamera();
-        closeBackgroundThread();
-        super.onPause();
-    }
-
-    private HandlerThread mBackgroundThread;
-    private Handler mBackgroundHandler;
-
-    private void openBackgroundThread() {
-        mBackgroundThread = new HandlerThread("Camera2 Background Thread");
-        mBackgroundThread.start();
-        mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
-    }
-    private void closeBackgroundThread() {
-        mBackgroundThread.quitSafely();
-        try {
-            mBackgroundThread.join();
-            mBackgroundThread = null;
-            mBackgroundHandler = null;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    private void manual() {
+        if(!mScanning) return;
+        else {
+            mManualButton.setBackground(getResources().getDrawable(R.drawable.fragment_scan_manual_button_background));
+            mManualButton.setImageDrawable(getResources().getDrawable(R.drawable.manual_white));
+            mScannerButton.setImageDrawable(getResources().getDrawable(R.drawable.scan_black));
+            mScannerButton.setBackground(null);
+            mScanning = !mScanning;
+            mViewPager.setCurrentItem(1);
         }
+    }
+
+    /**
+     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+     * one of the sections/tabs/pages.
+     */
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+        Scanner scannerFragment;
+        Manual scannerManual;
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+            scannerFragment = Scanner.newInstance(0);
+            scannerManual = Manual.newInstance(1);
+        }
+
+        @Override
+        public android.support.v4.app.Fragment getItem(int position) {
+            switch (position) {
+                case 0: return scannerFragment;
+                case 1: return scannerManual;
+                default: return null;
+            }
+        }
+        @Override
+        public int getCount() { return 2; }
+
     }
 
     //----- SCANNED LIST -----
@@ -829,7 +483,7 @@ public class ScanFragment extends Fragment {
     /**
      * RecyclerView adapter enabling undo on a swiped away item.
      */
-    class TestAdapter extends RecyclerView.Adapter {
+    public class TestAdapter extends RecyclerView.Adapter {
 
         private static final int PENDING_REMOVAL_TIMEOUT = 3000; // 3sec
 
@@ -957,8 +611,8 @@ public class ScanFragment extends Fragment {
         public TestViewHolder(ViewGroup parent) {
             super(LayoutInflater.from(parent.getContext()).inflate(R.layout.scanned_item, parent, false));
             titleTextView = (TextView) itemView.findViewById(R.id.title_text_view);
-            Typeface type = Typeface.createFromAsset(parent.getContext().getAssets(),"fonts/font.ttf");
-            titleTextView.setTypeface(type);
+            //Typeface type = Typeface.createFromAsset(parent.getContext().getAssets(),"fonts/font.ttf");
+            //titleTextView.setTypeface(type);
         }
 
     }

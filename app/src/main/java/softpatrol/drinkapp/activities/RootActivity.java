@@ -88,6 +88,8 @@ public class RootActivity extends BaseActivity {
         Display display = getWindowManager().getDefaultDisplay();
         displayWidth = display.getWidth();
         displayHeight = display.getHeight();
+        Log.d("KAJSDKASJHD", "ALKSDLAKSD: " + displayWidth);
+        Log.d("KAJSDKASJHD", "ALKSDLAKSD: " + displayHeight);
         parent = this;
 
         //TODO: When commenting out the reset look below for next TODO!!!!
