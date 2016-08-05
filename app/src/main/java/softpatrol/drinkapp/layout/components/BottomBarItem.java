@@ -17,21 +17,20 @@ import softpatrol.drinkapp.R;
 import softpatrol.drinkapp.activities.MainActivity;
 import softpatrol.drinkapp.model.event.EventBottomBar;
 import softpatrol.drinkapp.activities.fragments.Fragment;
+import softpatrol.drinkapp.model.event.EventSwapFragment;
 
 /**
  * Created by root on 6/17/16.
  */
-public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked {
+public class BottomBarItem extends RelativeLayout {
 
     private String titleName = "";
 
     private TextView titleTextView;
     private ImageView iconImageView;
-    private ViewPager fragmentViewPager;
 
-    private int tabId = -1;
+
     private int fragmentId = -1;
-    private boolean isFocused = false;
 
     private int selectBgColor,unselectBgColor;
 
@@ -42,7 +41,6 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
 
         TypedArray arr = context.obtainStyledAttributes(aSet, R.styleable.BottomBarItem);
         CharSequence titleName = arr.getString(R.styleable.BottomBarItem_name);
-        tabId = arr.getInt(R.styleable.BottomBarItem_tab_id,0);
         arr.recycle();
 
         inflate(getContext(), R.layout.bottom_bar_item, this);
@@ -64,33 +62,22 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
         return titleTextView;
     }
 
+    public ImageView getIconImageView() {
+        return iconImageView;
+    }
+
 
     public void setIconImageView(Drawable drawable) {
         iconImageView.setImageDrawable(drawable);
     }
 
-    public void setCustomClickListener(final ViewPager fragmentViewPager, final int fragmentId) {
-        final BottomBarItem self = this;
-        this.fragmentId = fragmentId;
-        this.fragmentViewPager = fragmentViewPager;
-
-        this.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EventBus.getDefault().post(new EventBottomBar(self.fragmentId,true));
-            }
-        });
-    }
-
-    private void select() {
-        isFocused = true;
+    public void select() {
         setScaleX(1.2f);
         setScaleY(1.2f);
         setBackgroundColor(selectBgColor);
     }
 
-    private void unselect() {
-        isFocused = false;
+    public void unselect() {
         setScaleX(1);
         setScaleY(1);
         setBackgroundColor(unselectBgColor);
@@ -107,17 +94,12 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
         }
     }
 
-    @Override
-    public void outsideClick(int tabIndex) {
-        unselect();
+    public int getFragmentId() {
+        return fragmentId;
     }
 
-    public int getTabId() {
-        return tabId;
-    }
-
-    public void setTabId(int tabId) {
-        this.tabId = tabId;
+    public void setFragmentId(int id) {
+        this.fragmentId = id;
     }
 
     public int getSelectBgColor() {
@@ -129,24 +111,11 @@ public class BottomBarItem extends RelativeLayout implements IOutsideTabClicked 
     }
 
     @Subscribe
-    public void onEditStashEvent(EventBottomBar event) {
-        if (event.id == this.fragmentId)  {
+    public void onSwapFragment(final EventSwapFragment event) {
+        if (event.fragmentId == this.fragmentId)  {
             select();
-            if (event.changeFragment) {
-                fragmentViewPager.setCurrentItem(fragmentId,true);
-                ((Fragment) ((MainActivity.SectionsPagerAdapter)fragmentViewPager.getAdapter()).getItem(fragmentId)).onEntered();
-            }
         } else {
             unselect();
         }
-    }
-
-    @Override
-    public boolean isFocused() {
-        return isFocused;
-    }
-
-    public void setFocused(boolean focused) {
-        isFocused = focused;
     }
 }

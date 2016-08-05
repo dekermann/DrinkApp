@@ -69,12 +69,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import softpatrol.drinkapp.R;
+import softpatrol.drinkapp.activities.MainActivity;
 import softpatrol.drinkapp.activities.fragments.stash.StashFragment;
 import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.database.models.ingredient.Ingredient;
 import softpatrol.drinkapp.database.models.stash.Stash;
 import softpatrol.drinkapp.model.event.ChangeCurrentStashEvent;
 import softpatrol.drinkapp.model.event.EditCurrentStashEvent;
+import softpatrol.drinkapp.model.event.EventBottomBar;
 import softpatrol.drinkapp.network.Definitions;
 import softpatrol.drinkapp.network.packet.IPacket;
 import softpatrol.drinkapp.network.ITcpResponse;
@@ -974,6 +976,11 @@ public class ScanFragment extends Fragment {
             ((TestAdapter)mScannedItems.getAdapter()).addItems(db.getIngredient(l));
         }
         mCurrentStashName.setText(StashFragment.CURRENT_STASH.getName());
+    }
+
+    @Subscribe
+    public void onBottomBarEvent(EventBottomBar event) {
+
     }
 
     @Override
