@@ -28,10 +28,8 @@ import softpatrol.drinkapp.activities.fragments.stash.StashFragment;
 import softpatrol.drinkapp.api.DataSynchronizer;
 import softpatrol.drinkapp.database.DatabaseHandler;
 import softpatrol.drinkapp.layout.components.BottomBarDefault;
-import softpatrol.drinkapp.layout.components.BottomBarItem;
 import softpatrol.drinkapp.layout.components.CameraBottomBar;
 import softpatrol.drinkapp.layout.components.CustomViewPager;
-import softpatrol.drinkapp.model.event.EventBottomBar;
 import softpatrol.drinkapp.model.event.EventCreatePopUp;
 import softpatrol.drinkapp.model.event.EventRecipeSearchComplete;
 import softpatrol.drinkapp.model.event.EventSwapFragment;
@@ -155,9 +153,6 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        mViewPager.setCurrentItem(2);
-
-
         bottomButtonHome = (BottomBarDefault) findViewById(R.id.activity_root_bottom_bar_tab_1);
         bottomButtonHome.setFragmentId(FRAGMENT_ID_BUTTON_HOME);
         bottomButtonHome.setSelectBgColor(getResources().getColor(R.color.light_green));
@@ -170,6 +165,7 @@ public class MainActivity extends BaseActivity {
 
         bottomButtonScan = (CameraBottomBar) findViewById(R.id.activity_root_bottom_bar_tab_3);
         bottomButtonScan.setFragmentId(FRAGMENT_ID_SCAN);
+        bottomButtonScan.setMoveableImageView((ImageView) getWindow().getDecorView().getRootView().findViewById(R.id.acitivty_root_random_img));
         bottomButtonScan.setSelectBgColor(getResources().getColor(R.color.Wheat));
         bottomButtonScan.setIconImageView(getResources().getDrawable(R.drawable.fragment_scan,null));
 

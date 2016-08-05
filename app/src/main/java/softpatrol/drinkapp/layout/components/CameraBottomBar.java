@@ -4,13 +4,14 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -29,7 +30,7 @@ public class CameraBottomBar extends BottomBarItem {
     public static final int FRAGMENT_SWITCH_STATE = 0;
 
     private Drawable currImage;
-    private ImageView randomImage;
+    private ImageView moveableImage;
 
     private int internal_state = 0;
 
@@ -43,18 +44,13 @@ public class CameraBottomBar extends BottomBarItem {
                 if (getInternal_state() == CAMERA_STATE) {
                     // send photo event
 
-                    final float growTo = 1f;
-                    final long duration = 250;
+                    RotateAnimation rotate = new RotateAnimation(0, 360,
+                            Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+                            0.5f);
 
-                    ScaleAnimation shrink = new ScaleAnimation(growTo, 0, growTo, 0,
-                            Animation.RELATIVE_TO_SELF, 0.5f,
-                            Animation.RELATIVE_TO_SELF, 0.5f);
-                    shrink.setDuration(duration);
-                    shrink.setStartOffset(duration / 2);
-                    AnimationSet growAndShrink = new AnimationSet(true);
-                    growAndShrink.setInterpolator(new LinearInterpolator());
-                    growAndShrink.addAnimation(shrink);
-                    getIconImageView().startAnimation(growAndShrink);
+                    rotate.setDuration(1000);
+                    rotate.setRepeatCount(Animation.ABSOLUTE);
+                    moveableImage.startAnimation(rotate);
 
                     EventBus.getDefault().post(new EventPhoto());
                 } else {
@@ -67,19 +63,18 @@ public class CameraBottomBar extends BottomBarItem {
         currImage = getIconImageView().getDrawable();
     }
 
-    public void setRootView(ImageView someView) {
-        randomImage = someView;
-        randomImage.setVisibility(View.VISIBLE);
+    public void setMoveableImageView(ImageView someView) {
+        moveableImage = someView;
+        moveableImage.setZ(100);
     }
 
     public void changeToCameraMode() {
         setInternal_state(CAMERA_STATE);
-        getIconImageView().setImageDrawable(getContext().getResources().getDrawable(R.drawable.camera_icon));
-        getIconImageView().setScaleX(2f);
-        getIconImageView().setScaleY(2f);
+        getIconImageView().setVisibility(View.GONE);
+        getTitleTextView().setVisibility(View.GONE);
+        moveableImage.setVisibility(View.VISIBLE);
 
 
-        /*
         final CameraBottomBar self = this;
         getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             public void onGlobalLayout() {
@@ -89,23 +84,20 @@ public class CameraBottomBar extends BottomBarItem {
                 getLocationOnScreen(locations);
                 int x = locations[0];
                 int y = locations[1];
-                ViewGroup parent = (ViewGroup) self;
-                parent.removeView(self.getIconImageView());
-                ViewGroup rootParent = (ViewGroup) getRootView();
-                rootParent.addView(self.getIconImageView());
+
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(400,400);
+                params.leftMargin = x-100;
+                params.topMargin = y-100;
+                moveableImage.setLayoutParams(params);
             }
         });
-        */
-
-        getTitleTextView().setVisibility(View.GONE);
     }
 
     public void changeToFragmentSwitchMode() {
         setInternal_state(FRAGMENT_SWITCH_STATE);
-        getIconImageView().setImageDrawable(currImage);
-        getIconImageView().setScaleX(1);
-        getIconImageView().setScaleY(1);
+        getIconImageView().setVisibility(View.VISIBLE);
         getTitleTextView().setVisibility(View.VISIBLE);
+        moveableImage.setVisibility(View.GONE);
     }
 
     @Override
