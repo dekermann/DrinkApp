@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.animation.RotateAnimation;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -26,9 +27,9 @@ import softpatrol.drinkapp.activities.fragments.SocialFragment;
 import softpatrol.drinkapp.activities.fragments.stash.StashFragment;
 import softpatrol.drinkapp.api.DataSynchronizer;
 import softpatrol.drinkapp.database.DatabaseHandler;
-import softpatrol.drinkapp.layout.components.BottomBarItem;
+import softpatrol.drinkapp.layout.components.BottomBarDefault;
+import softpatrol.drinkapp.layout.components.CameraBottomBar;
 import softpatrol.drinkapp.layout.components.CustomViewPager;
-import softpatrol.drinkapp.model.event.EventBottomBar;
 import softpatrol.drinkapp.model.event.EventCreatePopUp;
 import softpatrol.drinkapp.model.event.EventRecipeSearchComplete;
 import softpatrol.drinkapp.model.event.EventSwapFragment;
@@ -56,11 +57,17 @@ public class MainActivity extends BaseActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private CustomViewPager mViewPager;
 
-    private BottomBarItem bottomButtonHome;
-    private BottomBarItem bottomButtonStash;
-    private BottomBarItem bottomButtonScan;
-    private BottomBarItem bottomButtonRecipe;
-    private BottomBarItem bottomButtonSocial;
+    private BottomBarDefault bottomButtonHome;
+    private BottomBarDefault bottomButtonStash;
+    private CameraBottomBar bottomButtonScan;
+    private BottomBarDefault bottomButtonRecipe;
+    private BottomBarDefault bottomButtonSocial;
+
+    public static final int FRAGMENT_ID_BUTTON_HOME = 0;
+    public static final int FRAGMENT_ID_BUTTON_STASH = 1;
+    public static final int FRAGMENT_ID_SCAN = 2;
+    public static final int FRAGMENT__ID_RECIPE = 3;
+    public static final int FRAGMENT_ID_SOCIAL = 4;
 
     //Singleton
     private static MainActivity mainActivity;
@@ -146,35 +153,34 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        mViewPager.setCurrentItem(2);
-
-
-        bottomButtonHome = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_1);
-        bottomButtonHome.setCustomClickListener(mViewPager,0);
+        bottomButtonHome = (BottomBarDefault) findViewById(R.id.activity_root_bottom_bar_tab_1);
+        bottomButtonHome.setFragmentId(FRAGMENT_ID_BUTTON_HOME);
         bottomButtonHome.setSelectBgColor(getResources().getColor(R.color.light_green));
         bottomButtonHome.setIconImageView(getResources().getDrawable(R.drawable.fragment_home,null));
 
-        bottomButtonStash = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_2);
-        bottomButtonStash.setCustomClickListener(mViewPager,1);
+        bottomButtonStash = (BottomBarDefault) findViewById(R.id.activity_root_bottom_bar_tab_2);
+        bottomButtonStash.setFragmentId(FRAGMENT_ID_BUTTON_STASH);
         bottomButtonStash.setSelectBgColor(getResources().getColor(R.color.Thistle));
         bottomButtonStash.setIconImageView(getResources().getDrawable(R.drawable.search,null));
 
-        bottomButtonScan = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_3);
-        bottomButtonScan.setCustomClickListener(mViewPager,2);
+        bottomButtonScan = (CameraBottomBar) findViewById(R.id.activity_root_bottom_bar_tab_3);
+        bottomButtonScan.setFragmentId(FRAGMENT_ID_SCAN);
+        bottomButtonScan.setMoveableImageView((ImageView) getWindow().getDecorView().getRootView().findViewById(R.id.acitivty_root_random_img));
         bottomButtonScan.setSelectBgColor(getResources().getColor(R.color.Wheat));
         bottomButtonScan.setIconImageView(getResources().getDrawable(R.drawable.fragment_scan,null));
 
-        bottomButtonRecipe = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_4);
-        bottomButtonRecipe.setCustomClickListener(mViewPager,3);
+        bottomButtonRecipe = (BottomBarDefault) findViewById(R.id.activity_root_bottom_bar_tab_4);
+        bottomButtonRecipe.setFragmentId(FRAGMENT__ID_RECIPE);
         bottomButtonRecipe.setSelectBgColor(getResources().getColor(R.color.PaleTurquoise));
         bottomButtonRecipe.setIconImageView(getResources().getDrawable(R.drawable.fragment_result,null));
 
-        bottomButtonSocial = (BottomBarItem) findViewById(R.id.activity_root_bottom_bar_tab_5);
-        bottomButtonSocial.setCustomClickListener(mViewPager,4);
+        bottomButtonSocial = (BottomBarDefault) findViewById(R.id.activity_root_bottom_bar_tab_5);
+        bottomButtonSocial.setFragmentId(FRAGMENT_ID_SOCIAL);
         bottomButtonSocial.setSelectBgColor(getResources().getColor(R.color.light_yellow));
         bottomButtonSocial.setIconImageView(getResources().getDrawable(R.drawable.fragment_social,null));
 
 
+        EventBus.getDefault().post(new EventSwapFragment(FRAGMENT_ID_SCAN));
     }
 
     @Override
@@ -254,7 +260,7 @@ public class MainActivity extends BaseActivity {
 
     @Subscribe
     public void onSwapFragment(final EventSwapFragment event) {
-        EventBus.getDefault().post(new EventBottomBar(event.fragmentId,true));
+        mViewPager.setCurrentItem(event.fragmentId);
     }
 
     @Override
