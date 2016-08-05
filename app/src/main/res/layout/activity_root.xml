@@ -10,10 +10,18 @@
     tools:context=".activities.RootActivity">
 
 
+    <ImageView
+        android:id="@+id/acitivty_root_random_img"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/camera_icon"
+        android:visibility="gone"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
 
         <softpatrol.drinkapp.layout.components.CustomViewPager
             android:id="@+id/container"
