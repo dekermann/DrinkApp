@@ -72,8 +72,8 @@ public class BottomBarItem extends RelativeLayout {
     }
 
     public void select() {
-        setScaleX(1.2f);
-        setScaleY(1.2f);
+        setScaleX(1);
+        setScaleY(1);
         setBackgroundColor(selectBgColor);
     }
 
@@ -104,6 +104,10 @@ public class BottomBarItem extends RelativeLayout {
 
     public int getSelectBgColor() {
         return selectBgColor;
+    }
+
+    public int getUnselectBgColor() {
+        return unselectBgColor;
     }
 
     public void setSelectBgColor(int selectBgColor) {

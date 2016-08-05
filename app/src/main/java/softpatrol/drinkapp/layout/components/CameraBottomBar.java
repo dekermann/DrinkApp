@@ -44,6 +44,7 @@ public class CameraBottomBar extends BottomBarItem {
                 if (getInternal_state() == CAMERA_STATE) {
                     // send photo event
 
+                    /*
                     RotateAnimation rotate = new RotateAnimation(0, 360,
                             Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
                             0.5f);
@@ -51,6 +52,7 @@ public class CameraBottomBar extends BottomBarItem {
                     rotate.setDuration(1000);
                     rotate.setRepeatCount(Animation.ABSOLUTE);
                     moveableImage.startAnimation(rotate);
+                    */
 
                     EventBus.getDefault().post(new EventPhoto());
                 } else {
@@ -70,11 +72,14 @@ public class CameraBottomBar extends BottomBarItem {
 
     public void changeToCameraMode() {
         setInternal_state(CAMERA_STATE);
-        getIconImageView().setVisibility(View.GONE);
+        getIconImageView().setImageDrawable(getContext().getResources().getDrawable(R.drawable.photo_camera));
+        getIconImageView().setScaleX(1.5f);
+        getIconImageView().setScaleY(1.5f);
+        setBackgroundColor(getSelectBgColor());
         getTitleTextView().setVisibility(View.GONE);
-        moveableImage.setVisibility(View.VISIBLE);
 
 
+        /*
         final CameraBottomBar self = this;
         getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             public void onGlobalLayout() {
@@ -85,20 +90,22 @@ public class CameraBottomBar extends BottomBarItem {
                 int x = locations[0];
                 int y = locations[1];
 
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(400,400);
-                params.leftMargin = x-100;
-                params.topMargin = y-100;
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(200,200);
+                params.leftMargin = x;
+                params.topMargin = y-50;
                 moveableImage.setLayoutParams(params);
             }
         });
+        */
     }
 
     public void changeToFragmentSwitchMode() {
         setInternal_state(FRAGMENT_SWITCH_STATE);
-        getIconImageView().setVisibility(View.VISIBLE);
+        getIconImageView().setImageDrawable(currImage);
+        getIconImageView().setScaleX(1);
+        getIconImageView().setScaleY(1);
+        setBackgroundColor(getUnselectBgColor());
         getTitleTextView().setVisibility(View.VISIBLE);
-        moveableImage.setVisibility(View.GONE);
-        moveableImage.clearAnimation();
     }
 
     @Override
