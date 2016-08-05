@@ -98,6 +98,7 @@ public class CameraBottomBar extends BottomBarItem {
         getIconImageView().setVisibility(View.VISIBLE);
         getTitleTextView().setVisibility(View.VISIBLE);
         moveableImage.setVisibility(View.GONE);
+        moveableImage.clearAnimation();
     }
 
     @Override
