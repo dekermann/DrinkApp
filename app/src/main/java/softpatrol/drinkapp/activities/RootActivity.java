@@ -52,6 +52,7 @@ public class RootActivity extends BaseActivity {
 
     public void changeToMainActivity(boolean b){
         Intent intent = new Intent(this, MainActivity.class);
+        Log.d("DEBUG", "Swapping to main activity");
         intent.putExtra("firstTime", b);
         startActivityForResult(intent, MAIN_ACTIVITY);
     }
@@ -91,7 +92,7 @@ public class RootActivity extends BaseActivity {
 
         //TODO: When commenting out the reset look below for next TODO!!!!
         DatabaseHandler db = DatabaseHandler.getInstance(this);
-        db.onUpgrade(db.getWritableDatabase(), 1, 2);
+        //db.onUpgrade(db.getWritableDatabase(), 1, 2);
 
         String[] paths = new String[] { DATA_PATH, DATA_PATH + "tessdata/" };
 
@@ -135,6 +136,7 @@ public class RootActivity extends BaseActivity {
             }
         }
 
+        Log.d("DEBUG", "1");
         ArrayList<String> permissionRequests = new ArrayList<>();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             permissionRequests.add(Manifest.permission.CAMERA);
@@ -163,6 +165,7 @@ public class RootActivity extends BaseActivity {
 //                MultipartEntityBuilder multiPartEntityBuilder = MultipartEntityBuilder.create();
 //                multiPartEntityBuilder.setCharset(Charset.forName("UTF-8"));
                 firstTimeUser = true;
+                Log.d("DEBUG", "2");
                 new Poster(new AccountCreation(this)).execute(Definitions.CREATE_MOBILE);
             }
             else {

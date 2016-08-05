@@ -33,20 +33,26 @@ public class Ingredient {
             this.name = jsonObject.getString(NAME);
             metaData = new MetaData("vendor X");
             //metaData = new MetaData(jsonObject.getJSONObject(META_DATA));
-            JSONArray categories = jsonObject.getJSONArray(CATEGORIES);
+            /*JSONArray categories = jsonObject.getJSONArray(CATEGORIES);
             for(int i = 0;i<categories.length();i++) {
                 Category c = new Category(categories.getJSONObject(i));
                 this.categories.add(c);
-            }
+            }*/
+            this.categories.add(new Category());
             this.createdAt = jsonObject.getLong(CREATED_AT);
             this.latestModification = jsonObject.getLong(LATEST_MODIFICATION);
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
-
+    //Fake
     public Ingredient() {
-
+        this.serverId = (long) (Math.random()*100) + 1;
+        this.name = "SOME BOOZE" + serverId;
+        metaData = new MetaData("vendor X");
+        this.categories.add(new Category());
+        this.createdAt = 123;
+        this.latestModification = 1234;
     }
 
     @Override

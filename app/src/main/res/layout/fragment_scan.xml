@@ -1,10 +1,13 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ <com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.fragments.ScanFragment"
-    android:orientation="vertical">
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:id="@+id/scrollView">
 
+    <!--top view-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -56,61 +59,45 @@
                 android:background="@drawable/torch_button_off"
                 android:id="@+id/torch"/>
         </RelativeLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.75"
-            android:background="@color/Beige" />
+            android:layout_weight="2.75"
+            android:background="@color/black"
+            android:orientation="vertical">
+
+        </View>
 
     </LinearLayout>
 
-    <LinearLayout
+    <!--content view-->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-        <View
+        android:layout_weight="0.8">
+
+        <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.3"/>
-        <RelativeLayout
+            android:layout_marginTop="15dp"
+            android:paddingTop="15dp"
+            android:background="@drawable/scanner_list_inner"
+            android:id="@+id/scanned_item_list">
+        </android.support.v7.widget.RecyclerView>
+        <EditText
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.6"
+            android:layout_height="wrap_content"
+            android:inputType="textVisiblePassword"
+            android:hint="@string/new_stash"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:singleLine="true"
+            android:gravity="center"
+            android:id="@+id/fragment_scan_stash_name"
             android:layout_marginLeft="60dp"
             android:layout_marginRight="60dp"
-            android:background="@drawable/scanner_list">
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textVisiblePassword"
-                android:hint="@string/new_stash"
-                android:background="@android:color/transparent"
-                android:focusable="false"
-                android:focusableInTouchMode="false"
-                android:singleLine="true"
-                android:gravity="center"
-                android:id="@+id/fragment_scan_stash_name"
-                android:textSize="20sp"/>
-
-            <android.support.v7.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="26dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:padding="1dp"
-                android:background="@drawable/scanner_list_inner"
-                android:id="@+id/scanned_item_list">
-            </android.support.v7.widget.RecyclerView>
-
-        </RelativeLayout>
-    </LinearLayout>
-
-
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:background="#55FFFFFF"
-        android:id="@+id/black_white"/>
-</RelativeLayout>
+            android:background="@drawable/scanner_list"
+            android:textSize="26sp"/>
+    </RelativeLayout>
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

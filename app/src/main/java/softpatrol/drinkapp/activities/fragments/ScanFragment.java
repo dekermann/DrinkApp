@@ -37,18 +37,27 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Size;
+import android.view.DragEvent;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -85,6 +94,7 @@ public class ScanFragment extends Fragment {
     private static final int STATE_WAIT_LOCK = 1;
     private int mState;
     View rootView;
+    com.sothree.slidinguppanel.SlidingUpPanelLayout mScrollView;
 
 
     boolean AnalyzeInProgress = true;
@@ -135,13 +145,13 @@ public class ScanFragment extends Fragment {
                             //TODO: Dont convert to grayscale like this ffs
                             outgoingMatchForImage.setImgData(bytes);
 
-                            getActivity().runOnUiThread(new Runnable() {
+                            /*getActivity().runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     ImageView imageView = (ImageView) rootView.findViewById(R.id.black_white);
                                     imageView.setImageDrawable(new BitmapDrawable(bm));
                                 }
-                            });
+                            });*/
 
                             /*
                             TcpRequest tcpRequest = new TcpRequest(new ITcpResponse() {
@@ -458,13 +468,40 @@ public class ScanFragment extends Fragment {
                 AnalyzeInProgress = false;
             }
         });
+        mScrollView = (com.sothree.slidinguppanel.SlidingUpPanelLayout) rootView.findViewById(R.id.scrollView);
+        mScrollView.setOverlayed(true);
+        mScrollView.setShadowHeight(0);
+        mScrollView.setTouchEnabled(true);
+        mScrollView.setPanelHeight(250);
+        mScrollView.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                if(newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                    mCurrentStashName.setFocusable(false);
+                    mCurrentStashName.setFocusableInTouchMode(false);
+                    mCurrentStashName.setClickable(false);
+
+                } else if(newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+                    mCurrentStashName.setFocusable(true);
+                    mCurrentStashName.setFocusableInTouchMode(true);
+                    mCurrentStashName.setClickable(true);
+                }
+                Log.d("ASD", "State changed: " + newState.toString());
+            }
+        });
+        //mScrollView.setAnchorPoint(0.7f);
+
+        //mScrollView.setParallaxOffset(500);
 
         mScannedItems = (RecyclerView) rootView.findViewById(R.id.scanned_item_list);
         mScannedItems.requestFocus();
         mCurrentStashName = (EditText) rootView.findViewById(R.id.fragment_scan_stash_name);
         mCurrentStashName.setSelected(false);
-        mCurrentStashName.setFocusable(true);
-        mCurrentStashName.setFocusableInTouchMode(true);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
         InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
@@ -503,8 +540,10 @@ public class ScanFragment extends Fragment {
                     manual_add.setImageDrawable(getContext().getDrawable(R.drawable.manual_add));
                     //FAKE ADD
                     long fakeId = (long) (Math.random()*10) + 1;
+                    fakeId = 1;
                     //Debug.debugMessage((BaseActivity) getActivity(), "FOUND INGREDIENT " + fakeId + ": " + DatabaseHandler.getInstance(getContext()).getServerIngredient(fakeId).getName());
-                    ((TestAdapter)mScannedItems.getAdapter()).addItems(DatabaseHandler.getInstance(getContext()).getServerIngredient(fakeId));
+                    //((TestAdapter)mScannedItems.getAdapter()).addItems(DatabaseHandler.getInstance(getContext()).getServerIngredient(fakeId));
+                    ((TestAdapter)mScannedItems.getAdapter()).addItems(new Ingredient());
                     StashFragment.CURRENT_STASH.addIngredientId(fakeId);
                     EventBus.getDefault().post(new EditCurrentStashEvent());
                 }

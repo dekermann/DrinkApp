@@ -38,6 +38,13 @@ public class Category {
         createdAt = Long.parseLong(data[2]);
         latestModification = Long.parseLong(data[3]);
     }
+    //Fake
+    public Category() {
+        serverId = 1;
+        name = "Rum rum rum";
+        createdAt = 123;
+        latestModification = 1234;
+    }
 
     public long getServerId() {
         return serverId;

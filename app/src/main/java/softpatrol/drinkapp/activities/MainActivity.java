@@ -125,7 +125,7 @@ public class MainActivity extends BaseActivity {
 
         DataSynchronizer dataSynchronizer = new DataSynchronizer(this);
         dataSynchronizer.syncIngredients();
-        dataSynchronizer.syncRecipes();
+        //dataSynchronizer.syncRecipes();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
